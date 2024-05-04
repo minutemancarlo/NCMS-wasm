@@ -1,7 +1,7 @@
 ﻿@page "/fetchdata"
 @using NCMS_wasm.Shared
 @inject HttpClient Http
-@attribute [Authorize]
+@attribute [Authorize(Roles="Administrator")]
 
 <PageTitle>Weather forecast</PageTitle>
 

@@ -1,19 +1,58 @@
 ﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-
+@using System.Security.Claims
 @inject NavigationManager Navigation
 @inject SignOutSessionStateManager SignOutManager
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <AuthorizeView>
     <Authorized>
-        Hello, @context.User.Identity.Name!
-        <a href="#" @onclick="BeginSignOut">Log out</a>
+        <MudMenu Dense>
+            <ActivatorContent>
+                <MudAvatar>
+                    <ChildContent>
+                        <MudImage Src="@Picture" Width="25" Height="25" />
+                    </ChildContent>
+                </MudAvatar>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Icon="@Icons.Material.Filled.Person">Account</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="BeginSignOut">Sign Out</MudMenuItem>
+            </ChildContent>
+        </MudMenu>
     </Authorized>
     <NotAuthorized>
-        <a href="authentication/login">Log in</a>
+        <a href="authentication/login" class="text-white">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
+
+    public string Picture = "";
+    public bool isLoggedin = false;
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+    public List<Claim> UserClaims { get; set; } = new List<Claim>();
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is not null)
+        {
+            var state = await authenticationState;
+
+            if (state.User.Identity.IsAuthenticated)
+            {
+                var user = authenticationState.Result.User;
+
+                Picture = state?.User.Claims
+                            .Where(c => c.Type.Equals("picture"))
+                            .Select(c => c.Value)
+                            .FirstOrDefault() ?? string.Empty;
+                // navigationManager.NavigateTo("login?redirectUri=/");
+            }
+        }
+
+
+
+        await base.OnInitializedAsync();
+    }
     private async Task BeginSignOut(MouseEventArgs args)
     {
         await SignOutManager.SetSignOutState();

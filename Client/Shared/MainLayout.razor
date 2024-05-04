@@ -1,18 +1,68 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager navigationManager
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<PageTitle>NCMS</PageTitle>
+<AuthorizeView Roles="Administrator">
+    <Authorized>
+        <MudLayout>
+            <MudAppBar Elevation="1">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+                <MudSpacer />
+                <AccessControl />
+            </MudAppBar>
+            <MudDrawer @bind-Open="@open" Elevation="1">
+                <MudDrawerHeader Class="mud-theme-primary" Dense>
+                    <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudImage Src="images/logo.png" Width="50" Height="50" />
+                        <MudSpacer />
+                        <MudText Typo="Typo.h5">NCMS</MudText>
+                    </MudStack>
+                </MudDrawerHeader>
+                <NavMenu />
+            </MudDrawer>
+            <MudMainContent Class="pt-16 px-16">
+                <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+                    <MudGrid Class="pt-6">
+                        @Body
+                    </MudGrid>
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
+    </Authorized>
+    <NotAuthorized>
+        <MudLayout>
+            <MudAppBar Elevation="1">
+                <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
+                    <MudImage Src="images/logo.png" Width="50" Height="50" />
+                    <MudSpacer />
+                    <MudText Typo="Typo.h5">NCMS</MudText>
+                </MudStack>
+                <MudSpacer />
+                <AccessControl />
+            </MudAppBar>            
+            <MudMainContent Class="pt-16 px-16">
+                <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+                    <MudGrid Class="pt-6">
+                        @Body
+                    </MudGrid>
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
+    </NotAuthorized>
+</AuthorizeView>
 
-    <main>
-        <div class="top-row px-4">
-            <AccessControl />
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+
+@code {
+    bool open = true;
+
+    void ToggleDrawer()
+    {
+        open = !open;
+    }   
+}
+
+
