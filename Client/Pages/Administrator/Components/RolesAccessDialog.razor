@@ -1,0 +1,83 @@
+﻿@using NCMS_wasm.Shared
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Security"></MudIcon>
+            Role Access
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Model="@model">
+            <MudOverlay Visible="isLoading" DarkBackground="false" Absolute="true">
+                <MudProgressCircular Color="Color.Warning" Indeterminate="true" />
+            </MudOverlay>
+            <MudStack Spacing="0">
+                <MudText><strong>Name: </strong>@user.FirstName @user.LastName</MudText>
+                <MudText><strong>Email: </strong>@user.Email</MudText>
+                <MudText><strong>Last Login: </strong>@user.Last_Login</MudText>
+            </MudStack>
+            <MudDivider />
+            <MudStack>
+                <MudToggleGroup T="string" Vertical SelectionMode="SelectionMode.SingleSelection" @bind-Value="@model.Role_Id" Color="Color.Primary" CheckMark FixedContent>
+                    @foreach (var item in roles)
+                    {
+                        <MudToggleItem Value="@($"{item.id}")">
+                            <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                                <MudText Typo="Typo.body1" Class="fw-bold">@item.name</MudText>
+                                <MudText Typo="Typo.caption">@item.description</MudText>
+                            </MudStack>
+                        </MudToggleItem>
+                    }
+                </MudToggleGroup>
+            </MudStack>
+        </MudForm>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [Inject] HttpClient? httpClient { get; set; }
+
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public UserDto? user { get; set; }    
+    private bool isLoading = true;
+    [Parameter] public RoleAssignment model { get; set; }
+    private List<RolesProperty> roles = new List<RolesProperty>();
+    MudForm form;
+    protected override async Task OnInitializedAsync()
+    {        
+        await GetRoles();                
+        await base.OnInitializedAsync();
+    }
+
+
+
+    private async Task GetRoles()
+    {
+        isLoading = true;
+        try
+        {
+            roles = await httpClient.GetFromJsonAsync<List<RolesProperty>>("UserManagement/GetAllRoles");
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+
+    }
+
+
+
+
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+}

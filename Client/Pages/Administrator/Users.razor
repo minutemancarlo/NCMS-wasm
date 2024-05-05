@@ -1,0 +1,121 @@
+﻿@page "/admin-usersmanagement"
+@attribute [Authorize(Roles = "Administrator")]
+@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Administrator.Components
+<MudStack>
+    <MudText Typo="Typo.h5">User Management</MudText>
+    <MudDataGrid Items="@usersList" T="UserDto" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" >
+        <ToolBarContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(async () => await LoadUsers())">Refresh</MudButton>
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="x => x.Email" Filterable="true" />
+            <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="true" />
+            <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="true" />
+            <TemplateColumn Title="Blocked" Filterable="true">
+                <CellTemplate>
+                    @if (context.Item.Blocked)
+                    {
+                        <MudChip Color="Color.Error">Yes</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip Color="Color.Success">No</MudChip>
+                    }
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.Last_Login" Title="Last Login" Filterable="true" />
+            <TemplateColumn Title="Actions" Sortable="false" Hideable="false" Filterable="false">
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudTooltip Text="Roles" Arrow="true" Color="Color.Primary" Placement="Placement.Top">
+                            <MudIconButton Icon="@Icons.Material.Filled.Security" OnClick="@(() => OpenRoleAccessDialog(context.Item))"></MudIconButton>
+                        </MudTooltip>
+                        @* <MudTooltip Text="Disable/Enable" Arrow="true" Color="Color." Placement="Placement.Top">
+                            <MudIconButton Icon="@Icons.Material.Filled.LockPerson"></MudIconButton>
+                        </MudTooltip> *@
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <NoRecordsContent>
+            <MudText>No Records to show</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudDataGridPager T="UserDto" />
+        </PagerContent>
+    </MudDataGrid>
+</MudStack>
+
+
+
+
+@code {
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] IDialogService? DialogService { get; set; }
+    private List<UserDto> usersList = new List<UserDto>();
+    private bool isLoading = true;
+    private string roleid { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadUsers()
+    {
+        isLoading = true;
+        try
+        {
+            usersList = await httpClient.GetFromJsonAsync<List<UserDto>>("UserManagement/UsersList");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+
+    }
+
+    private async Task OpenRoleAccessDialog(UserDto userDto)
+    {
+        var options = new DialogOptions 
+        { 
+            CloseOnEscapeKey = false, 
+            FullWidth = true, 
+            MaxWidth = MaxWidth.Small,
+            DisableBackdropClick=true,
+            CloseButton = true 
+        };
+        await GetUserRole(userDto.User_Id);
+        var parameters = new DialogParameters<RolesAccessDialog>();
+        parameters.Add(x => x.user, userDto);   
+        parameters.Add(x => x.model, new RoleAssignment { Id = userDto.User_Id, Role_Id = roleid } );
+        DialogService.Show<RolesAccessDialog>("Simple Dialog", parameters,options);
+    }
+
+    private async Task GetUserRole(string userid)
+    {
+        try
+        {
+            HttpResponseMessage response = await httpClient.PostAsJsonAsync("UserManagement/GetUserRole",userid);
+
+            if (response.IsSuccessStatusCode)
+            {
+                roleid = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                Console.WriteLine($"Failed to get user role. Status code: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception Occurred: {ex.Message}");
+        }
+    }
+
+}

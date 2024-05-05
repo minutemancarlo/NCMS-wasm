@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NCMS_wasm.Shared;
 
@@ -5,6 +6,7 @@ namespace NCMS_wasm.Server.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize(Roles = "Administrator")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]

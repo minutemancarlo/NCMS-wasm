@@ -7,28 +7,26 @@
             <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
             <MudText Typo="Typo.body2" Class="px-4 text-muted">Administrator</MudText>
             <MudDivider Class="my-2" />
-            <MudNavLink Href="/admin-dashboard" Icon="fas fa-chart-line">Dashboard</MudNavLink>
-            <MudNavLink Href="/admin-usermanagement" Icon="fas fa-users">User Management</MudNavLink>
+            <MudNavLink Href="/admin-dashboard" IconColor="Color.Primary" Icon="fas fa-chart-line">Dashboard</MudNavLink>
+            <MudNavLink Href="/admin-usersmanagement" Icon="fas fa-users">User Management</MudNavLink>
         </Authorized>       
     </AuthorizeView>
-    <AuthorizeView Roles="HR">
+    <AuthorizeView Roles="Human Resource">
         <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
         <MudText Typo="Typo.body2" Class="px-4 text-muted">Human Resource</MudText>
         <MudDivider Class="my-2" />
-        <MudNavLink Href="/dashboard" Icon="fas fa-chart-line">Dashboard</MudNavLink>
-        <MudNavLink Href="/servers" Icon="fas fa-server">Employee Management</MudNavLink>
-        <MudNavGroup Title="Requests" Icon="fas fa-cogs" Expanded="true">
-            <MudNavLink Href="/users" Icon="fas fa-users" IconColor="Color.Success">Leave Requests</MudNavLink>
-            <MudNavLink Href="/security" Icon="fas fa-user-shield" IconColor="Color.Info">COE Requests</MudNavLink>
-        </MudNavGroup>
+        <MudNavLink Href="/hr-dashboard" Icon="fas fa-chart-line" IconColor="Color.Primary">Dashboard</MudNavLink>
+        <MudNavLink Href="/hr-employees" Icon="fas fa-users">Employee Management</MudNavLink>
+        <MudNavLink Href="/hr-requests" Icon="fas fa-user-tag">Requests</MudNavLink>
+        <MudNavLink Href="/hr-reports" Icon="fas fa-file-invoice">Reports</MudNavLink>        
     </AuthorizeView>
-    <AuthorizeView Roles="Hotel">
+    <AuthorizeView Roles="Front Desk">
         <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
         <MudText Typo="Typo.body2" Class="px-4 text-muted">Front Desk</MudText>
         <MudDivider Class="my-2" />
-        <MudNavLink Href="/dashboard" Icon="fas fa-chart-line">Dashboard</MudNavLink>
-        <MudNavLink Href="/billing" Icon="fas fa-receipt" Disabled="true">Billing</MudNavLink>
-        <MudNavLink Href="/users" Icon="fas fa-cogs" IconColor="Color.Success">Device Settings</MudNavLink>
+        <MudNavLink Href="/hotel-dashboard" Icon="fas fa-chart-line" IconColor="Color.Primary">Dashboard</MudNavLink>
+        <MudNavLink Href="/hotel-roomsmanagement" Icon="fas fa-hotel">Room Management</MudNavLink>
+        <MudNavLink Href="/hotel-devices" Icon="fas fa-cogs" IconColor="Color.Success">Device Settings</MudNavLink>
     </AuthorizeView>
 </MudNavMenu>
 
