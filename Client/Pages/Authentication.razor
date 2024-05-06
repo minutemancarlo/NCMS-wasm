@@ -1,4 +1,5 @@
 ﻿@page "/authentication/{action}"
+@layout AuthLayout
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Microsoft.Extensions.Configuration
 
@@ -7,10 +8,39 @@
 
 <RemoteAuthenticatorView Action="@Action">
     <LogOut>
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            <MudText Typo="Typo.body2" Class="fw-bolder">Logging you out, please wait...</MudText>
+        </MudStack>
         @{
             Logout();
         }
     </LogOut>
+    <LoggingIn>
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            <MudText Typo="Typo.body2" Class="fw-bolder">Checking Session, please wait...</MudText>
+        </MudStack>
+    </LoggingIn>
+    <CompletingLoggingIn>
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            <MudText Typo="Typo.body2" Class="fw-bolder">Logging in, please wait...</MudText>
+        </MudStack>
+    </CompletingLoggingIn>
+    <CompletingLogOut>
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            <MudText Typo="Typo.body2" Class="fw-bolder">Logging you out, please wait...</MudText>
+        </MudStack>
+    </CompletingLogOut>
+    <LogOutSucceeded>
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            <MudText Typo="Typo.body2" Class="fw-bolder">Logging you out, please wait...</MudText>
+        </MudStack>
+    </LogOutSucceeded>
+    
 </RemoteAuthenticatorView>
 
 @code {

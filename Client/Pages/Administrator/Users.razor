@@ -8,7 +8,7 @@
     <MudDataGrid Items="@usersList" T="UserDto" Loading="@isLoading" HeaderClass="mud-theme-default">
         <ToolBarContent>
             <MudButton Variant="Variant.Filled" Color="Color.Success"  StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(async () => await LoadUsers())">Refresh</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.Add" OnClick="@(async () => await LoadUsers())">Add User</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddUserDialog">Add User</MudButton>
         </ToolBarContent>
         <Columns>
             <PropertyColumn Property="x => x.Email" Filterable="true" />
@@ -55,6 +55,9 @@
         <NoRecordsContent>
             <MudText>No Records to show</MudText>
         </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Loading Content...</MudText>
+        </LoadingContent>
         <PagerContent>
             <MudDataGridPager T="UserDto" />
         </PagerContent>
@@ -109,6 +112,19 @@
         parameters.Add(x => x.user, userDto);   
         parameters.Add(x => x.model, new RoleAssignment { Id = userDto.User_Id, Role_Id = roleid } );
         DialogService.Show<RolesAccessDialog>("Simple Dialog", parameters,options);
+    }
+
+    private async Task OpenAddUserDialog()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                DisableBackdropClick = true,
+                CloseButton = true                
+            };                        
+        DialogService.Show<AddUserDialog>("Simple Dialog", options);
     }
 
     private async Task GetUserRole(string userid)

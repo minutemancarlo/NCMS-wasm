@@ -1,0 +1,64 @@
+﻿@using NCMS_wasm.Shared
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Person"></MudIcon>
+            Add User
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Model="@userInfo">
+            <MudStack Row>
+                <MudTextField @bind-Value="userInfo.GivenName" Label="First Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="userInfo.FamilyName" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+            </MudStack>
+            <MudTextField @bind-Value="userInfo.Email" 
+            InputType="InputType.Email" 
+            Label="Email Address" 
+            Variant="Variant.Outlined"/>
+
+            <MudTextField @bind-Value="userInfo.Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton >Cancel</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Success" >Submit</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    MudForm form;
+    MudTextField<string> password;
+    private UserInfo? userInfo { get; set; }
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    void ButtonTestclick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+    
+    
+    protected override Task OnInitializedAsync()
+    {
+        userInfo = new UserInfo();
+        return base.OnInitializedAsync();
+    }
+
+  
+
+}
