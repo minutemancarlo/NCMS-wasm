@@ -2,7 +2,35 @@
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
 <PageTitle>Devices | NCMS</PageTitle>
+<MudStack AlignItems="AlignItems.Stretch">
+    
 
+    <MudTabs Outlined="true" Position="Position.Start" Rounded="true" Border="true"
+             ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6 w-100">
+        <MudTabPanel Text="USB RFID Reader" Icon="fab fa-usb">
+            <MudItem xs="12" Class="w-100">
+                <MudStack>
+                    <MudSelect T="string" Label="USB Devices" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem Value="@("Cappuccino")" />
+                        <MudSelectItem Value="@("Cafe Latte")" />
+                        <MudSelectItem Value="@("Espresso")" />
+                    </MudSelect>
+                </MudStack>
+            </MudItem>
+        </MudTabPanel>
+        <MudTabPanel Text="Network RFID" Icon="fas fa-network-wired">
+            <MudItem xs="12" Class="w-100">
+                <MudSelect T="string" Label="Devices" AnchorOrigin="Origin.BottomCenter">
+                    <MudSelectItem Value="@("Cappuccino")" />
+                    <MudSelectItem Value="@("Cafe Latte")" />
+                    <MudSelectItem Value="@("Espresso")" />
+                </MudSelect>
+            </MudItem>
+        </MudTabPanel>
+    </MudTabs>
+
+
+</MudStack>
 @code {
 
 }

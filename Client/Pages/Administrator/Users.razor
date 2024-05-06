@@ -2,16 +2,30 @@
 @attribute [Authorize(Roles = "Administrator")]
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Administrator.Components
+
 <MudStack>
     <MudText Typo="Typo.h5">User Management</MudText>
-    <MudDataGrid Items="@usersList" T="UserDto" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" >
+    <MudDataGrid Items="@usersList" T="UserDto" Loading="@isLoading" HeaderClass="mud-theme-default">
         <ToolBarContent>
-            <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(async () => await LoadUsers())">Refresh</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Success"  StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(async () => await LoadUsers())">Refresh</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.Add" OnClick="@(async () => await LoadUsers())">Add User</MudButton>
         </ToolBarContent>
         <Columns>
             <PropertyColumn Property="x => x.Email" Filterable="true" />
             <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="true" />
             <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="true" />
+            <TemplateColumn Title="Email Verified" Filterable="true">
+                <CellTemplate>
+                    @if (context.Item.Verified==true)
+                    {
+                        <MudChip Color="Color.Success">Yes</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip Color="Color.Error">No</MudChip>
+                    }
+                </CellTemplate>
+            </TemplateColumn>
             <TemplateColumn Title="Blocked" Filterable="true">
                 <CellTemplate>
                     @if (context.Item.Blocked)

@@ -5,6 +5,7 @@ using Auth0.ManagementApi.Paging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NCMS_wasm.Client.Pages.Administrator;
 using NCMS_wasm.Shared;
 
 namespace NCMS_wasm.Server.Controllers
@@ -37,6 +38,7 @@ namespace NCMS_wasm.Server.Controllers
                     LastName = x.LastName,
                     Blocked = x.Blocked ?? false,
                     User_Id = x.UserId,
+                    Verified = x.EmailVerified,
                     Last_Login = x.LastLogin,
                     Provider = x.UserId.ToLower().Contains("auth0") ? "Email-Password Auth" :
                                x.UserId.ToLower().Contains("facebook") ? "Facebook" :
@@ -75,18 +77,54 @@ namespace NCMS_wasm.Server.Controllers
         }
 
         [HttpPost("GetUserRole")]
-        public async Task<ActionResult<string>> GetUserRole([FromBody] string userid)
+        public async Task<ActionResult<string>> GetUsersRole([FromBody] string userid)
         {
             try
             {
-                var result = _managementApiClient.Users.GetRolesAsync(userid);
-                var userRole = result.Result.FirstOrDefault()?.Id;
+                var userRole = await GetUserRole(userid);
                 return Ok(userRole);
             }
             catch (Exception ex)
             {
                 return BadRequest($"Exception Occured: {ex.Message}");
             }
+        }
+
+        [HttpPost("SetUserRole")]
+        public async Task<ActionResult<string>> SetUserRole([FromBody] SetUserRole user)
+        {
+            try
+            {
+                var currentUserRole = await GetUserRole(user.UserId);
+                if (!string.IsNullOrEmpty(currentUserRole))
+                {
+                    // Initialize the AssignRolesRequest object with the roles to be removed
+                    var oldData = new AssignRolesRequest
+                    {
+                        Roles = new string[] { currentUserRole }
+                    };
+
+                    // Call the RemoveRolesAsync method with the user ID and the AssignRolesRequest object
+                    await _managementApiClient.Users.RemoveRolesAsync(user.UserId, oldData);
+                }
+                var currentData = new AssignRolesRequest
+                {
+                    Roles = new string[] { user.RoleId }
+                };
+                var result = _managementApiClient.Users.AssignRolesAsync(user.UserId, currentData);                
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Exception Occured: {ex.Message}");
+            }
+        }
+
+        private async Task<string> GetUserRole(string userid)
+        {
+            var result = _managementApiClient.Users.GetRolesAsync(userid);
+            var userRole = result.Result.FirstOrDefault()?.Id;
+            return userRole;
         }
 
     }

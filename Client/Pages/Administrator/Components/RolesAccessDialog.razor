@@ -1,4 +1,5 @@
 ﻿@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.GeneralComponents
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
@@ -18,16 +19,37 @@
             </MudStack>
             <MudDivider />
             <MudStack>
-                <MudToggleGroup T="string" Vertical SelectionMode="SelectionMode.SingleSelection" @bind-Value="@model.Role_Id" Color="Color.Primary" CheckMark FixedContent>
-                    @foreach (var item in roles)
-                    {
-                        <MudToggleItem Value="@($"{item.id}")">
-                            <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
-                                <MudText Typo="Typo.body1" Class="fw-bold">@item.name</MudText>
-                                <MudText Typo="Typo.caption">@item.description</MudText>
-                            </MudStack>
-                        </MudToggleItem>
-                    }
+                <MudToggleGroup @ref="toggle" T="string" Vertical SelectionMode="SelectionMode.SingleSelection" @bind-Value="@model.Role_Id" Color="Color.Primary" CheckMark FixedContent>
+                    <MudToggleItem Value="@("rol_z7LQFm4RqTAyYaqJ")">
+                        <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.body1" Class="fw-bold">Administrator</MudText>
+                            <MudText Typo="Typo.caption">System Administrator</MudText>
+                        </MudStack>
+                    </MudToggleItem>
+                    <MudToggleItem Value="@("rol_MKxjFGw5sDvO5HXW")">
+                        <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.body1" Class="fw-bold">Front Desk</MudText>
+                            <MudText Typo="Typo.caption">Hotel Front Desk</MudText>
+                        </MudStack>
+                    </MudToggleItem>
+                    <MudToggleItem Value="@("rol_ZH92sAR6ggvkxPOM")">
+                        <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.body1" Class="fw-bold">Gas Employee</MudText>
+                            <MudText Typo="Typo.caption">Gas Station Employee</MudText>
+                        </MudStack>
+                    </MudToggleItem>
+                    <MudToggleItem Value="@("rol_Auk4u6P2AUid2gwT")">
+                        <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.body1" Class="fw-bold">Guests</MudText>
+                            <MudText Typo="Typo.caption">Hotel Guest</MudText>
+                        </MudStack>
+                    </MudToggleItem>
+                    <MudToggleItem Value="@("rol_ZmH7XuUWNYOzQlfT")">
+                        <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.body1" Class="fw-bold">Human Resource</MudText>
+                            <MudText Typo="Typo.caption">HR Employees</MudText>
+                        </MudStack>
+                    </MudToggleItem>
                 </MudToggleGroup>
             </MudStack>
         </MudForm>
@@ -35,21 +57,24 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSubmit">Submit</MudButton>
     </DialogActions>
 </MudDialog>
 @code {
     [Inject] HttpClient? httpClient { get; set; }
-
+    [Inject] IDialogService? DialogService { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
-    [Parameter] public UserDto? user { get; set; }    
-    private bool isLoading = true;
+    [Parameter] public UserDto? user { get; set; }
+    private bool isLoading = false;
     [Parameter] public RoleAssignment model { get; set; }
     private List<RolesProperty> roles = new List<RolesProperty>();
     MudForm form;
+    MudToggleGroup<string> toggle;
     protected override async Task OnInitializedAsync()
-    {        
-        await GetRoles();                
+    {
+        // await GetRoles();
+        StateHasChanged();
         await base.OnInitializedAsync();
     }
 
@@ -74,7 +99,58 @@
 
     }
 
+    private async Task OnSubmit()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                DisableBackdropClick = true,
+                CloseButton = false
+            };
+        var parameters = new DialogParameters<ConfirmationDialog>();
+        parameters.Add(x => x.Action, "Please confirm your action.");
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Simple Dialog", parameters, options);
+        var result = await dialog.Result;
+        bool data = (bool)result.Data;
+        if (data)
+        {
+            await SetUserRole();
+            Snackbar.Add("User Role Updated", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        
+    }
 
+    private async Task SetUserRole()
+    {
+        try
+        {
+            var data = new SetUserRole
+            {
+                UserId= user.User_Id,
+                RoleId = model.Role_Id
+            };
+
+            HttpResponseMessage response = await httpClient.PostAsJsonAsync("UserManagement/SetUserRole", data);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();                
+            }
+            else
+            {
+                Snackbar.Add($"Failed to set user role. Status code: {response.StatusCode}",Severity.Error);
+                Console.WriteLine($"Failed to set user role. Status code: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Exception Occurred: {ex.Message}",Severity.Error);
+            Console.WriteLine($"Exception Occurred: {ex.Message}");
+        }
+    }
 
 
 
