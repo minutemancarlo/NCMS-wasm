@@ -17,10 +17,11 @@ namespace NCMS_wasm.Server.Controllers
     {
 
         private readonly IManagementApiClient _managementApiClient;
-
-        public UserManagementController(IManagementApiClient managementApiClient)
+        private readonly ILogger<UserManagementController> _logger;
+        public UserManagementController(IManagementApiClient managementApiClient, ILogger<UserManagementController> logger)
         {
             _managementApiClient = managementApiClient;
+            _logger = logger;
         }
 
         [HttpGet("UsersList")]
@@ -46,10 +47,12 @@ namespace NCMS_wasm.Server.Controllers
                                "Unknown Provider",
                     Picture = x.Picture
                 }).ToList();
+                _logger.LogInformation("Users List Retrieved.");
                 return Ok(userslist);
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Exception Occured: {ex.Message}");
                 return BadRequest($"Exception Occured: {ex.Message}");
             }
 
@@ -67,11 +70,13 @@ namespace NCMS_wasm.Server.Controllers
                     name = x.Name,
                     description = x.Description
                 }).ToList();
+                _logger.LogInformation("Roles List Retrieved.");
                 return Ok(rolesList);
 
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Exception Occured: {ex.Message}");
                 return BadRequest($"Exception Occured: {ex.Message}");
             }
         }
@@ -82,10 +87,12 @@ namespace NCMS_wasm.Server.Controllers
             try
             {
                 var userRole = await GetUserRole(userid);
+                _logger.LogInformation("Users Role Retrieved.");
                 return Ok(userRole);
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Exception Occured: {ex.Message}");
                 return BadRequest($"Exception Occured: {ex.Message}");
             }
         }
@@ -111,11 +118,45 @@ namespace NCMS_wasm.Server.Controllers
                 {
                     Roles = new string[] { user.RoleId }
                 };
-                var result = _managementApiClient.Users.AssignRolesAsync(user.UserId, currentData);                
+                var result = _managementApiClient.Users.AssignRolesAsync(user.UserId, currentData);
+                _logger.LogInformation("User Role Assigned.");
                 return Ok();
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Exception Occured: {ex.Message}");
+                return BadRequest($"Exception Occured: {ex.Message}");
+            }
+        }
+
+        [HttpPost("CreateUser")]
+        public async Task<IActionResult> CreateUser([FromBody] UserInfo user)
+        {
+            try
+            {
+                var data = new UserCreateRequest
+                {
+                    Email = user.Email,
+                    FirstName = user.GivenName,
+                    LastName = user.FamilyName,
+                    Password = user.Password,
+                    EmailVerified = user.EmailVerified,
+                    Blocked = user.Blocked,
+                    VerifyEmail = user.VerifyEmail,
+                    Connection=user.Connection
+                };
+                User createResult = await _managementApiClient.Users.CreateAsync(data);
+                var currentData = new AssignRolesRequest
+                {
+                    Roles = new string[] { string.IsNullOrEmpty(user.RoleId) ? "rol_Auk4u6P2AUid2gwT" : user.RoleId }
+                };
+                var result = _managementApiClient.Users.AssignRolesAsync(createResult.UserId, currentData);
+                _logger.LogInformation("User Added.");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception Occured: {ex.Message}");
                 return BadRequest($"Exception Occured: {ex.Message}");
             }
         }

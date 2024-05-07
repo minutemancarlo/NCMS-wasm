@@ -5,16 +5,17 @@
 
 <MudStack>
     <MudText Typo="Typo.h5">User Management</MudText>
-    <MudDataGrid Items="@usersList" T="UserDto" Loading="@isLoading" HeaderClass="mud-theme-default">
+    <MudDataGrid Items="@usersList" T="UserDto" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon ColumnResizeMode="ResizeMode.Container">
         <ToolBarContent>
-            <MudButton Variant="Variant.Filled" Color="Color.Success"  StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(async () => await LoadUsers())">Refresh</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddUserDialog">Add User</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(async () => await LoadUsers())">Refresh</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddUserDialog">Add User</MudButton>
+            <MudSpacer/>
         </ToolBarContent>
         <Columns>
             <PropertyColumn Property="x => x.Email" Filterable="true" />
             <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="true" />
             <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="true" />
-            <TemplateColumn Title="Email Verified" Filterable="true">
+            <TemplateColumn Title="Email Verified" Filterable="true" Hidden Hideable="true">
                 <CellTemplate>
                     @if (context.Item.Verified==true)
                     {
@@ -26,7 +27,7 @@
                     }
                 </CellTemplate>
             </TemplateColumn>
-            <TemplateColumn Title="Blocked" Filterable="true">
+            <TemplateColumn Title="Blocked" Filterable="true" Hidden Hideable="true">
                 <CellTemplate>
                     @if (context.Item.Blocked)
                     {
@@ -124,7 +125,13 @@
                 DisableBackdropClick = true,
                 CloseButton = true                
             };                        
-        DialogService.Show<AddUserDialog>("Simple Dialog", options);
+        var dialog = await DialogService.ShowAsync<AddUserDialog>("Simple Dialog", options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await LoadUsers();
+            StateHasChanged();
+        }
     }
 
     private async Task GetUserRole(string userid)

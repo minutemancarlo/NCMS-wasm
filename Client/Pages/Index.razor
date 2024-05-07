@@ -1,16 +1,50 @@
 ﻿@page "/"
 @* @layout NoLayout *@
+@inject NavigationManager Navigation
+@using System.Security.Claims
 <PageTitle>Index</PageTitle>
 
-<AuthorizeView>
-    <Authorized>
-        @foreach (var claim in context.User.Claims)
-        {
-            <p>@claim.Type - @claim.Value</p>
-        }
-    </Authorized>
-    <NotAuthorized>
-        Please login to see all the claims, <a href="authentication/login">Log in</a>
-    </NotAuthorized>
-</AuthorizeView>
 
+
+@code{
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    public List<Claim> UserClaims { get; set; } = new List<Claim>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RedirectUser();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RedirectUser()
+    {
+        if (authenticationState is not null)
+        {
+            var state = await authenticationState;
+
+            if (state.User.Identity.IsAuthenticated)
+            {
+                var user = authenticationState.Result.User;
+
+                if (user.IsInRole("Administrator"))
+                {
+                    Navigation.NavigateTo("/admin-dashboard");
+                }
+
+                if (user.IsInRole("Front Desk"))
+                {
+                    Navigation.NavigateTo("/admin-dashboard");
+                }
+
+                if (user.IsInRole("Human Resource"))
+                {
+                    Navigation.NavigateTo("/hr-dashboard");
+                }
+
+            }
+        }
+    }
+
+}

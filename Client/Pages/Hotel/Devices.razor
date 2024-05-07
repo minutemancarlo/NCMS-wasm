@@ -2,9 +2,10 @@
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
 <PageTitle>Devices | NCMS</PageTitle>
-<MudStack AlignItems="AlignItems.Stretch">
-    
-
+<MudStack>
+    <MudText Typo="Typo.h5">Device Settings</MudText>
+</MudStack>
+<MudStack AlignItems="AlignItems.Stretch">    
     <MudTabs Outlined="true" Position="Position.Start" Rounded="true" Border="true"
              ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6 w-100">
         <MudTabPanel Text="USB RFID Reader" Icon="fab fa-usb">

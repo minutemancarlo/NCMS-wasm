@@ -1,4 +1,5 @@
 ﻿@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Validations
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
@@ -7,36 +8,82 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="form" Model="@userInfo">
+        <MudForm @ref="form" Model="@userInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0">
             <MudStack Row>
-                <MudTextField @bind-Value="userInfo.GivenName" Label="First Name" Variant="Variant.Outlined"></MudTextField>
-                <MudTextField @bind-Value="userInfo.FamilyName" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="userInfo.GivenName" For="@(() => userInfo.GivenName)" Label="First Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="userInfo.FamilyName" For="@(() => userInfo.FamilyName)" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
             </MudStack>
-            <MudTextField @bind-Value="userInfo.Email" 
-            InputType="InputType.Email" 
-            Label="Email Address" 
-            Variant="Variant.Outlined"/>
+            <MudTextField @bind-Value="userInfo.Email" For="@(() => userInfo.Email)"
+                          InputType="InputType.Email"
+                          Label="Email Address"
+                          Variant="Variant.Outlined" />
 
-            <MudTextField @bind-Value="userInfo.Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
+            <MudTextField @bind-Value="userInfo.Password" Class="pb-3" Label="Password" For="@(() => userInfo.Password)" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon"
+                          OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" />
 
+            <MudToggleGroup T="string" Vertical SelectionMode="SelectionMode.SingleSelection" @bind-Value="@userInfo.RoleId" Color="Color.Primary" CheckMark FixedContent>
+                <MudToggleItem Value="@("rol_z7LQFm4RqTAyYaqJ")">
+                    <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.body1" Class="fw-bold">Administrator</MudText>
+                        <MudText Typo="Typo.caption">System Administrator</MudText>
+                    </MudStack>
+                </MudToggleItem>
+                <MudToggleItem Value="@("rol_MKxjFGw5sDvO5HXW")">
+                    <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.body1" Class="fw-bold">Front Desk</MudText>
+                        <MudText Typo="Typo.caption">Hotel Front Desk</MudText>
+                    </MudStack>
+                </MudToggleItem>
+                <MudToggleItem Value="@("rol_ZH92sAR6ggvkxPOM")">
+                    <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.body1" Class="fw-bold">Gas Employee</MudText>
+                        <MudText Typo="Typo.caption">Gas Station Employee</MudText>
+                    </MudStack>
+                </MudToggleItem>
+                <MudToggleItem Value="@("rol_Auk4u6P2AUid2gwT")">
+                    <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.body1" Class="fw-bold">Guests</MudText>
+                        <MudText Typo="Typo.caption">Hotel Guest</MudText>
+                    </MudStack>
+                </MudToggleItem>
+                <MudToggleItem Value="@("rol_ZmH7XuUWNYOzQlfT")">
+                    <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.body1" Class="fw-bold">Human Resource</MudText>
+                        <MudText Typo="Typo.caption">HR Employees</MudText>
+                    </MudStack>
+                </MudToggleItem>
+            </MudToggleGroup>
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton >Cancel</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Success" >Submit</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        @* <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="OnSubmit" >Submit</MudButton> *@
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"
+                          Loading="@(_loading)"
+                          OnClick="OnSubmit"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Submitting...</LoadingContent>
+            <ChildContent>Submit</ChildContent>
+        </MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
     MudForm form;
     MudTextField<string> password;
+    private bool _loading = false;
     private UserInfo? userInfo { get; set; }
+    CreateUserValidator modelValidator = new CreateUserValidator();
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
-    void ButtonTestclick()
+    void ShowHidePassword()
     {
         @if (isShow)
         {
@@ -51,14 +98,55 @@
             PasswordInput = InputType.Text;
         }
     }
-    
-    
+
+    private async Task OnSubmit()
+    {
+        _loading = true;
+        try
+        {
+            await form.Validate();
+
+            if (form.IsValid)
+            {
+                userInfo.VerifyEmail = true;
+                userInfo.Blocked = false;
+                userInfo.EmailVerified = false;
+                userInfo.UserId = "0";
+                userInfo.Connection = "Username-Password-Authentication";
+                var response = await httpClient.PostAsJsonAsync("UserManagement/CreateUser", userInfo);
+                response.EnsureSuccessStatusCode();
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add("User has been created.", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to set user role: {response.StatusCode} - {errorMessage}", Severity.Error);
+                    Console.WriteLine($"Failed to set user role: {response.StatusCode} - {errorMessage}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to set user role: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Failed to create user: {ex.Message}");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
     protected override Task OnInitializedAsync()
     {
         userInfo = new UserInfo();
         return base.OnInitializedAsync();
     }
 
-  
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
 
 }

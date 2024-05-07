@@ -26,7 +26,7 @@
         <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
             <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
             <MudText Typo="Typo.body2" Class="fw-bolder">Logging in, please wait...</MudText>
-        </MudStack>
+        </MudStack>        
     </CompletingLoggingIn>
     <CompletingLogOut>
         <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
@@ -40,11 +40,16 @@
             <MudText Typo="Typo.body2" Class="fw-bolder">Logging you out, please wait...</MudText>
         </MudStack>
     </LogOutSucceeded>
-    
+  
 </RemoteAuthenticatorView>
 
 @code {
     [Parameter] public string Action { get; set; }
+    
+
+   
+
+
     private void Logout()
     {
         var authority = Configuration["Auth0:Authority"];

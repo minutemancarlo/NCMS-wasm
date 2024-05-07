@@ -1,7 +1,20 @@
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Data.SqlClient;
+using System.Data;
+using NCMS_wasm.Server.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
+// Register your database connection
+builder.Services.AddTransient<IDbConnection>(sp =>
+{
+    IConfiguration configuration = sp.GetRequiredService<IConfiguration>();
+    string connectionString = configuration.GetConnectionString("DefaultConnection");
+    return new SqlConnection(connectionString);
+});
+
+// Add Dapper
+builder.Services.AddTransient<DeviceRepository>();
 // Add services to the container.
 builder.Services.AddAuthentication(options =>
 {
