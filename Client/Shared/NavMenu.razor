@@ -26,7 +26,17 @@
         <MudDivider Class="my-2" />
         <MudNavLink Href="/hotel-dashboard" Icon="fas fa-chart-line" IconColor="Color.Primary">Dashboard</MudNavLink>
         <MudNavLink Href="/hotel-roomsmanagement" Icon="fas fa-hotel">Room Management</MudNavLink>
+        <MudNavLink Href="/hotel-guests" IconColor="Color.Secondary" Icon="fas fa-users">Guest Management</MudNavLink>
         <MudNavLink Href="/hotel-devices" Icon="fas fa-cogs" IconColor="Color.Success">Device Settings</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView Roles="Gas Employee">
+        <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
+        <MudText Typo="Typo.body2" Class="px-4 text-muted">Gas Employee</MudText>
+        <MudDivider Class="my-2" />
+        <MudNavLink Href="/gas-dashboard" Icon="fas fa-chart-line" IconColor="Color.Primary">Dashboard</MudNavLink>
+        <MudNavLink Href="/gas-cards" IconColor="Color.Dark" Icon="fas fa-credit-card">Card Management</MudNavLink>
+        <MudNavLink Href="/gas-pos" Icon="fas fa-cash-register" IconColor="Color.Error">Point of Sales</MudNavLink>
+        <MudNavLink Href="/gas-tanks" Icon="fas fa-gas-pump" IconColor="Color.Success">Tank Management</MudNavLink>
     </AuthorizeView>
 </MudNavMenu>
 

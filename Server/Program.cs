@@ -15,6 +15,7 @@ builder.Services.AddTransient<IDbConnection>(sp =>
 
 // Add Dapper
 builder.Services.AddTransient<DeviceRepository>();
+builder.Services.AddTransient<CardRepository>();
 // Add services to the container.
 builder.Services.AddAuthentication(options =>
 {

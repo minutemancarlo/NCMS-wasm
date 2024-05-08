@@ -20,11 +20,9 @@ namespace NCMS_wasm.Server.Repository
 
         public async Task<int> AddDeviceAsync(Device device)
         {
-            var parameters = new
-            {
-                DeviceName = device.DeviceName,
-                IsConnected = device.IsConnected
-            };
+            var parameters = new DynamicParameters();
+            parameters.Add("@DeviceName", device.DeviceName);
+            parameters.Add("@IsConnected", device.IsConnected);
 
             // Execute the stored procedure
             return await _dbConnection.ExecuteScalarAsync<int>("AddUpdateDevice", parameters, commandType: CommandType.StoredProcedure);

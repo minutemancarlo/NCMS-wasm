@@ -1,0 +1,37 @@
+﻿@page "/gas-tanks"
+@attribute [Authorize(Roles = "Gas Employee")]
+<PageTitle>Tank Management | NCMS</PageTitle>
+<MudStack>
+    <MudText Typo="Typo.h5">Tank Management</MudText>
+    <MudStack Row>
+        <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.AddCard">Add Tank</MudButton>
+    </MudStack>
+    <MudStack Row Wrap="Wrap.Wrap">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Tank 1</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
+                    <MudIcon Icon="fas fa-gas-pump"></MudIcon>
+                    <MudStack>
+                        <MudText>Last Filled: 02/02/2024</MudText>
+                        <MudProgressLinear Color="Color.Warning" Size="Size.Large" Value="25" Class="my-7">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                                <b>25%</b>
+                            </MudText>
+                        </MudProgressLinear>
+                    </MudStack>
+                </MudStack>
+            </MudCardContent>          
+        </MudCard>
+    </MudStack>
+</MudStack>
+@code {
+
+}

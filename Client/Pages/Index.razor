@@ -35,14 +35,17 @@
 
                 if (user.IsInRole("Front Desk"))
                 {
-                    Navigation.NavigateTo("/admin-dashboard");
+                    Navigation.NavigateTo("/hotel-dashboard");
                 }
 
                 if (user.IsInRole("Human Resource"))
                 {
                     Navigation.NavigateTo("/hr-dashboard");
                 }
-
+                if (user.IsInRole("Gas Employee"))
+                {
+                    Navigation.NavigateTo("/gas-dashboard");
+                }
             }
         }
     }

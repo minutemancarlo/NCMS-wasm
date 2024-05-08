@@ -1,0 +1,90 @@
+﻿@page "/gas-cards"
+@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Gas.Components
+@attribute [Authorize(Roles = "Gas Employee")]
+<PageTitle>Card Management | NCMS</PageTitle>
+<MudStack>
+    <MudText Typo="Typo.h5">Card Management</MudText>
+    <MudDataGrid Items="@cards" T="LoyaltyCardInfo" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense
+    ColumnResizeMode="ResizeMode.Column">
+        <ToolBarContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(async () => await LoadCardsList())">Refresh</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.AddCard" OnClick="OpenAddCardDialog">Add Card</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.CardGiftcard" OnClick="OpenAddCardDialog">Check Balance</MudButton>
+            <MudSpacer />
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="true" />
+            <PropertyColumn Property="x => x.MiddleName" Title="Middle Name" Filterable="true" />
+            <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="true" />
+            <PropertyColumn Property="x => x.Email" Filterable="true" />
+            <PropertyColumn Property="x => x.PhoneNumber" Title="Phone Number" Filterable="true" />
+            <TemplateColumn Title="Created By">
+                <CellTemplate>
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.subtitle1">@context.Item.CreatedBy</MudText>
+                        <MudText Typo="Typo.subtitle2" Class="text-muted">@context.Item.CreatedOn</MudText>
+                    </MudStack>                    
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <NoRecordsContent>
+            <MudText>No Records to show</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Loading Content...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudDataGridPager T="LoyaltyCardInfo" />
+        </PagerContent>
+    </MudDataGrid>
+</MudStack>
+
+@code {
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] IDialogService? DialogService { get; set; }
+    private List<LoyaltyCardInfo> cards = new List<LoyaltyCardInfo>();
+    private bool isLoading = true;
+
+    private async Task OpenAddCardDialog()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                DisableBackdropClick = true,
+                CloseButton = true
+            };
+        var dialog = await DialogService.ShowAsync<AddCardDialog>("Simple Dialog", options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await LoadCardsList();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCardsList();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadCardsList()
+    {
+        isLoading = true;
+        try
+        {
+            cards = await httpClient.GetFromJsonAsync<List<LoyaltyCardInfo>>($"CardManagement/GetLoyaltyCards?cardType={0}");
+        }catch(Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+}

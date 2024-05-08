@@ -146,6 +146,8 @@ namespace NCMS_wasm.Server.Controllers
                     Connection=user.Connection
                 };
                 User createResult = await _managementApiClient.Users.CreateAsync(data);
+
+                //Default Role if not set is Guest
                 var currentData = new AssignRolesRequest
                 {
                     Roles = new string[] { string.IsNullOrEmpty(user.RoleId) ? "rol_Auk4u6P2AUid2gwT" : user.RoleId }

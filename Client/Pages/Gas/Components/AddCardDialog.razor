@@ -1,0 +1,97 @@
+﻿@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Validations
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.CardTravel"></MudIcon>
+            Card Holder Information
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @* <MudForm @ref="form" Model="@rfidInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0"> *@
+        <MudForm @ref="form" Model="@rfidInfo">
+            <MudFocusTrap Disabled="false" DefaultFocus="DefaultFocus.FirstChild">
+                <MudTextField @bind-Value="rfidInfo.CardReference"
+                              Label="Scan RFID Here" Clearable
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.DocumentScanner"
+                              AdornmentColor="Color.Info"
+                              ShrinkLabel
+                              AutoFocus
+                              Variant="Variant.Outlined"></MudTextField>
+            </MudFocusTrap>
+            <MudItem Class="py-2">
+                <MudText Typo="Typo.body1"> <strong>RFID No: </strong> @rfidInfo.CardReference </MudText>
+            </MudItem>
+
+            <MudStack Row>
+                <MudTextField @bind-Value="rfidInfo.FirstName" Label="First Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="rfidInfo.MiddleName" Label="Middle Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="rfidInfo.LastName" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+            </MudStack>
+            <MudTextField @bind-Value="rfidInfo.PhoneNumber" Label="Phone Number" Variant="Variant.Outlined"></MudTextField>
+            <MudTextField @bind-Value="rfidInfo.Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"
+                          Loading="@(_loading)"
+                          OnClick="OnSubmit"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Submitting...</LoadingContent>
+            <ChildContent>Submit</ChildContent>
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    MudForm form;
+    private LoyaltyCardInfo? rfidInfo { get; set; }
+    private bool _loading = false;
+
+    private List<UserDto> usersList = new List<UserDto>();
+
+    public string rfidValue;
+
+    private async Task OnSubmit()
+    {
+        Snackbar.Add($"Card Value: {rfidInfo.CardReference}", Severity.Normal);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        rfidInfo = new LoyaltyCardInfo();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadUsers()
+    {
+        try
+        {
+            usersList = await httpClient.GetFromJsonAsync<List<UserDto>>("UserManagement/UsersList");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void HandleRfidInput(string text)
+    {
+        Snackbar.Add($"Card Value: {text}", Severity.Normal);
+        if (text.EndsWith("\n") || text.EndsWith("\r") || text.EndsWith("\r\n"))
+        {
+            Snackbar.Add($"Card Value: {rfidInfo.CardReference}", Severity.Normal);
+        }
+    }
+
+
+    void Cancel() => MudDialog.Cancel();
+}
