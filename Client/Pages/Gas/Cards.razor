@@ -5,7 +5,7 @@
 <PageTitle>Card Management | NCMS</PageTitle>
 <MudStack>
     <MudText Typo="Typo.h5">Card Management</MudText>
-    <MudDataGrid Items="@cards" T="LoyaltyCardInfo" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense
+    <MudDataGrid Items="@cards" T="LoyaltyCardInfo" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense HorizontalScrollbar="true"
     ColumnResizeMode="ResizeMode.Column">
         <ToolBarContent>
             <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(async () => await LoadCardsList())">Refresh</MudButton>

@@ -1,0 +1,45 @@
+﻿@page "/Home"
+
+<MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="py-2 mud-width-full">
+    <MudPaper Elevation="4">
+
+        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+            <MudDatePicker Label="Check In" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudDatePicker Label="Check Out" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudNumericField @bind-Value="IntValue" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense"/>
+            <MudSelect T="string" Label="Guests" Variant="Variant.Outlined" Margin="Margin.Dense">
+                <MudSelectItem Value="@("Children")" />
+                <MudSelectItem Value="@("Adults")" />
+            </MudSelect>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" IconSize="Size.Large">Search</MudButton>
+        </MudStack>
+    </MudPaper>
+    <MudCarousel Class="mud-width-full py-3" Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+        @for (int i = 1; i <= 8; i++)
+        {
+            string image = $"images/{i}.jpg";
+            <MudCarouselItem Transition="transition">
+                <div class="d-flex" style="height:100%; width: 100%">
+
+                    <MudImage ObjectFit="ObjectFit.Cover" Src="@image" Style="height:100%; width: 100%" />
+                </div>
+            </MudCarouselItem>
+        }
+
+    </MudCarousel>
+</MudStack>
+
+
+
+@code {
+    private bool arrows = true;
+    private bool bullets = false;
+    private bool enableSwipeGesture = true;
+    private bool autocycle = true;
+    private Transition transition = Transition.Slide;
+    public int IntValue { get; set; } = 1;
+}
+
+            @code {
+    DateTime? date = DateTime.Today;
+}

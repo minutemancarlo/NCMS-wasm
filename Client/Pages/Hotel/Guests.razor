@@ -1,10 +1,67 @@
 ﻿@page "/hotel-guests"
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Hotel.Components
 <PageTitle>Guest Management | NCMS</PageTitle>
 <MudStack>
     <MudText Typo="Typo.h5">Guest Management</MudText>
+    <MudDataGrid Items="@guestsList" T="GuestsInfo" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense HorizontalScrollbar="true"
+                 ColumnResizeMode="ResizeMode.Column">
+        <ToolBarContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh">Refresh</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.FamilyRestroom" OnClick="OpenAddGuestDialog">Add Guest</MudButton>
+            <MudSpacer />
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="true" />
+            <PropertyColumn Property="x => x.MiddleName" Title="Middle Name" Filterable="true" />
+            <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="true" />
+            <PropertyColumn Property="x => x.Email" Filterable="true" />
+            <PropertyColumn Property="x => x.Phone" Title="Phone Number" Filterable="true" />
+            <TemplateColumn Title="Created By">
+                <CellTemplate>
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.subtitle1">@context.Item.CreatedBy</MudText>
+                        <MudText Typo="Typo.subtitle2" Class="text-muted">@context.Item.CreatedOn</MudText>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <NoRecordsContent>
+            <MudText>No Records to show</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Loading Content...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudDataGridPager T="GuestsInfo" />
+        </PagerContent>
+    </MudDataGrid>
 </MudStack>
 @code {
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] IDialogService? DialogService { get; set; }
+    private List<GuestsInfo> guestsList = new List<GuestsInfo>();
+    private bool isLoading = false;
+
+    private async Task OpenAddGuestDialog()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                DisableBackdropClick = true,
+                CloseButton = true
+            };
+        var dialog = await DialogService.ShowAsync<AddGuestDialog>("Simple Dialog", options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            // await LoadCardsList();
+            StateHasChanged();
+        }
+    }
+
 
 }

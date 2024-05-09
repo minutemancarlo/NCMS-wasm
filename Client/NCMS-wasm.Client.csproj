@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Guest\" />
     <Folder Include="Pages\Portal\" />
   </ItemGroup>
 
