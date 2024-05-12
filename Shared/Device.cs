@@ -8,8 +8,10 @@ namespace NCMS_wasm.Shared
 {
     public class Device
     {
-        public int DeviceId { get; set; }
-        public string DeviceName { get; set; }
+        //public string DeviceId { get; set; }
+        public string DeviceName { get; set; } 
+        public string MacAddress { get; set; }  
+        public string LocalIP { get; set; }
         public bool IsConnected { get; set; }
     }
 }

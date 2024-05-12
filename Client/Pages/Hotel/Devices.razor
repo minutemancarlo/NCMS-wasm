@@ -4,34 +4,66 @@
 <PageTitle>Devices | NCMS</PageTitle>
 <MudStack>
     <MudText Typo="Typo.h5">Device Settings</MudText>
-</MudStack>
-<MudStack AlignItems="AlignItems.Stretch">    
-    <MudTabs Outlined="true" Position="Position.Start" Rounded="true" Border="true"
-             ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6 w-100">
-        <MudTabPanel Text="USB RFID Reader" Icon="fab fa-usb">
-            <MudItem xs="12" Class="w-100">
-                <MudStack>
-                    <MudSelect T="string" Label="USB Devices" AnchorOrigin="Origin.BottomCenter">
+    <MudDataGrid Items="@guestsList" T="GuestsInfo" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense HorizontalScrollbar="true"
+                 ColumnResizeMode="ResizeMode.Column">
+        <ToolBarContent>
+            @* <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh">Refresh</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.FamilyRestroom" OnClick="OpenAddGuestDialog">Add Guest</MudButton> *@
+            <MudSpacer />
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="true" />
+            <PropertyColumn Property="x => x.MiddleName" Title="Middle Name" Filterable="true" />
+            <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="true" />
+            <PropertyColumn Property="x => x.Email" Filterable="true" />
+            <PropertyColumn Property="x => x.Phone" Title="Phone Number" Filterable="true" />
+            <TemplateColumn Title="Created By">
+                <CellTemplate>
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.subtitle1">@context.Item.CreatedBy</MudText>
+                        <MudText Typo="Typo.subtitle2" Class="text-muted">@context.Item.CreatedOn</MudText>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <NoRecordsContent>
+            <MudText>No Records to show</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Loading Content...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudDataGridPager T="GuestsInfo" />
+        </PagerContent>
+    </MudDataGrid>
+    @* <MudStack AlignItems="AlignItems.Stretch">
+        <MudTabs Outlined="true" Position="Position.Start" Rounded="true" Border="true"
+                 ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6 w-100">
+            <MudTabPanel Text="USB RFID Reader" Icon="fab fa-usb">
+                <MudItem xs="12" Class="w-100">
+                    <MudStack>
+                        <MudSelect T="string" Label="USB Devices" AnchorOrigin="Origin.BottomCenter">
+                            <MudSelectItem Value="@("Cappuccino")" />
+                            <MudSelectItem Value="@("Cafe Latte")" />
+                            <MudSelectItem Value="@("Espresso")" />
+                        </MudSelect>
+                    </MudStack>
+                </MudItem>
+            </MudTabPanel>
+            <MudTabPanel Text="Network RFID" Icon="fas fa-network-wired">
+                <MudItem xs="12" Class="w-100">
+                    <MudSelect T="string" Label="Devices" AnchorOrigin="Origin.BottomCenter">
                         <MudSelectItem Value="@("Cappuccino")" />
                         <MudSelectItem Value="@("Cafe Latte")" />
                         <MudSelectItem Value="@("Espresso")" />
                     </MudSelect>
-                </MudStack>
-            </MudItem>
-        </MudTabPanel>
-        <MudTabPanel Text="Network RFID" Icon="fas fa-network-wired">
-            <MudItem xs="12" Class="w-100">
-                <MudSelect T="string" Label="Devices" AnchorOrigin="Origin.BottomCenter">
-                    <MudSelectItem Value="@("Cappuccino")" />
-                    <MudSelectItem Value="@("Cafe Latte")" />
-                    <MudSelectItem Value="@("Espresso")" />
-                </MudSelect>
-            </MudItem>
-        </MudTabPanel>
-    </MudTabs>
-
-
+                </MudItem>
+            </MudTabPanel>
+        </MudTabs>
+    </MudStack> *@
 </MudStack>
-@code {
 
+@code {
+    private List<GuestsInfo> guestsList = new List<GuestsInfo>();
+    private bool isLoading = false;
 }

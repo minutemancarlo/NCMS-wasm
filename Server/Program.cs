@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Data.SqlClient;
 using System.Data;
 using NCMS_wasm.Server.Repository;
+using NCMS_wasm.Client.Pages.Hotel;
 
 var builder = WebApplication.CreateBuilder(args);
 // Register your database connection
@@ -34,6 +35,16 @@ builder.Services.AddAuth0AuthenticationClient(config =>
     config.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowOrigin", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddAuth0ManagementClient().AddManagementAccessToken();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -57,7 +68,7 @@ else
 }
 
 
-
+app.UseCors("AllowOrigin");
 
 app.UseHttpsRedirection();
 

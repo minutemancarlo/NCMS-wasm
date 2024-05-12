@@ -22,6 +22,8 @@ namespace NCMS_wasm.Server.Repository
         {
             var parameters = new DynamicParameters();
             parameters.Add("@DeviceName", device.DeviceName);
+            parameters.Add("@LocalIP", device.LocalIP);
+            parameters.Add("@MacAddress", device.MacAddress);
             parameters.Add("@IsConnected", device.IsConnected);
 
             // Execute the stored procedure
