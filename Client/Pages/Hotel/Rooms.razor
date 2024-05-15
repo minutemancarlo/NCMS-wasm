@@ -2,10 +2,71 @@
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
 <PageTitle>Rooms | NCMS</PageTitle>
-<MudStack>
+<MudStack Class="w-100">
     <MudText Typo="Typo.h5">Rooms Management</MudText>
+    <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudTextField @bind-Value="searchRoom" Variant="Variant.Outlined" 
+        Placeholder="Enter room number here.."
+        Label="Search Room" 
+        AdornmentIcon="@Icons.Material.Filled.Search" 
+        Margin="Margin.Dense"        
+        Adornment="Adornment.Start"></MudTextField>
+        <MudSelect T="RoomStatus" Label="Room Status" @bind-SelectedValues="roomStatus" ShrinkLabel Placeholder="Filter Room Status.." Variant="Variant.Outlined"
+                   MultiSelection="true"
+                   AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" Adornment="Adornment.Start" 
+                   AdornmentIcon="@Icons.Material.Filled.FilterAlt" Clearable>
+            <MudSelectItem Value="@RoomStatus.Available" />
+            <MudSelectItem Value="@RoomStatus.Occupied" />
+            <MudSelectItem Value="@RoomStatus.Reserved" />
+            <MudSelectItem Value="@RoomStatus.Under_Maintenance" />
+            <MudSelectItem Value="@RoomStatus.Not_Available" />
+        </MudSelect>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Medium">Search</MudButton>
+    </MudStack>
+    <MudDataGrid Items="@roomsList" T="HotelRoom" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense HorizontalScrollbar="true"
+                 ColumnResizeMode="ResizeMode.Column">
+        <ToolBarContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh">Refresh</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add">Add Room</MudButton>
+            <MudSpacer />
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="x => x.RoomNumber" Title="Room Number" Filterable="true" />
+            <PropertyColumn Property="x => x.Type" Title="Room Type" Filterable="true" />
+            <PropertyColumn Property="x => x.Status" Title="Status" Filterable="true" />
+            <TemplateColumn Title="Created By">
+                <CellTemplate>
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.subtitle1">@context.Item.CreatedBy</MudText>
+                        <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.CreatedOn</MudText>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Updated By">
+                <CellTemplate>
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.subtitle1">@context.Item.UpdatedBy</MudText>
+                        <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.UpdatedOn</MudText>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <NoRecordsContent>
+            <MudText>No Records to show</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Loading Content...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudDataGridPager T="HotelRoom" />
+        </PagerContent>
+    </MudDataGrid>
 </MudStack>
 
-@code {    
-
+@code {
+    private string? searchRoom { get; set; }
+    private string? filterStatus { get; set; }
+    private List<HotelRoom> roomsList = new List<HotelRoom>();
+    private bool isLoading = false;
+    private IEnumerable<RoomStatus> roomStatus { get; set; } = new HashSet<RoomStatus>();
 }

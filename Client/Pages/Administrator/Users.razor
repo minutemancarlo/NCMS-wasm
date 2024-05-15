@@ -5,7 +5,7 @@
 
 <MudStack>
     <MudText Typo="Typo.h5">User Management</MudText>
-    <MudDataGrid Items="@usersList" T="UserDto" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon ColumnResizeMode="ResizeMode.Container">
+    <MudDataGrid Items="@usersList" T="UserDto" Loading="@isLoading" Dense HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon ColumnResizeMode="ResizeMode.Container">
         <ToolBarContent>
             <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(async () => await LoadUsers())">Refresh</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddUserDialog">Add User</MudButton>

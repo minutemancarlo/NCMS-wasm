@@ -13,5 +13,6 @@ namespace NCMS_wasm.Shared
         public string MacAddress { get; set; }  
         public string LocalIP { get; set; }
         public bool IsConnected { get; set; }
+        public DateTime? UpdatedOn { get; set; }
     }
 }

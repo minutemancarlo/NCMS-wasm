@@ -4,7 +4,7 @@
 <PageTitle>Devices | NCMS</PageTitle>
 <MudStack>
     <MudText Typo="Typo.h5">Device Settings</MudText>
-    <MudDataGrid Items="@guestsList" T="GuestsInfo" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense HorizontalScrollbar="true"
+    <MudDataGrid Items="@deviceList" T="Device" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense HorizontalScrollbar="true"
                  ColumnResizeMode="ResizeMode.Column">
         <ToolBarContent>
             @* <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh">Refresh</MudButton>
@@ -12,16 +12,13 @@
             <MudSpacer />
         </ToolBarContent>
         <Columns>
-            <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="true" />
-            <PropertyColumn Property="x => x.MiddleName" Title="Middle Name" Filterable="true" />
-            <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="true" />
-            <PropertyColumn Property="x => x.Email" Filterable="true" />
-            <PropertyColumn Property="x => x.Phone" Title="Phone Number" Filterable="true" />
-            <TemplateColumn Title="Created By">
+            <PropertyColumn Property="x => x.DeviceName" Title="Device Name" Filterable="true" />
+            <PropertyColumn Property="x => x.LocalIP" Title="Local IP" Filterable="true" />
+            <PropertyColumn Property="x => x.MacAddress" Title="Mac Address" Filterable="true" />            
+            <TemplateColumn Title="Last Server Handshake">
                 <CellTemplate>
                     <MudStack Spacing="0">
-                        <MudText Typo="Typo.subtitle1">@context.Item.CreatedBy</MudText>
-                        <MudText Typo="Typo.subtitle2" Class="text-muted">@context.Item.CreatedOn</MudText>
+                        <MudText Typo="Typo.subtitle2">@context.Item.UpdatedOn</MudText>
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>
@@ -33,7 +30,7 @@
             <MudText>Loading Content...</MudText>
         </LoadingContent>
         <PagerContent>
-            <MudDataGridPager T="GuestsInfo" />
+            <MudDataGridPager T="Device" />
         </PagerContent>
     </MudDataGrid>
     @* <MudStack AlignItems="AlignItems.Stretch">
@@ -64,6 +61,32 @@
 </MudStack>
 
 @code {
-    private List<GuestsInfo> guestsList = new List<GuestsInfo>();
+    private List<Device> deviceList = new List<Device>();
     private bool isLoading = false;
+    [Inject] HttpClient? httpClient { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDeviceList();
+        await base.OnInitializedAsync();
+    }
+
+
+    private async Task LoadDeviceList()
+    {
+        isLoading = true;
+        try
+        {
+            deviceList = await httpClient.GetFromJsonAsync<List<Device>>($"Devices/GetNetworkDevices");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
 }

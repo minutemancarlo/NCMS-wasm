@@ -11,19 +11,20 @@
         @* <MudForm @ref="form" Model="@rfidInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0"> *@
         <MudForm @ref="form" Model="@guestsInfo">                     
             <MudStack Row>
-                <MudTextField @bind-Value="guestsInfo.FirstName" Label="First Name" Variant="Variant.Outlined"></MudTextField>
-                <MudTextField @bind-Value="guestsInfo.MiddleName" Label="Middle Name" Variant="Variant.Outlined"></MudTextField>
-                <MudTextField @bind-Value="guestsInfo.LastName" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="guestsInfo.FirstName" Label="First Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                <MudTextField @bind-Value="guestsInfo.MiddleName" Label="Middle Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                <MudTextField @bind-Value="guestsInfo.LastName" Label="Last Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
             </MudStack>
-            <MudTextField @bind-Value="guestsInfo.Phone" Label="Phone Number" Variant="Variant.Outlined"></MudTextField>
-            <MudTextField @bind-Value="guestsInfo.Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
+            <MudTextField @bind-Value="guestsInfo.Phone" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+            <MudTextField @bind-Value="guestsInfo.Email" Label="Email Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
             <MudStack Row Class="py-1" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
-                <MudDatePicker Label="Check In" @bind-Date="guestsInfo.CheckInDate" Variant="Variant.Outlined" />
-                <MudDatePicker Label="Check Out" @bind-Date="guestsInfo.CheckOutDate" Variant="Variant.Outlined" />
-                <MudNumericField @bind-Value="guestsInfo.Rooms" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" />                
+                <MudDatePicker Label="Check In" @bind-Date="guestsInfo.CheckInDate" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                <MudDatePicker Label="Check Out" @bind-Date="guestsInfo.CheckOutDate" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                <MudNumericField @bind-Value="guestsInfo.Rooms" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
             </MudStack>
-            <MudNumericField Class="py-1" @bind-Value="guestsInfo.Children" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" />
-            <MudNumericField Class="py-1"  @bind-Value="guestsInfo.Adults" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" />
+            <MudText Typo="Typo.caption" Class="pt-5 fw-bold">Occupants:</MudText>            
+            <MudNumericField Class="py-1" @bind-Value="guestsInfo.Children" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+            <MudNumericField Class="py-1" @bind-Value="guestsInfo.Adults" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
         </MudForm>
     </DialogContent>
     <DialogActions>
