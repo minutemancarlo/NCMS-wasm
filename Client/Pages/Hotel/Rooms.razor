@@ -1,6 +1,7 @@
 ﻿@page "/hotel-roomsmanagement"
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Hotel.Components
 <PageTitle>Rooms | NCMS</PageTitle>
 <MudStack Class="w-100">
     <MudText Typo="Typo.h5">Rooms Management</MudText>
@@ -26,18 +27,30 @@
     <MudDataGrid Items="@roomsList" T="HotelRoom" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense HorizontalScrollbar="true"
                  ColumnResizeMode="ResizeMode.Column">
         <ToolBarContent>
-            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh">Refresh</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add">Add Room</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadRoomsList">Refresh</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddRoomDialog">Add Room</MudButton>
             <MudSpacer />
         </ToolBarContent>
         <Columns>
             <PropertyColumn Property="x => x.RoomNumber" Title="Room Number" Filterable="true" />
-            <PropertyColumn Property="x => x.Type" Title="Room Type" Filterable="true" />
+            <PropertyColumn Property="x => x.Type" Title="Room Type" Filterable="true" >
+                <CellTemplate>
+                    <MudStack Row Spacing="0" AlignItems="AlignItems.Baseline">
+                        <MudText Typo="Typo.body2">@context.Item.Type</MudText>
+                        @if (!string.IsNullOrEmpty(context.Item.RoomDescription))
+                        {
+                            <MudTooltip Text="@context.Item.RoomDescription" Arrow ShowOnClick Color="Color.Info" Placement="Placement.Top">
+                                <MudIconButton Icon="fas fa-info-circle" Size="Size.Medium" Color="Color.Info" />
+                            </MudTooltip>
+                        }
+                    </MudStack>                    
+                </CellTemplate>
+            </PropertyColumn>
             <PropertyColumn Property="x => x.Status" Title="Status" Filterable="true" />
             <TemplateColumn Title="Created By">
                 <CellTemplate>
                     <MudStack Spacing="0">
-                        <MudText Typo="Typo.subtitle1">@context.Item.CreatedBy</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.CreatedBy</MudText>
                         <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.CreatedOn</MudText>
                     </MudStack>
                 </CellTemplate>
@@ -45,7 +58,7 @@
             <TemplateColumn Title="Updated By">
                 <CellTemplate>
                     <MudStack Spacing="0">
-                        <MudText Typo="Typo.subtitle1">@context.Item.UpdatedBy</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.UpdatedBy</MudText>
                         <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.UpdatedOn</MudText>
                     </MudStack>
                 </CellTemplate>
@@ -64,9 +77,55 @@
 </MudStack>
 
 @code {
+    [Inject] IDialogService? DialogService { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
     private string? searchRoom { get; set; }
     private string? filterStatus { get; set; }
     private List<HotelRoom> roomsList = new List<HotelRoom>();
     private bool isLoading = false;
     private IEnumerable<RoomStatus> roomStatus { get; set; } = new HashSet<RoomStatus>();
+
+    private async Task OpenAddRoomDialog()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                DisableBackdropClick = true,
+                CloseButton = true
+            };
+        var dialog = await DialogService.ShowAsync<AddRoomDialog>("Simple Dialog", options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await LoadRoomsList();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRoomsList();
+        await base.OnInitializedAsync();
+    }
+
+
+    private async Task LoadRoomsList()
+    {
+        isLoading = true;
+        try
+        {
+            roomsList = await httpClient.GetFromJsonAsync<List<HotelRoom>>($"HotelManagement/GetRooms");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using NCMS_wasm.Shared;
 using System.Data;
+using System.Text;
 
 namespace NCMS_wasm.Server.Repository
 {
@@ -31,6 +32,31 @@ namespace NCMS_wasm.Server.Repository
             // Execute the stored procedure
             return await _dbConnection.ExecuteScalarAsync<int>("AddAccomodations", parameters, commandType: CommandType.StoredProcedure);
         }
+
+        public async Task<int> AddRoomsAsync(HotelRoom room)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@RoomNumber", room.RoomNumber);
+            parameters.Add("@RoomDescription", room.RoomDescription);
+            parameters.Add("@Type", room.Type);
+            parameters.Add("@PricePerNight", room.PricePerNight);
+            parameters.Add("@Status", room.Status);
+            parameters.Add("@MaxGuest", room.MaxGuest);
+            parameters.Add("@IsAvailable", room.IsAvailable);
+            parameters.Add("@CreatedBy", room.CreatedBy);
+            parameters.Add("@CreatedOn", room.CreatedOn);
+
+            return await _dbConnection.ExecuteScalarAsync<int>("AddRooms", parameters, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<IEnumerable<HotelRoom>> GetAllRoomsAsync()
+        {
+            string query = "SELECT * FROM Rooms ORDER BY RoomId DESC";
+            return await _dbConnection.QueryAsync<HotelRoom>(query);
+        }
+
+
+
     }
 }
 

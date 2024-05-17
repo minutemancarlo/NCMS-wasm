@@ -32,6 +32,7 @@
         <MudLoadingButton Variant="Variant.Filled"
                           Color="Color.Success"
                           Size="Size.Large"
+                          OnClick="OnSubmit"
                           Loading="@(_loading)"                        
                           ButtonType="ButtonType.Button">
             <LoadingContent>Submitting...</LoadingContent>
@@ -51,10 +52,10 @@
 
     private List<GuestsInfo> guestsList = new List<GuestsInfo>();
     
-    // private async Task OnSubmit()
-    // {
-    //     Snackbar.Add($"Card Value: {rfidInfo.CardReference}", Severity.Normal);
-    // }
+    private async Task OnSubmit()
+    {
+        // Snackbar.Add($"Card Value: {rfidInfo.CardReference}", Severity.Normal);
+    }
 
     protected override async Task OnInitializedAsync()
     {

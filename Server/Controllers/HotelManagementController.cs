@@ -33,5 +33,37 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("AddRooms")]
+        public async Task<ActionResult<int>> AddRooms(HotelRoom rooms)
+        {
+            try
+            {
+                int accId = await _hotelRepository.AddRoomsAsync(rooms);
+                _logger.LogInformation("Room added successfully.");
+                return Ok(accId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while adding room info: {ex.Message}");
+                return BadRequest($"Exception occurred while adding room info: {ex.Message}");
+            }
+        }
+
+        [HttpGet("GetRooms")]
+        public async Task<ActionResult<List<HotelRoom>>> GetAllRooms()
+        {
+            try
+            {
+                var devices = await _hotelRepository.GetAllRoomsAsync();
+                _logger.LogInformation("Rooms retrieved successfully.");
+                return Ok(devices);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving rooms: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
+            }
+        }
+
     }
 }

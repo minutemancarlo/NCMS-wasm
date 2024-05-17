@@ -9,19 +9,24 @@ namespace NCMS_wasm.Shared
 {
     public class HotelRoom : BaseModel
     {
-        public int RoomNumber { get; set; }
+        public int? RoomNumber { get; set; }
+        public string? RoomDescription { get; set; }
         public RoomType Type { get; set; }
         public decimal PricePerNight { get; set; }
         public RoomStatus Status { get; set; }
+        public int MaxGuest { get; set; }
         public bool IsAvailable { get; set; }
     }
 
     public enum RoomType
     {
-        Single,
-        Double,
+        Twin,
+        Double_Twin,
+        Triple,
+        Deluxe_Double,
+        Superior_Queen,
         Suite,
-        Penthouse
+        King_Suite
     }
     public enum RoomStatus
     {
