@@ -46,6 +46,10 @@
                 {
                     Navigation.NavigateTo("/gas-dashboard");
                 }
+                if (user.IsInRole("Guest"))
+                {
+                    Navigation.NavigateTo("/Home");
+                }
             }
             else
             {

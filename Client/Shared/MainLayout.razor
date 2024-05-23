@@ -15,16 +15,15 @@
             </MudAppBar>
             <MudDrawer @bind-Open="@open" Elevation="1">
                 <MudDrawerHeader Class="mud-theme-primary" Dense>
-                    <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
-                        <MudImage Src="images/logo.png" Width="50" Height="50" />
-                        <MudSpacer />
+                    <MudStack Row Spacing="0">
+                        <MudImage Src="images/logo.png" Width="50" Height="50" />                        
                         <MudText Typo="Typo.h5">NCMS</MudText>
                     </MudStack>
                 </MudDrawerHeader>
                 <NavMenu />
             </MudDrawer>
             <MudMainContent Class="pt-16 px-16">
-                <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+                <MudContainer MaxWidth="MaxWidth.ExtraLarge" Fixed="true">
                     <MudGrid Class="pt-6">
                         @Body
                     </MudGrid>
@@ -36,15 +35,14 @@
         <MudLayout>
             <MudAppBar Elevation="1">
                 <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
-                    <MudImage Src="images/logo.png" Width="50" Height="50" />
-                    <MudSpacer />
+                    <MudImage Src="images/logo.png" Width="50" Height="50" />                    
                     <MudText Typo="Typo.h5">NCMS</MudText>
                 </MudStack>
                 <MudSpacer />
                 <AccessControl />
             </MudAppBar>            
-            <MudMainContent Class="pt-16 px-16">
-                <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+            <MudMainContent Class="pt-16">
+                <MudContainer Fixed="true">
                     <MudGrid Class="pt-6">
                         @Body
                     </MudGrid>

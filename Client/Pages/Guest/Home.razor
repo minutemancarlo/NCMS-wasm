@@ -1,8 +1,7 @@
 ﻿@page "/Home"
 
-<MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="py-2 mud-width-full">
+<MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-width-full">
     <MudPaper Elevation="4">
-
         <MudStack Row Class="pa-2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
             <MudDatePicker Label="Check In" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
             <MudDatePicker Label="Check Out" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
@@ -11,7 +10,7 @@
                 <MudSelectItem Value="@("Children")" />
                 <MudSelectItem Value="@("Adults")" />
             </MudSelect>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" IconSize="Size.Large">Search</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/rooms" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" IconSize="Size.Large">Search</MudButton>
         </MudStack>
     </MudPaper>
     <MudCarousel Class="mud-width-full py-3" Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
@@ -20,7 +19,6 @@
             string image = $"images/{i}.jpg";
             <MudCarouselItem Transition="transition">
                 <div class="d-flex" style="height:100%; width: 100%">
-
                     <MudImage ObjectFit="ObjectFit.Cover" Src="@image" Style="height:100%; width: 100%" />
                 </div>
             </MudCarouselItem>
@@ -76,124 +74,8 @@
     </MudStack>
 
     </MudItem> *@
-    <!-- Footer -->
-    <footer class="text-center text-lg-start bg-body-tertiary text-muted">
-        <!-- Section: Social media -->
-        <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
-            <!-- Left -->
-            <div class="me-5 d-none d-lg-block">
-                <span>Get connected with us on social networks:</span>
-            </div>
-            <!-- Left -->
-            <!-- Right -->
-            <div>
-                <a href="" class="me-4 text-reset">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="" class="me-4 text-reset">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="" class="me-4 text-reset">
-                    <i class="fab fa-google"></i>
-                </a>
-                <a href="" class="me-4 text-reset">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="" class="me-4 text-reset">
-                    <i class="fab fa-linkedin"></i>
-                </a>
-                <a href="" class="me-4 text-reset">
-                    <i class="fab fa-github"></i>
-                </a>
-            </div>
-            <!-- Right -->
-        </section>
-        <!-- Section: Social media -->
-        <!-- Section: Links  -->
-        <section class="">
-            <div class="container text-center text-md-start mt-5">
-                <!-- Grid row -->
-                <div class="row mt-3">
-                    <!-- Grid column -->
-                    <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
-                        <!-- Content -->
-                        <h6 class="text-uppercase fw-bold mb-4">
-                            <i class="fas fa-gem me-3"></i>Norlu Cedec Midpoint Hotel
-                        </h6>
-                        <p>
-                            This 4-star hotel offers room service and a 24-hour front desk. The property is non-smoking and is located 50 km from Mines View Park.
-                            ttle, a bidet, free toiletries and a desk. Rooms are complete with a private bathroom equipped with a shower, while certain units at the hotel also provide guests with a balcony. At Norlu Cedec Midpoint Hotel every room has bed linen and towels.
-
-
-                        </p>
-                    </div>
-                    <!-- Grid column -->
-                    <!-- Grid column -->
-                    <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-                        <!-- Links -->
-                        <h6 class="text-uppercase fw-bold mb-4">
-                            Rooms
-                        </h6>
-                        <p>
-                            <a href="#!" class="text-reset">Twin</a>
-                        </p>
-                        <p>
-                            <a href="#!" class="text-reset">Double Twin</a>
-                        </p>
-                        <p>
-                            <a href="#!" class="text-reset">Deluxe Double</a>
-                        </p>
-                        <p>
-                            <a href="#!" class="text-reset">Superior Queen</a>
-                        </p>
-                    </div>
-                    <!-- Grid column -->
-                    <!-- Grid column -->
-                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
-                        <!-- Links -->
-                        <h6 class="text-uppercase fw-bold mb-4">
-                            links
-                        </h6>
-                        <p>
-                            <a href="#!" class="text-reset">Pricing</a>
-                        </p>
-                        <p>
-                            <a href="#!" class="text-reset">Maps</a>
-                        </p>
-                        <p>
-                            <a href="#!" class="text-reset">Faq</a>
-                        </p>
-                        <p>
-                            <a href="#!" class="text-reset">Help</a>
-                        </p>
-                    </div>
-                    <!-- Grid column -->
-                    <!-- Grid column -->
-                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-                        <!-- Links -->
-                        <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
-                        <p><i class="fas fa-home me-3"></i> Camp One, Rosario, La Union</p>
-                        <p>
-                            <i class="fas fa-envelope me-3"></i>
-                            info@ncmslu.com
-                        </p>
-                        <p><i class="fas fa-phone me-3"></i> + 01 234 567 88</p>
-                        <p><i class="fas fa-print me-3"></i> + 01 234 567 89</p>
-                    </div>
-                    <!-- Grid column -->
-                </div>
-                <!-- Grid row -->
-            </div>
-        </section>
-        <!-- Section: Links  -->
-        <!-- Copyright -->
-        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
-            © 2024 Copyright:
-            <a class="text-reset fw-bold" href="https://ncmslu.com/">www.ncmslu.com</a>
-        </div>
-        <!-- Copyright -->
-    </footer>
-    <!-- Footer -->
+   
+    <Footer/>
 
 
 </MudStack>
@@ -208,8 +90,6 @@
     private bool autocycle = true;
     private Transition transition = Transition.Slide;
     public int IntValue { get; set; } = 1;
-}
 
-            @code {
     DateTime? date = DateTime.Today;
 }

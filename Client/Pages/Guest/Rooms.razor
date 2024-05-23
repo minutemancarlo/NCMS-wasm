@@ -1,0 +1,117 @@
+﻿@page "/rooms"
+@attribute [Authorize(Roles = "Guest")]
+@using NCMS_wasm.Shared
+@using MudBlazor.Utilities
+
+<PageTitle>Rooms | NCMS</PageTitle>
+
+<MudStack Spacing="1">    
+    <MudBreadcrumbs Items="_items" Class="py-2"></MudBreadcrumbs>
+    <MudText Typo="Typo.h6" Class="text-muted">Norlu Cedec Midpoint Hotel</MudText>
+    <MudText Typo="Typo.body1"><MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.LocationOn"></MudIcon>Brgy. Camp 1, Rosario, La Union, 2506 Rosario, Philippines</MudText>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d239.4362641321693!2d120.50367531875483!3d16.221456260245443!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x339173d5a0d770b9%3A0xfecd6972116bf21e!2sNORLU%20CEDEC%20Midpoint%20Hotel!5e0!3m2!1sen!2sph!4v1716353390924!5m2!1sen!2sph" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+    
+
+    <MudGrid>
+        <MudItem xs="12" sm="8" Class="d-flex align-center flex-wrap">
+            <MudGallery @ref="_gallery" ImageSource="_source" ItemPerLine="_itemPerLine" EnableBackdropClick="_enableBackdropClick"
+                        ShowToolboxCloseButton="_showToolboxCloseButton" ShowToolboxNavigationButtons="_showToolboxNavigationButtons"
+                        MaxWidth="_maxWidth" StyleSelectedImage="@ImageStyle" EnableAnimation="_enableAnimation">
+                <ToolboxTopContent>
+                    <MudText Class="white-text pa-4">Image @(_gallery?.GetSelectedImageIndex() + 1) - Description</MudText>
+                </ToolboxTopContent>
+                <ToolboxBottomContent>
+                    <MudIconButton Class="white-text" Icon="@Icons.Material.Outlined.Edit" />
+                    <MudIconButton Class="white-text" Icon="@Icons.Material.Outlined.RotateRight" OnClick="ArrangeRotateValue" />
+                    @if (_showToolboxCloseButton == false)
+                    {
+                        <MudIconButton Class="white-text" Icon="@Icons.Material.Outlined.Close" OnClick="@(() => _gallery?.ChangeMenu(false))" />
+                    }
+                </ToolboxBottomContent>
+            </MudGallery>
+        </MudItem>
+
+        <MudItem xs="12" sm="4">
+            <MudStack Spacing="2">
+                <MudText Typo="Typo.h6" Class="fw-bold">Room Information</MudText>
+                <MudText Typo="Typo.body1" Class="fw-bold">Twin Room</MudText>
+                <MudText Typo="Typo.body1">2 single beds <MudIcon Icon="@Icons.Material.Filled.SingleBed" Size="Size.Small"></MudIcon><MudIcon Icon="@Icons.Material.Filled.SingleBed" Size="Size.Small"></MudIcon></MudText>
+                <MudText Typo="Typo.h6" Class="fw-bolder">Php. 2000 per night <s class="text-danger">Php. 2500</s> </MudText>
+                <MudText Typo="Typo.body1"><MudIcon Color="Color.Info" Icon="@Icons.Material.Filled.Wifi" Size="Size.Small"></MudIcon> Free WiFi</MudText>
+                <MudText Typo="Typo.body1"><MudIcon Color="Color.Info" Icon="@Icons.Material.Filled.Tv" Size="Size.Small"></MudIcon> Flat Screen TV</MudText>
+                <MudStack Row Wrap="Wrap.Wrap" Spacing="0">
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Free toiletries</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Bidet</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Toilet</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Bath or shower</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Hardwood or parquet floors</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Towels</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Linen</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Socket near the bed</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Desk</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> TV</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Refrigerator</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Telephone</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Electric kettle</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Cable channels</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Wake-up service</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Wardrobe or closet</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Dining table</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Upper floors accessible by elevator</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Clothes rack</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Toilet paper</MudText>
+                    <MudText Typo="Typo.body1"><MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" Size="Size.Small"></MudIcon> Entire unit wheelchair accessible</MudText>
+                     
+                </MudStack>
+                <MudButton Variant="Variant.Filled" Color="Color.Info" FullWidth>Reserve</MudButton>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+    <Footer/>
+</MudStack>
+
+
+
+
+
+@code {
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+    new BreadcrumbItem("Home", href: "/home", icon: Icons.Material.Filled.Home),
+    new BreadcrumbItem("Rooms", href: "/rooms", icon: Icons.Material.Filled.HomeWork),
+    new BreadcrumbItem("Twin", href: "/rooms", icon: Icons.Material.Filled.Hotel)
+    };
+
+    MudGallery? _gallery;
+    int _itemPerLine = 3;
+    bool _enableBackdropClick = true;
+    bool _showToolboxCloseButton = true;
+    bool _showToolboxNavigationButtons = true;
+    bool _enableAnimation = true;
+    int _rotateValue = 0;
+    MaxWidth _maxWidth = MaxWidth.Medium;
+
+    private string ImageStyle => new StyleBuilder()
+        .AddStyle("transform", $"rotate({_rotateValue}deg)")
+        .Build();
+
+    private string link = "/";
+
+    List<string> _source = new() { "https://ncmslu.com/images/7.jpg",
+        "https://ncmslu.com/images/2.jpg",
+        "https://ncmslu.com/images/3.jpg",
+        "https://ncmslu.com/images/4.jpg",
+        "https://ncmslu.com/images/5.jpg",
+        "https://ncmslu.com/images/6.jpg"};
+
+    private void ArrangeRotateValue()
+    {
+        if (_rotateValue == 270)
+        {
+            _rotateValue = 0;
+            return;
+        }
+        _rotateValue += 90;
+    }
+}
