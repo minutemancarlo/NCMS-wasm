@@ -4,15 +4,56 @@
 <PageTitle>Dashboard | NCMS</PageTitle>
 <MudStack Class="w-100">
     <MudText Typo="Typo.h5">HR Dashboard</MudText>
-    <MudCalendar HighlightToday ShowWorkWeek ShowWeek="false" Style="width: 100%" CellClicked="DayClicked" />
+    <MudCalendar HighlightToday ShowWorkWeek="false" Elevation="1" ShowWeek="false"
+                 Style="width: 100%"
+                 CellClicked="CellClicked" 
+                 ItemClicked="ItemClicked"                 
+                 MonthCellMinHeight="100"                 
+                 Items="_events">
+        <ToolbarContent>            
+                <MudText Typo="Typo.button" Class="pt-1"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Warning" Size="Size.Small" /> Holiday</MudText>
+                <MudText Typo="Typo.button" Class="pt-1"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Info" Size="Size.Small" /> Leave Notice</MudText>
+        </ToolbarContent>
+        <CellTemplate>
+            <div style="background-color: @GetColor(((CustomItem)context).Color)" class="pa-2 d-flex gap-1">                
+                <MudText Style="color: white" Class="fw-bold" Typo="Typo.body2">@context.Text</MudText>
+             </div>            
+        </CellTemplate>
+    </MudCalendar>
 </MudStack>
 @code {
     [Inject] private IDialogService DialogService { get; set; }
-    private async Task DayClicked()
+    private Task CellClicked(DateTime dateTime)
     {
-        await DialogService.ShowMessageBox(
-             "Warning",
-             "Deleting can not be undone!",
-             yesText: "Delete!", cancelText: "Cancel");
+        return DialogService.ShowMessageBox("No Events", dateTime.ToString(Thread.CurrentThread.CurrentCulture));
+    }
+
+    private Task ItemClicked(CalendarItem item)
+    {                
+        return DialogService.ShowMessageBox("Event", item.Text);
+    }
+
+    private string GetColor(Color color) => $"var(--mud-palette-{color.ToDescriptionString()})";
+
+    private List<CustomItem> _events = new()
+    {
+        new CustomItem
+        {
+           Start = DateTime.ParseExact("2024/08/21", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+            Text = "National Heroes Day",            
+            Color = Color.Warning
+        },
+        new CustomItem
+        {
+             Start = DateTime.ParseExact("2024/08/06", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+            End = DateTime.ParseExact("2024/08/07", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+            Text = $"Carlo Boado",            
+            Color = Color.Info
+        }
+    };
+
+    private class CustomItem : CalendarItem
+    {               
+        public Color Color { get; set; } = Color.Primary;
     }
 }
