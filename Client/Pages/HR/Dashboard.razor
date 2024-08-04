@@ -2,9 +2,17 @@
 @attribute [Authorize(Roles = "Human Resource")]
 @using NCMS_wasm.Shared
 <PageTitle>Dashboard | NCMS</PageTitle>
-<MudStack>
+<MudStack Class="w-100">
     <MudText Typo="Typo.h5">HR Dashboard</MudText>
+    <MudCalendar HighlightToday ShowWorkWeek ShowWeek="false" Style="width: 100%" CellClicked="DayClicked" />
 </MudStack>
 @code {
-
+    [Inject] private IDialogService DialogService { get; set; }
+    private async Task DayClicked()
+    {
+        await DialogService.ShowMessageBox(
+             "Warning",
+             "Deleting can not be undone!",
+             yesText: "Delete!", cancelText: "Cancel");
+    }
 }

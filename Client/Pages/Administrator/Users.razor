@@ -105,7 +105,7 @@
             CloseOnEscapeKey = false, 
             FullWidth = true, 
             MaxWidth = MaxWidth.Small,
-            DisableBackdropClick=true,
+            BackdropClick=true,
             CloseButton = true 
         };
         await GetUserRole(userDto.User_Id);
@@ -122,7 +122,7 @@
                 CloseOnEscapeKey = false,
                 FullWidth = true,
                 MaxWidth = MaxWidth.Small,
-                DisableBackdropClick = true,
+                BackdropClick = true,
                 CloseButton = true                
             };                        
         var dialog = await DialogService.ShowAsync<AddUserDialog>("Simple Dialog", options);
