@@ -1,0 +1,53 @@
+﻿@using NCMS_wasm.Shared
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.CalendarMonth"></MudIcon>
+            Event Information
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Model="@events">                                  
+            <MudTextField @bind-Value="events.EventName" Label="Holiday Description" Variant="Variant.Outlined"></MudTextField>
+            <MudStack Row>
+                <MudDatePicker Label="From Date" @bind-Date="events.EventStart" />   
+                <MudDatePicker Label="To Date" @bind-Date="events.EventStart" />
+            </MudStack>            
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"
+                          Loading="@(_loading)"
+                          OnClick="OnSubmit"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Submitting...</LoadingContent>
+            <ChildContent>Submit</ChildContent>
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code{
+    MudForm form;
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    private Events? events {get;set;}
+    private bool _loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        events = new Events();
+        await base.OnInitializedAsync();
+    }
+
+    void Cancel() => MudDialog.Cancel();
+    private async Task OnSubmit()
+    {
+        Cancel();
+    }
+
+
+}

@@ -1,6 +1,7 @@
 ﻿@page "/hr-dashboard"
 @attribute [Authorize(Roles = "Human Resource")]
 @using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.HR.Components
 <PageTitle>Dashboard | NCMS</PageTitle>
 <MudStack Class="w-100">
     <MudText Typo="Typo.h5">HR Dashboard</MudText>
@@ -9,13 +10,14 @@
                  ShowWeek="false"
                  ShowDay="false"
                  Elevation="1" 
-                 ShowTodayButton
+                 ShowTodayButton = "false"
                  Style="width: 100%"
                  CellClicked="CellClicked" 
                  ItemClicked="ItemClicked"                 
                  MonthCellMinHeight="100"                 
                  Items="_events">
-        <ToolbarContent>                        
+        <ToolbarContent>  
+                <MudSpacer/>
                 <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Warning" Size="Size.Small" /> Holiday</MudText>
                 <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" /> Approved Leave</MudText>
                 <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Info" Size="Size.Small" /> For Approval Leave</MudText>            
@@ -26,12 +28,29 @@
              </div>            
         </CellTemplate>
     </MudCalendar>
+    
 </MudStack>
 @code {
     [Inject] private IDialogService DialogService { get; set; }    
-    private Task CellClicked(DateTime dateTime)
+
+    private async Task CellClicked(DateTime dateTime)
     {
-        return DialogService.ShowMessageBox("No Events", dateTime.ToString(Thread.CurrentThread.CurrentCulture));
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = true,
+                CloseButton = true
+            };
+        var dialog = await DialogService.ShowAsync<AddEventDialog>("Simple Dialog", options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            // await LoadCardsList();
+            StateHasChanged();
+        }
+        // return DialogService.ShowMessageBox("No Events", dateTime.ToString(Thread.CurrentThread.CurrentCulture));
     }
 
     private Task ItemClicked(CalendarItem item)

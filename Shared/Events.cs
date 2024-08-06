@@ -9,10 +9,10 @@ namespace NCMS_wasm.Shared
     public class Events
     {
         public int EventId { get; set; }
-        public string EventName { get; set; }
+        public string? EventName { get; set; }
         public EventsType EventType { get; set; } = EventsType.Holiday;
-        public DateTime EventStart { get; set; }
-        public DateTime EventEnd { get; set; }
+        public DateTime? EventStart { get; set; } = DateTime.Today;
+        public DateTime? EventEnd { get; set; } = DateTime.Today;
         public bool IsApproved { get; set; } = false;
     }
 
