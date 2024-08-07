@@ -18,6 +18,7 @@ builder.Services.AddTransient<IDbConnection>(sp =>
 builder.Services.AddTransient<DeviceRepository>();
 builder.Services.AddTransient<CardRepository>();
 builder.Services.AddTransient<HotelRepository>();
+builder.Services.AddTransient<EventsRepository>();
 // Add services to the container.
 builder.Services.AddAuthentication(options =>
 {

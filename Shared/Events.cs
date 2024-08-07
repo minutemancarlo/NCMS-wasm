@@ -8,7 +8,7 @@ namespace NCMS_wasm.Shared
 {
     public class Events
     {
-        public int EventId { get; set; }
+        public int EventId { get; set; } = 0;
         public string? EventName { get; set; }
         public EventsType EventType { get; set; } = EventsType.Holiday;
         public DateTime? EventStart { get; set; } = DateTime.Today;
