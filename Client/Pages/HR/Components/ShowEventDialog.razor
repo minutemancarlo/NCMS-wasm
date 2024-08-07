@@ -1,0 +1,43 @@
+﻿@using NCMS_wasm.Shared
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.CalendarMonth"></MudIcon>
+            Event Information
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Typo="Typo.body1">Type: <strong>@eventType.ToString()</strong> </MudText>
+        @if(eventType == EventsType.Leave)
+        {
+            <MudText Typo="Typo.body1">Employee Name: <strong>@description</strong> </MudText>
+            <MudText Typo="Typo.body1">Leave Type: <strong>@type</strong> </MudText>
+        }
+        else
+        {
+            <MudText Typo="Typo.body1">Holiday Description: <strong>@description</strong> </MudText>
+            <MudText Typo="Typo.body1">Holiday Type: <strong>@type</strong> </MudText>
+        }
+        <MudText Typo="Typo.body1">From: <strong>@from.ToString()</strong> </MudText>
+        <MudText Typo="Typo.body1">To: <strong>@to.ToString()</strong> </MudText>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code{
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    void Cancel() => MudDialog.Cancel();
+    [Parameter] public EventsType eventType {get;set;}
+    [Parameter] public string description { get; set; }
+    [Parameter] public string type { get; set; }
+    [Parameter] public DateTime? from { get; set; }
+    [Parameter] public DateTime? to { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {       
+        await base.OnInitializedAsync();
+    }
+}
