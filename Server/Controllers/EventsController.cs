@@ -34,6 +34,22 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpGet("GetEvents")]
+        public async Task<ActionResult<List<Events>>> GetEvents()
+        {
+            try
+            {
+                var devices = await _eventsRepository.GetAllEventsAsync();
+                _logger.LogInformation("Events retrieved successfully.");
+                return Ok(devices);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving events: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving events: {ex.Message}");
+            }
+        }
+
 
     }
 }

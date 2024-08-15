@@ -17,6 +17,7 @@ namespace NCMS_wasm.Server.Repository
             var parameters = new DynamicParameters();
             parameters.Add("@EventId", events.EventId);
             parameters.Add("@EventName", events.EventName);
+            parameters.Add("@EventSubType", events.SubType);
             parameters.Add("@EventType", events.EventType);
             parameters.Add("@EventStart", events.EventStart);
             parameters.Add("@EventEnd", events.EventEnd);
@@ -24,6 +25,12 @@ namespace NCMS_wasm.Server.Repository
 
             // Execute the stored procedure
             return await _dbConnection.ExecuteScalarAsync<int>("AddUpdateEvent", parameters, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<IEnumerable<Events>> GetAllEventsAsync()
+        {
+            string query = "SELECT EventId ,EventName ,EventSubType ,EventType ,EventStart ,EventEnd , IsApproved FROM Events where IsApproved=1";
+            return await _dbConnection.QueryAsync<Events>(query);
         }
 
 

@@ -8,10 +8,14 @@
     </TitleContent>
     <DialogContent>
         <MudForm @ref="form" Model="@events">                                  
-            <MudTextField @bind-Value="events.EventName" Label="Holiday Description" Variant="Variant.Outlined"></MudTextField>
+            <MudTextField @bind-Value="events.EventName" Label="Holiday Description" ShrinkLabel Variant="Variant.Outlined"></MudTextField>
+            <MudSelect T="string" @bind-Value="events.SubType" Label="Holiday Type" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem Value="@("Regular Holiday")" />                
+                <MudSelectItem Value="@("Special Non-Working Holiday")" />
+            </MudSelect>
             <MudStack Row>
-                <MudDatePicker Label="From Date" @bind-Date="events.EventStart" />   
-                <MudDatePicker Label="To Date" @bind-Date="events.EventStart" />
+                <MudDatePicker Label="From Date" @bind-Date="StartDate" />
+                <MudDatePicker Label="To Date" @bind-Date="EndDate" />
             </MudStack>            
         </MudForm>
     </DialogContent>
@@ -42,8 +46,8 @@
     protected override async Task OnInitializedAsync()
     {
         events = new Events();
-        events.EventStart = StartDate;
-        events.EventEnd = EndDate;
+        events.EventStart = StartDate ?? DateTime.Today;
+        events.EventEnd = EndDate ?? DateTime.Today;
         await base.OnInitializedAsync();
     }
 
@@ -55,6 +59,8 @@
         _loading = true;
         try
         {
+            events.EventStart = StartDate ?? DateTime.Today;
+            events.EventEnd = EndDate ?? DateTime.Today;
             events.IsApproved = true;
             var response = await httpClient.PostAsJsonAsync("Events/AddUpdateEvent", events);
             response.EnsureSuccessStatusCode();

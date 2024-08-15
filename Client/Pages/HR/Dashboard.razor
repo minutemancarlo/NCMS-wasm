@@ -8,7 +8,7 @@
     <MudCalendar HighlightToday
                  ShowWorkWeek="false"
                  ShowWeek="false"
-                 ShowDay="false"                 
+                 ShowDay="false"
                  Elevation="1"
                  ShowTodayButton="false"
                  Style="width: 100%"
@@ -32,6 +32,14 @@
 </MudStack>
 @code {
     [Inject] private IDialogService DialogService { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    private List<Events> eventsList = new List<Events>();
+    private List<CustomItem> _events = new();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEventsList();
+        await base.OnInitializedAsync();
+    }
 
     private async Task CellClicked(DateTime dateTime)
     {
@@ -52,7 +60,7 @@
         var result = await dialog.Result;
         if (!result.Canceled)
         {
-            // await LoadCardsList();
+            await LoadEventsList();
             StateHasChanged();
         }
         // return DialogService.ShowMessageBox("No Events", dateTime.ToString(Thread.CurrentThread.CurrentCulture));
@@ -85,43 +93,72 @@
             var dialog = await DialogService.ShowAsync<ShowEventDialog>("Simple Dialog", parameters, options);
             var result = await dialog.Result;
             if (!result.Canceled)
-            {             
+            {
                 StateHasChanged();
-            }     
+            }
         }
-     
 
+
+    }
+
+    private async Task LoadEventsList()
+    {
+
+        try
+        {
+             _events = new();
+            eventsList = await httpClient.GetFromJsonAsync<List<Events>>($"Events/GetEvents");
+            foreach (var events in eventsList)
+            {
+                var customItem = new CustomItem
+                    {
+                        Start = events.EventStart,
+                        End = events.EventEnd,
+                        Text = events.EventName,
+                        Color = events.EventType==EventsType.Holiday?Color.Warning:Color.Info,
+                        Type = events.EventType,
+                        SubType = events.SubType
+                    };
+                _events.Add(customItem);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
     }
 
     private string GetColor(Color color) => $"var(--mud-palette-{color.ToDescriptionString()})";
 
-    private List<CustomItem> _events = new()
-    {
-        new CustomItem
-        {
-           Start = DateTime.ParseExact("2024/08/21", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
-            Text = "National Heroes Day",
-            Color = Color.Warning
-        },
-        new CustomItem
-        {
-             Start = DateTime.ParseExact("2024/08/06", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
-            End = DateTime.ParseExact("2024/08/07", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
-            Text = $"Carlo Boado - VL",
-            Color = Color.Info,
-            Type = EventsType.Leave,
-            SubType = "Vacation Leave"
-        },
-        new CustomItem
-        {
-            Start = DateTime.ParseExact("2024/08/04", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
-            End = DateTime.ParseExact("2024/08/04", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
-            Text = $"Carlo Boado - VL",
-            Color = Color.Success,
-            Type = EventsType.Leave,
-            SubType ="Vacation Leave"
-        }
-    };
+
+
+    // private List<CustomItem> _events = new()
+    // {
+    //     new CustomItem
+    //     {
+    //        Start = DateTime.ParseExact("2024/08/21", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+    //         Text = "National Heroes Day",
+    //         Color = Color.Warning
+    //     },
+    //     new CustomItem
+    //     {
+    //          Start = DateTime.ParseExact("2024/08/06", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+    //         End = DateTime.ParseExact("2024/08/07", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+    //         Text = $"Carlo Boado - VL",
+    //         Color = Color.Info,
+    //         Type = EventsType.Leave,
+    //         SubType = "Vacation Leave"
+    //     },
+    //     new CustomItem
+    //     {
+    //         Start = DateTime.ParseExact("2024/08/04", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+    //         End = DateTime.ParseExact("2024/08/04", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+    //         Text = $"Carlo Boado - VL",
+    //         Color = Color.Success,
+    //         Type = EventsType.Leave,
+    //         SubType ="Vacation Leave"
+    //     }
+    // };
 
     private class CustomItem : CalendarItem
     {
