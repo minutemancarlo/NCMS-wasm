@@ -5,6 +5,10 @@
 <PageTitle>Dashboard | NCMS</PageTitle>
 <MudStack Class="w-100">
     <MudText Typo="Typo.h5">HR Dashboard</MudText>
+    <MudOverlay @bind-Visible="_overlayVisible" DarkBackground AutoClose="false">
+        <MudLoading @bind-Loading="_overlayVisible" Overlap="false" LoaderType="LoaderType.Circular" Darken="true" 
+                         Color="Color.Primary"/>
+    </MudOverlay>
     <MudCalendar HighlightToday
                  ShowWorkWeek="false"
                  ShowWeek="false"
@@ -33,10 +37,13 @@
 @code {
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
     private List<Events> eventsList = new List<Events>();
     private List<CustomItem> _events = new();
+    private bool _overlayVisible;
     protected override async Task OnInitializedAsync()
     {
+
         await LoadEventsList();
         await base.OnInitializedAsync();
     }
@@ -105,6 +112,7 @@
 
         try
         {
+            _overlayVisible = true;
             _events = new();
             eventsList = await httpClient.GetFromJsonAsync<List<Events>>($"Events/GetEvents");
             foreach (var events in eventsList)
@@ -124,7 +132,13 @@
         }
         catch (Exception ex)
         {
+            _overlayVisible = false;
+            Snackbar.Add($"Exception Occured: {ex.Message}", Severity.Error);
             Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            _overlayVisible = false;
         }
     }
 
