@@ -23,6 +23,15 @@
 
     </DialogContent>
     <DialogActions>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Error"
+                          Size="Size.Large"
+                          Loading="@(_loading)"
+                          OnClick="OnDelete"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Deleting...</LoadingContent>
+            <ChildContent>Delete</ChildContent>
+        </MudLoadingButton>
         <MudButton OnClick="Cancel">Close</MudButton>
     </DialogActions>
 </MudDialog>
@@ -30,14 +39,35 @@
 @code{
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
     void Cancel() => MudDialog.Cancel();
+    [Parameter] public int eventId { get; set; }
     [Parameter] public EventsType eventType {get;set;}
     [Parameter] public string description { get; set; }
     [Parameter] public string type { get; set; }
     [Parameter] public DateTime? from { get; set; }
     [Parameter] public DateTime? to { get; set; }
+    private bool _loading = false;
 
     protected override async Task OnInitializedAsync()
     {       
         await base.OnInitializedAsync();
     }
+
+    private async Task OnDelete()
+    {
+        try
+        {
+            _loading = true;
+            await Task.CompletedTask;
+
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
 }

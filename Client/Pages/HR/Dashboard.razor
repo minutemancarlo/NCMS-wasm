@@ -82,6 +82,7 @@
         {
             var parameters = new DialogParameters<ShowEventDialog>
             {
+             {x => x.eventId,customItem.Id},
              {x => x.from,customItem.Start},
              {x => x.to,customItem.End},
              {x => x.description,customItem.Text},
@@ -97,8 +98,6 @@
                 StateHasChanged();
             }
         }
-
-
     }
 
     private async Task LoadEventsList()
@@ -106,12 +105,13 @@
 
         try
         {
-             _events = new();
+            _events = new();
             eventsList = await httpClient.GetFromJsonAsync<List<Events>>($"Events/GetEvents");
             foreach (var events in eventsList)
             {
                 var customItem = new CustomItem
                     {
+                        Id = events.EventId,
                         Start = events.EventStart,
                         End = events.EventEnd,
                         Text = events.EventName,
@@ -162,6 +162,7 @@
 
     private class CustomItem : CalendarItem
     {
+        public int Id { get; set; } = 0;
         public Color Color { get; set; } = Color.Primary;
         public EventsType Type { get; set; } = EventsType.Holiday;
         public string SubType { get; set; } = "Regular Holiday";

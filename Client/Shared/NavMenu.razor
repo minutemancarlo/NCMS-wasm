@@ -18,7 +18,8 @@
         <MudNavLink Href="/hr-dashboard" Icon="fas fa-chart-line" IconColor="Color.Primary">Dashboard</MudNavLink>
         <MudNavLink Href="/hr-employees" Icon="fas fa-users">Employee Management</MudNavLink>
         <MudNavLink Href="/hr-requests" Icon="fas fa-user-tag">Requests</MudNavLink>
-        <MudNavLink Href="/hr-reports" Icon="fas fa-file-invoice">Reports</MudNavLink>        
+        <MudNavLink Href="/hr-reports" Icon="fas fa-file-invoice">Reports</MudNavLink> 
+        <MudNavLink Href="/hr-reports" Icon="fas fa-people-arrows">Employee Portal</MudNavLink>
     </AuthorizeView>
     <AuthorizeView Roles="Front Desk">
         <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
@@ -28,6 +29,7 @@
         <MudNavLink Href="/hotel-roomsmanagement" Icon="fas fa-hotel">Room Management</MudNavLink>
         <MudNavLink Href="/hotel-guests" IconColor="Color.Secondary" Icon="fas fa-users">Guest Management</MudNavLink>
         <MudNavLink Href="/hotel-devices" Icon="fas fa-cogs" IconColor="Color.Success">Device Settings</MudNavLink>
+        <MudNavLink Href="/hr-reports" Icon="fas fa-people-arrows">Employee Portal</MudNavLink>
     </AuthorizeView>
     <AuthorizeView Roles="Gas Employee">
         <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
@@ -37,6 +39,7 @@
         <MudNavLink Href="/gas-cards" IconColor="Color.Dark" Icon="fas fa-credit-card">Card Management</MudNavLink>
         <MudNavLink Href="/gas-pos" Icon="fas fa-cash-register" IconColor="Color.Error">Point of Sales</MudNavLink>
         <MudNavLink Href="/gas-tanks" Icon="fas fa-gas-pump" IconColor="Color.Success">Tank Management</MudNavLink>
+        <MudNavLink Href="/hr-reports" Icon="fas fa-people-arrows">Employee Portal</MudNavLink>
     </AuthorizeView>
 </MudNavMenu>
 
