@@ -1,6 +1,7 @@
 ﻿@page "/hr-employees"
 @attribute [Authorize(Roles = "Human Resource")]
 @using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.HR.Components
 <PageTitle>Employees | NCMS</PageTitle>
 <MudStack>
     <MudText Typo="Typo.h5">Employee Management</MudText>
@@ -8,7 +9,7 @@
                  HorizontalScrollbar="true"
                  ColumnResizeMode="ResizeMode.Column">
         <ToolBarContent>
-            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.PersonAdd">Add Employee</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.PersonAdd" OnClick="AddEmployee">Add Employee</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh">Refresh</MudButton>
             @* <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.FamilyRestroom" OnClick="OpenAddGuestDialog">Add Guest</MudButton> *@
             <MudSpacer />
@@ -21,7 +22,7 @@
             <PropertyColumn Title="Status" Property="x => x.EmploymentStatus" Filterable="true" />
             <TemplateColumn Title="Action">
                 <CellTemplate>
-                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Medium" Variant="Variant.Filled" Color="Color.Warning"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Medium" OnClick="(() => UpdateEmployee(context.Item))" Variant="Variant.Filled" Color="Color.Warning"></MudIconButton>
                 </CellTemplate>
             </TemplateColumn>
         </Columns>
@@ -42,17 +43,7 @@
                                     <MudStack Row>
                                         <MudItem xs="3">
                                             <MudPaper Style="width: 192px; height: 192px;" Class="text-center" Elevation="0">
-                                                <MudImage Src="@context.Item.Profile" Height="192" Width="192" />
-                                                @* <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg" Class="" MaximumFileCount="1" FilesChanged="UploadFiles">
-                                                <ActivatorContent>
-                                                <MudFab HtmlTag="label"
-                                                Size="MudBlazor.Size.Small"
-                                                Color="MudBlazor.Color.Secondary"
-                                                StartIcon="@Icons.Material.Filled.Image"
-                                                Label="Select Image" />
-                                                </ActivatorContent>
-                                                </MudFileUpload> *@
-
+                                                <MudImage Src="@context.Item.Profile" Height="192" Width="192" />                                                
                                             </MudPaper>
                                         </MudItem>
                                         <MudItem xs="9">
@@ -125,6 +116,9 @@
 @code {
     // private List<Employee> employeeList = new List<Employee>();
     private string imageUrl { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
     private List<Employee> employeeList = new List<Employee>
 {
     new Employee
@@ -190,33 +184,43 @@
 };
 
     private bool isLoading = false;
-    [Inject] HttpClient? httpClient { get; set; }
 
 
 
-    private async Task UploadFiles(IBrowserFile file)
-    {
-        // try
-        // {
-        //     // Read the content of the file as a byte array
-        //     using (var memoryStream = new MemoryStream())
-        //     {
-        //         await file.OpenReadStream(5120000).CopyToAsync(memoryStream); //Maximum file size is 5 mb
-        //         var bytes = memoryStream.ToArray();
 
-        //         // Convert the byte array to a base64 string
-        //         var base64String = Convert.ToBase64String(bytes);
-        //         store.Logo = base64String;
-        //         // Construct the data URL
-        //         imageUrl = $"data:{file.ContentType};base64,{base64String}";
-        //     }
-        // }
-        // catch (Exception ex)
-        // {
-        //     Snackbar.Add("Maximum image file size is 5 MB", MudBlazor.Severity.Success);
-        // }
 
+
+    private void AddEmployee(){
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium,
+                BackdropClick = true,
+                CloseButton = true
+            };
+        var parameters = new DialogParameters<AddEmployeeDialog>
+            {
+             {x => x.employeeInfo,new Employee()}             
+            };
+        DialogService.Show<AddEmployeeDialog>("Add Employee", parameters ,options);
     }
 
+    private void UpdateEmployee(Employee dto)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium,
+                BackdropClick = true,
+                CloseButton = true
+            };
+        var parameters = new DialogParameters<AddEmployeeDialog>
+            {
+             {x => x.employeeInfo,dto}
+            };
+        DialogService.Show<AddEmployeeDialog>("Add Employee", parameters, options);
+    }
 
 }

@@ -15,10 +15,10 @@ namespace NCMS_wasm.Shared
         public string SSS { get; set; }
         public string PagIbig { get; set; }
         public string PHIC { get; set; }
-        public string Profile { get; set; }
+        public string Profile { get; set; } = "images/user-alt-solid.svg";
 
         // Additional fields
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public string PlaceOfBirth { get; set; }
         public string Gender { get; set; }
         public string CivilStatus { get; set; }             
@@ -27,9 +27,9 @@ namespace NCMS_wasm.Shared
         public string Position { get; set; }
         public string Department { get; set; }
         public string EmploymentStatus { get; set; } // Full-time, Part-time, Resigned etc.
-        public DateTime DateHired { get; set; }
-        public DateTime DateResigned { get; set; }
-        public decimal Salary { get; set; }
+        public DateTime? DateHired { get; set; }
+        public DateTime? DateResigned { get; set; }
+        public decimal? Salary { get; set; } = null;
         public Department department { get; set; }
         
         public string EmergencyContactName { get; set; }
