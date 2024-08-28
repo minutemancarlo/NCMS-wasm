@@ -49,7 +49,7 @@
                                         <MudItem xs="9">
                                             <MudCard Elevation="0">
                                                 <MudCardHeader>
-                                                    <MudText Typo="Typo.h6">Personal Details</MudText>
+                                                    <MudText Typo="Typo.button">Personal Details</MudText>
                                                 </MudCardHeader>
                                                 <MudCardContent>
                                                     <MudText Typo="Typo.body1"><strong>Name: </strong> @context.Item.Name</MudText>
@@ -72,7 +72,7 @@
                         <MudItem xs="6" Class="d-flex">
                             <MudCard Elevation="0">
                                 <MudCardHeader>
-                                    <MudText Typo="Typo.h6">Emergency Contact and Beneficiary Details</MudText>
+                                    <MudText Typo="Typo.button">Emergency Contact and Beneficiary Details</MudText>
                                 </MudCardHeader>
                                 <MudCardContent>
                                     <MudText Typo="Typo.body1"><strong>Contact Name: </strong> @context.Item.EmergencyContactName</MudText>
@@ -88,7 +88,7 @@
                         <MudItem xs="6" Class="d-flex w-100">
                             <MudCard Elevation="0">
                                 <MudCardHeader>
-                                    <MudText Typo="Typo.h6">Employment Details</MudText>
+                                    <MudText Typo="Typo.button">Employment Details</MudText>
                                 </MudCardHeader>
                                 <MudCardContent>
                                     <MudText Typo="Typo.body1"><strong>ID Number: </strong> @context.Item.IDNumber</MudText>
@@ -137,12 +137,11 @@
         CivilStatus = "Single",
         Email = "john.doe@example.com",
         Position = "Software Engineer",
-        Department = "IT",
-        EmploymentStatus = "Full-time",
+        Department = Department.Gas,
+        EmploymentStatus = EmploymentStatus.FullTime,
         DateHired = new DateTime(2020, 1, 10),
         DateResigned = DateTime.MinValue, // or null if not applicable
-        Salary = 50000.00m,
-        department = Department.HR,
+        Salary = 50000.00m,        
         EmergencyContactName = "Jane Doe",
         EmergencyContactRelationship = "Sister",
         EmergencyContactPhone = "09179876543",
@@ -167,12 +166,11 @@
         CivilStatus = "Married",
         Email = "maria.santos@example.com",
         Position = "HR Manager",
-        Department = "HR",
-        EmploymentStatus = "Full-time",
+        Department = Department.Gas,
+        EmploymentStatus = EmploymentStatus.FullTime,
         DateHired = new DateTime(2015, 3, 20),
         DateResigned = DateTime.MinValue, // or null if not applicable
-        Salary = 70000.00m,
-        department = Department.Gas,
+        Salary = 70000.00m,        
         EmergencyContactName = "Carlos Santos",
         EmergencyContactRelationship = "Husband",
         EmergencyContactPhone = "09171234567",
@@ -220,7 +218,7 @@
             {
              {x => x.employeeInfo,dto}
             };
-        DialogService.Show<AddEmployeeDialog>("Add Employee", parameters, options);
+        DialogService.Show<AddEmployeeDialog>("Update Employee", parameters, options);
     }
 
 }

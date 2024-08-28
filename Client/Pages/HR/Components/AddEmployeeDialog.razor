@@ -1,4 +1,5 @@
 ﻿@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Validations
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
@@ -7,8 +8,8 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="form" Model="@employeeInfo">
-            <MudStack Row>
+        <MudForm @ref="form" Model="@employeeInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0">
+            <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
                 <MudItem xs="4">
                     <MudPaper Style="width: 192px; height: 192px;" Class="text-center" Elevation="0">
                         <MudImage Src="@employeeInfo.Profile" Height="192" Width="192" Class="pb-1" />
@@ -25,22 +26,22 @@
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.caption">Personal Information</MudText>
-                    <MudTextField @bind-Value="employeeInfo.Name" Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.Address" Label="Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.Name" For="@(() => employeeInfo.Name)" Label="Name" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.Address"  For="@(() => employeeInfo.Address)" Label="Address" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                     <MudStack Row>
-                        <MudTextField @bind-Value="employeeInfo.Phone" Label="Phone" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                        <MudTextField @bind-Value="employeeInfo.Email" Label="Email" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                        <MudTextField @bind-Value="employeeInfo.Phone" For="@(() => employeeInfo.Phone)" Label="Phone" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                        <MudTextField @bind-Value="employeeInfo.Email" For="@(() => employeeInfo.Email)" Label="Email" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                     </MudStack>
                     <MudStack Row AlignItems="AlignItems.Baseline">
                         <MudText>Gender: </MudText>
-                        <MudRadioGroup @bind-Value="employeeInfo.Gender">
+                        <MudRadioGroup @bind-Value="employeeInfo.Gender" For="@(() => employeeInfo.Gender)">
                             <MudRadio Value="@("Male")" Color="Color.Success" Size="Size.Small">Male</MudRadio>
                             <MudRadio Value="@("Female")" Color="Color.Success" Size="Size.Small">Female</MudRadio>
                         </MudRadioGroup>
                     </MudStack>
                     <MudStack Row AlignItems="AlignItems.Baseline">
                         <MudText>Civil Status: </MudText>
-                        <MudRadioGroup @bind-Value="employeeInfo.CivilStatus">
+                        <MudRadioGroup @bind-Value="employeeInfo.CivilStatus" For="@(() => employeeInfo.CivilStatus)">
                             <MudRadio Value="@("Single")" Color="Color.Success" Size="Size.Small">Single</MudRadio>
                             <MudRadio Value="@("Married")" Color="Color.Success" Size="Size.Small">Married</MudRadio>
                             <MudRadio Value="@("Separated")" Color="Color.Success" Size="Size.Small">Separated</MudRadio>
@@ -48,8 +49,8 @@
                         </MudRadioGroup>
                     </MudStack>
 
-                    <MudTextField @bind-Value="employeeInfo.PlaceOfBirth" Label="Place of Birth" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudDatePicker Label="Date of Birth" Class="pt-1" Editable="true" Margin="Margin.Dense" @bind-Date="employeeInfo.DateOfBirth" Variant="Variant.Outlined" Placeholder="Select Date" />
+                    <MudTextField @bind-Value="employeeInfo.PlaceOfBirth" For="@(() => employeeInfo.PlaceOfBirth)" Label="Place of Birth" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudDatePicker Label="Date of Birth" For="@(() => employeeInfo.DateOfBirth)" Class="pt-1" Editable="true" Margin="Margin.Dense" @bind-Date="employeeInfo.DateOfBirth" Variant="Variant.Outlined" Placeholder="Select Date" />
 
 
                 </MudItem>
@@ -58,45 +59,42 @@
             <MudText Typo="Typo.caption">Employment Information</MudText>
             <MudStack Row>
                 <MudItem xs="6">
-                    <MudTextField @bind-Value="employeeInfo.EmploymentStatus" Label="Employment Status" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudDatePicker Class="pt-1" Label="Date Hired" Margin="Margin.Dense" Editable="true" Variant="Variant.Outlined" @bind-Date="employeeInfo.DateHired" Placeholder="Select Date" />
-                    <MudTextField @bind-Value="employeeInfo.Position" Label="Position" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.Department" Label="Department" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.Salary" Label="Salary" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudSelect T="EmploymentStatus" @bind-Value="employeeInfo.EmploymentStatus" For="@(() => employeeInfo.EmploymentStatus)" Class="pt-1" Label="Employment Status" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem Value="@(EmploymentStatus.Probationary)" />
+                        <MudSelectItem Value="@(EmploymentStatus.FullTime)" />
+                        <MudSelectItem Value="@(EmploymentStatus.Resigned)" />                        
+                    </MudSelect>                    
+                    <MudDatePicker Label="Date Hired" For="@(() => employeeInfo.DateHired)" Class="pt-1" Margin="Margin.Dense" Editable="true" Variant="Variant.Outlined" @bind-Date="employeeInfo.DateHired" Placeholder="Select Date" />
+                    <MudTextField @bind-Value="employeeInfo.Position" For="@(() => employeeInfo.Position)" Class="pt-1" Label="Position" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudSelect T="Department" @bind-Value="employeeInfo.Department" Class="pt-1" Label="Department" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem Value="@(Department.None)" />
+                        <MudSelectItem Value="@(Department.HR)" />
+                        <MudSelectItem Value="@(Department.Gas)" />
+                    </MudSelect>                    
                 </MudItem>
                 <MudItem xs="6">
-                    <MudTextField @bind-Value="employeeInfo.SSS" Label="SSS ID" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.PagIbig" Label="Pag-Ibig ID" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.PHIC" Label="PhilHealth ID" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.Salary" For="@(() => employeeInfo.Salary)" Class="pt-1" Label="Salary" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.SSS" For="@(() => employeeInfo.SSS)" Class="pt-1" Label="SSS ID" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.PagIbig"  For="@(() => employeeInfo.PagIbig)" Class="pt-1" Label="Pag-Ibig ID" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.PHIC" For="@(() => employeeInfo.PHIC)" Class="pt-1" Label="PhilHealth ID" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                 </MudItem>
             </MudStack>
             <MudDivider />
             <MudStack Row>
                 <MudItem xs="6">
                     <MudText Typo="Typo.caption">Emergency Contact</MudText>
-                    <MudTextField @bind-Value="employeeInfo.EmergencyContactName" Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.EmergencyContactPhone" Label="Phone" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.EmergencyContactAddress" Label="Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.EmergencyContactRelationship" Label="Relationship" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.EmergencyContactName" For="@(() => employeeInfo.EmergencyContactName)" Class="pt-1" Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.EmergencyContactPhone"  For="@(() => employeeInfo.EmergencyContactPhone)" Class="pt-1" Label="Phone" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.EmergencyContactAddress" For="@(() => employeeInfo.EmergencyContactAddress)" Class="pt-1" Label="Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.EmergencyContactRelationship" For="@(() => employeeInfo.EmergencyContactRelationship)" Class="pt-1" Label="Relationship" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.caption">Beneficiary Information</MudText>
-                    <MudTextField @bind-Value="employeeInfo.BeneficiaryName" Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.BeneficiaryContactInfo" Label="Phone" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.BeneficiaryRelationship" Label="Relationship" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.BeneficiaryName" For="@(() => employeeInfo.BeneficiaryName)" Label="Name" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.BeneficiaryContactInfo" For="@(() => employeeInfo.BeneficiaryContactInfo)" Class="pt-1" Label="Phone" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.BeneficiaryRelationship" For="@(() => employeeInfo.BeneficiaryRelationship)" Class="pt-1" Label="Relationship" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                 </MudItem>
             </MudStack>
-
-
-            @*  <MudTextField @bind-Value="events.EventName" Label="Holiday Description" ShrinkLabel Variant="Variant.Outlined"></MudTextField>
-            <MudSelect T="string" @bind-Value="events.SubType" Label="Holiday Type" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-            <MudSelectItem Value="@("Regular Holiday")" />
-            <MudSelectItem Value="@("Special Non-Working Holiday")" />
-            </MudSelect>
-            <MudStack Row>
-            <MudDatePicker Label="From Date" @bind-Date="StartDate" />
-            <MudDatePicker Label="To Date" @bind-Date="EndDate" />
-            </MudStack>   *@
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -119,6 +117,7 @@
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
+    EmployeeValidator modelValidator = new EmployeeValidator();
     private bool _loading { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -132,6 +131,12 @@
 
     private async Task OnSubmit()
     {
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            Snackbar.Add("Employee Added", MudBlazor.Severity.Success);
+        }
         await Task.CompletedTask;
     }
 

@@ -25,12 +25,11 @@ namespace NCMS_wasm.Shared
         public string Email { get; set; }
 
         public string Position { get; set; }
-        public string Department { get; set; }
-        public string EmploymentStatus { get; set; } // Full-time, Part-time, Resigned etc.
+        public Department Department { get; set; }
+        public EmploymentStatus EmploymentStatus { get; set; } 
         public DateTime? DateHired { get; set; }
         public DateTime? DateResigned { get; set; }
-        public decimal? Salary { get; set; } = null;
-        public Department department { get; set; }
+        public decimal? Salary { get; set; } = null;        
         
         public string EmergencyContactName { get; set; }
         public string EmergencyContactRelationship { get; set; }
@@ -47,6 +46,13 @@ namespace NCMS_wasm.Shared
         None = 0,
         HR = 1,
         Gas = 2
+    }
+
+    public enum EmploymentStatus
+    {
+        Resigned = 0,
+        FullTime = 1,
+        Probationary = 2
     }
 
 }
