@@ -27,6 +27,14 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteScalarAsync<int>("AddUpdateEvent", parameters, commandType: CommandType.StoredProcedure);
         }
 
+        public async Task<int> DeleteEventAsync(Events events)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@EventId", events.EventId);           
+            
+            return await _dbConnection.ExecuteScalarAsync<int>("Delete FROM Events where EventId = @EventId ", parameters, commandType: CommandType.Text);
+        }
+
         public async Task<IEnumerable<Events>> GetAllEventsAsync()
         {
             string query = "SELECT EventId ,EventName ,EventSubType ,EventType ,EventStart ,EventEnd , IsApproved FROM Events where IsApproved=1";

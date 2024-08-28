@@ -34,6 +34,22 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("DeleteEvent")]
+        public async Task<ActionResult<int>> DeleteEvent(Events events)
+        {
+            try
+            {
+                _ = await _eventsRepository.DeleteEventAsync(events);
+                _logger.LogInformation("Event deleted successfully.");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while deleting event: {ex.Message}");
+                return BadRequest($"Exception occurred while deleting event: {ex.Message}");
+            }
+        }
+
         [HttpGet("GetEvents")]
         public async Task<ActionResult<List<Events>>> GetEvents()
         {

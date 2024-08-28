@@ -94,14 +94,15 @@
              {x => x.to,customItem.End},
              {x => x.description,customItem.Text},
              {x => x.eventType,customItem.Type},
-             {x => x.type,customItem.SubType}
-
+             {x => x.type,customItem.SubType},
+             {x => x.enableDelete,customItem.Type == EventsType.Holiday ? true : false }
             };
 
             var dialog = await DialogService.ShowAsync<ShowEventDialog>("Simple Dialog", parameters, options);
             var result = await dialog.Result;
             if (!result.Canceled)
             {
+                await LoadEventsList();
                 StateHasChanged();
             }
         }
