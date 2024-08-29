@@ -62,7 +62,7 @@
                 <MudItem xs="6">
                     <MudSelect T="EmploymentStatus" @bind-Value="employeeInfo.EmploymentStatus" For="@(() => employeeInfo.EmploymentStatus)" Class="pt-1" Label="Employment Status" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
                         <MudSelectItem Value="@(EmploymentStatus.Probationary)" />
-                        <MudSelectItem Value="@(EmploymentStatus.FullTime)" />
+                        <MudSelectItem Value="@(EmploymentStatus.Regular)" />
                         <MudSelectItem Value="@(EmploymentStatus.Resigned)" />                        
                     </MudSelect>                    
                     <MudDatePicker Label="Date Hired" For="@(() => employeeInfo.DateHired)" Class="pt-1" Margin="Margin.Dense" Editable="true" Variant="Variant.Outlined" @bind-Date="employeeInfo.DateHired" Placeholder="Select Date" />
@@ -120,6 +120,7 @@
     [Inject] ISnackbar Snackbar { get; set; }    
     EmployeeValidator modelValidator = new EmployeeValidator();
     private bool _loading { get; set; }
+    private string imageUrl = String.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -154,7 +155,7 @@
                 }
                 else
                 {
-                    employeeInfo.UpdatedBy = userId;
+                    employeeInfo.UpdatedBy = userId;                    
                 }
 
                 var response = await httpClient.PostAsJsonAsync("Employee/AddUpdateEmployee", employeeInfo);
@@ -187,27 +188,29 @@
                 
     }
 
+    
+
     private async Task UploadFiles(IBrowserFile file)
     {
-        // try
-        // {
-        //     // Read the content of the file as a byte array
-        //     using (var memoryStream = new MemoryStream())
-        //     {
-        //         await file.OpenReadStream(5120000).CopyToAsync(memoryStream); //Maximum file size is 5 mb
-        //         var bytes = memoryStream.ToArray();
+        try
+        {
+            // Read the content of the file as a byte array
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.OpenReadStream(5120000).CopyToAsync(memoryStream); //Maximum file size is 5 mb
+                var bytes = memoryStream.ToArray();
 
-        //         // Convert the byte array to a base64 string
-        //         var base64String = Convert.ToBase64String(bytes);
-        //         store.Logo = base64String;
-        //         // Construct the data URL
-        //         imageUrl = $"data:{file.ContentType};base64,{base64String}";
-        //     }
-        // }
-        // catch (Exception ex)
-        // {
-        //     Snackbar.Add("Maximum image file size is 5 MB", MudBlazor.Severity.Success);
-        // }
+                // Convert the byte array to a base64 string
+                var base64String = Convert.ToBase64String(bytes);
+                employeeInfo.Profile = base64String;
+                // Construct the data URL
+                imageUrl = $"data:{file.ContentType};base64,{base64String}";
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Maximum image file size is 5 MB", MudBlazor.Severity.Success);
+        }
 
     }
 

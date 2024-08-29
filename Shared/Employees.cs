@@ -38,20 +38,21 @@ namespace NCMS_wasm.Shared
 
         public string BeneficiaryName { get; set; }
         public string BeneficiaryRelationship { get; set; }
-        public string BeneficiaryContactInfo { get; set; }
+        public string BeneficiaryContactInfo { get; set; }        
     }
 
     public enum Department
     {
         None = 0,
         HR = 1,
-        Gas = 2
+        Gas = 2,
+        Hotel = 3
     }
 
     public enum EmploymentStatus
     {
         Resigned = 0,
-        FullTime = 1,
+        Regular = 1,
         Probationary = 2
     }
 

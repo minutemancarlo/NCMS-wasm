@@ -14,12 +14,13 @@ builder.Services.AddTransient<IDbConnection>(sp =>
     return new SqlConnection(connectionString);
 });
 
-// Add Dapper
+// Add Dapper Repositories
 builder.Services.AddTransient<DeviceRepository>();
 builder.Services.AddTransient<CardRepository>();
 builder.Services.AddTransient<HotelRepository>();
 builder.Services.AddTransient<EventsRepository>();
 builder.Services.AddTransient<EmployeeRepository>();
+
 // Add services to the container.
 builder.Services.AddAuthentication(options =>
 {
@@ -37,6 +38,8 @@ builder.Services.AddAuth0AuthenticationClient(config =>
     config.ClientId = builder.Configuration["Auth0:ClientId"];
     config.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
 });
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddCors(options =>
 {

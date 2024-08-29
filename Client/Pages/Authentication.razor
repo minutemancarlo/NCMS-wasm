@@ -6,6 +6,8 @@
 @inject NavigationManager Navigation
 @inject IConfiguration Configuration
 
+
+<div class="vh-100 vw-100 d-flex justify-content-center align-items-center" style="background-image: url('images/scattered-forcefields.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
 <RemoteAuthenticatorView Action="@Action">
     <LogOut>
         <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
@@ -17,10 +19,16 @@
         }
     </LogOut>
     <LoggingIn>
+        @* <MudImage Src="images/logo.png" Width="50" Height="50" />
         <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+        
             <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
             <MudText Typo="Typo.body2" Class="fw-bolder">Checking Session, please wait...</MudText>
-        </MudStack>
+        </MudStack> *@        
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+                <MudText Typo="Typo.body2" Class="fw-bolder">Checking Session, please wait...</MudText>
+            </MudStack>        
     </LoggingIn>
     <CompletingLoggingIn>
         <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
@@ -42,7 +50,7 @@
     </LogOutSucceeded>
   
 </RemoteAuthenticatorView>
-
+</div>
 @code {
     [Parameter] public string Action { get; set; }
     

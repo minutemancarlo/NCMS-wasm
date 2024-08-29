@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -10,14 +11,30 @@
         <MudLayout>
             <MudAppBar Elevation="1">
                 <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+                @if (isAdmin)
+                {
+                    <MudText Typo="Typo.h6">Admin Management Module</MudText>
+                }
+                else if (isFrontDesk)
+                {
+                    <MudText Typo="Typo.h6">Hotel Management Module</MudText>
+                }
+                else if (isHR)
+                {
+                    <MudText Typo="Typo.h6">HR Management Module</MudText>
+                }
+                else if (isGasEmployee)
+                {
+                    <MudText Typo="Typo.h6">Gas Station Management Module</MudText>
+                }
                 <MudSpacer />
                 <AccessControl />
             </MudAppBar>
             <MudDrawer @bind-Open="@open" Elevation="1">
                 <MudDrawerHeader Class="mud-theme-primary" Dense>
                     <MudStack Row Spacing="0">
-                        <MudImage Src="images/logo.png" Width="50" Height="50" />                        
-                        <MudText Typo="Typo.h5">NCMS</MudText>
+                        <MudImage Src="images/logo.png" Width="50" Height="50" />
+                        <MudText Typo="Typo.h5" Class="pt-2">NCMS</MudText>                        
                     </MudStack>
                 </MudDrawerHeader>
                 <NavMenu />
@@ -35,12 +52,12 @@
         <MudLayout>
             <MudAppBar Elevation="1">
                 <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
-                    <MudImage Src="images/logo.png" Width="50" Height="50" />                    
+                    <MudImage Src="images/logo.png" Width="50" Height="50" />
                     <MudText Typo="Typo.h5">NCMS</MudText>
                 </MudStack>
                 <MudSpacer />
                 <AccessControl />
-            </MudAppBar>            
+            </MudAppBar>
             <MudMainContent Class="pt-16">
                 <MudContainer Fixed="true">
                     <MudGrid Class="pt-6">
@@ -55,12 +72,33 @@
 
 
 @code {
+
+    private bool isAdmin;
+    private bool isFrontDesk;
+    private bool isHR;
+    private bool isGasEmployee;
     bool open = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            isAdmin = user.IsInRole("Administrator");
+            isFrontDesk = user.IsInRole("Front Desk");
+            isHR = user.IsInRole("Human Resource");
+            isGasEmployee = user.IsInRole("Gas Employee");
+        }
+    }
+
+    
 
     void ToggleDrawer()
     {
         open = !open;
-    }   
+    }
 }
 
 

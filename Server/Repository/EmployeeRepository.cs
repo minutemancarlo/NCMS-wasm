@@ -51,6 +51,12 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteScalarAsync<int>("AddOrUpdateEmployee", parameters, commandType: CommandType.StoredProcedure);
         }
 
+        public async Task<IEnumerable<Employee>> GetAllEmployeesAsync()
+        {
+            string query = "SELECT * FROM Employee";
+            return await _dbConnection.QueryAsync<Employee>(query);
+        }
+
 
     }
 }
