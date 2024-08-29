@@ -1,5 +1,6 @@
 ﻿@using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Validations
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
@@ -116,7 +117,7 @@
     MudForm form;
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
     [Inject] HttpClient? httpClient { get; set; }
-    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }    
     EmployeeValidator modelValidator = new EmployeeValidator();
     private bool _loading { get; set; }
 
@@ -131,13 +132,59 @@
 
     private async Task OnSubmit()
     {
-        await form.Validate();
 
-        if (form.IsValid)
+        try
         {
-            Snackbar.Add("Employee Added", MudBlazor.Severity.Success);
+            _loading = true;
+
+            await form.Validate();
+            if (form.IsValid)
+            {
+                var userId = String.Empty;
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+                if (user.Identity.IsAuthenticated)
+                {
+                    userId = user.FindFirst(c => c.Type == "sub")?.Value;
+                }
+
+                if (String.IsNullOrEmpty(employeeInfo.IDNumber))
+                {
+                    employeeInfo.CreatedBy = userId;                    
+                }
+                else
+                {
+                    employeeInfo.UpdatedBy = userId;
+                }
+
+                var response = await httpClient.PostAsJsonAsync("Employee/AddUpdateEmployee", employeeInfo);
+                response.EnsureSuccessStatusCode();
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add("Employee Added", MudBlazor.Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to save event info: {response.StatusCode} - {errorMessage}", Severity.Error);
+                    Console.WriteLine($"Failed to save event info: {response.StatusCode} - {errorMessage}");
+                }
+            }
+        }catch(Exception ex)
+        {
+            Snackbar.Add($"Failed to submit employee info: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Failed to submit employee info: {ex.Message}");
         }
-        await Task.CompletedTask;
+        finally
+        {
+            _loading = false;
+        }
+
+
+
+                
     }
 
     private async Task UploadFiles(IBrowserFile file)

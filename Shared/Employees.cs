@@ -8,7 +8,7 @@ namespace NCMS_wasm.Shared
 {
     public class Employee : BaseModel
     {
-        public string IDNumber { get; set; }
+        public string? IDNumber { get; set; } = null;
         public string Name { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
@@ -28,7 +28,7 @@ namespace NCMS_wasm.Shared
         public Department Department { get; set; }
         public EmploymentStatus EmploymentStatus { get; set; } 
         public DateTime? DateHired { get; set; }
-        public DateTime? DateResigned { get; set; }
+        public DateTime? DateResigned { get; set; } = null;
         public decimal? Salary { get; set; } = null;        
         
         public string EmergencyContactName { get; set; }

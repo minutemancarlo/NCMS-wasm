@@ -19,6 +19,7 @@ builder.Services.AddTransient<DeviceRepository>();
 builder.Services.AddTransient<CardRepository>();
 builder.Services.AddTransient<HotelRepository>();
 builder.Services.AddTransient<EventsRepository>();
+builder.Services.AddTransient<EmployeeRepository>();
 // Add services to the container.
 builder.Services.AddAuthentication(options =>
 {
