@@ -75,5 +75,12 @@
     </MudStack>
 </MudStack>
 @code {
+    [CascadingParameter]
+    public MainLayout MainLayout { get; private set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        MainLayout.SubTitle = "Admin Management Module";
+        await base.OnInitializedAsync();
+    }
 }

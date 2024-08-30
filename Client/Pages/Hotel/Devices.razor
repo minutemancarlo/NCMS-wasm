@@ -64,9 +64,13 @@
     private List<Device> deviceList = new List<Device>();
     private bool isLoading = false;
     [Inject] HttpClient? httpClient { get; set; }
+    [CascadingParameter]
+    public MainLayout MainLayout { get; private set; }
 
+    
     protected override async Task OnInitializedAsync()
     {
+        MainLayout.SubTitle = "Hotel Management Module";
         await LoadDeviceList();
         await base.OnInitializedAsync();
     }

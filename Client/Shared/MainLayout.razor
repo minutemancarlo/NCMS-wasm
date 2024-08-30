@@ -1,32 +1,20 @@
 ﻿@inherits LayoutComponentBase
-@inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
+
 <PageTitle>NCMS</PageTitle>
+
+<CascadingValue Value="this">
 <AuthorizeView Roles="Administrator,Front Desk,Human Resource,Gas Employee">
     <Authorized>
         <MudLayout>
             <MudAppBar Elevation="1">
                 <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
-                @if (isAdmin)
-                {
-                    <MudText Typo="Typo.h6">Admin Management Module</MudText>
-                }
-                else if (isFrontDesk)
-                {
-                    <MudText Typo="Typo.h6">Hotel Management Module</MudText>
-                }
-                else if (isHR)
-                {
-                    <MudText Typo="Typo.h6">HR Management Module</MudText>
-                }
-                else if (isGasEmployee)
-                {
-                    <MudText Typo="Typo.h6">Gas Station Management Module</MudText>
-                }
+                    <MudText Typo="Typo.h6">@subTitle</MudText>
                 <MudSpacer />
                 <AccessControl />
             </MudAppBar>
@@ -34,10 +22,10 @@
                 <MudDrawerHeader Class="mud-theme-primary" Dense>
                     <MudStack Row Spacing="0">
                         <MudImage Src="images/logo.png" Width="50" Height="50" />
-                        <MudText Typo="Typo.h5" Class="pt-2">NCMS</MudText>                        
+                        <MudText Typo="Typo.h5" Class="pt-2">NCMS</MudText>
                     </MudStack>
                 </MudDrawerHeader>
-                <NavMenu />
+                <NavMenu/>
             </MudDrawer>
             <MudMainContent Class="pt-16 px-16">
                 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Fixed="true">
@@ -68,30 +56,39 @@
         </MudLayout>
     </NotAuthorized>
 </AuthorizeView>
-
+</CascadingValue>
 
 
 @code {
 
-    private bool isAdmin;
-    private bool isFrontDesk;
-    private bool isHR;
-    private bool isGasEmployee;
+    private string subTitle;
     bool open = true;
+
+
+    public string SubTitle
+    {
+        get => subTitle;
+        set
+        {
+            subTitle = value;
+            InvokeAsync(() => StateHasChanged());
+        }
+    }
+
+    public string currentUserId;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-
         if (user.Identity.IsAuthenticated)
         {
-            isAdmin = user.IsInRole("Administrator");
-            isFrontDesk = user.IsInRole("Front Desk");
-            isHR = user.IsInRole("Human Resource");
-            isGasEmployee = user.IsInRole("Gas Employee");
+            currentUserId = user.FindFirst(c => c.Type == "sub")?.Value;
         }
+       
+        await base.OnInitializedAsync();
     }
+
 
     
 

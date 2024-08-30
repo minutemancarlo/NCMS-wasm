@@ -7,5 +7,14 @@
 </MudStack>
 
 @code {
+    [CascadingParameter]
+    public MainLayout MainLayout { get; private set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        MainLayout.SubTitle = "HR Management Module";
+     
+        await base.OnInitializedAsync();
+    }
 
 }

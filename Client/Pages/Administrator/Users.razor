@@ -69,13 +69,18 @@
 
 
 @code {
+    [CascadingParameter]
+    public MainLayout MainLayout { get; private set; }
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] IDialogService? DialogService { get; set; }
     private List<UserDto> usersList = new List<UserDto>();
     private bool isLoading = true;
     private string roleid { get; set; }
+
+  
     protected override async Task OnInitializedAsync()
     {
+        MainLayout.SubTitle = "Admin Management Module";
         await LoadUsers();
         await base.OnInitializedAsync();
     }

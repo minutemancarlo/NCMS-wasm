@@ -84,7 +84,10 @@
     private List<HotelRoom> roomsList = new List<HotelRoom>();
     private bool isLoading = false;
     private IEnumerable<RoomStatus> roomStatus { get; set; } = new HashSet<RoomStatus>();
+    [CascadingParameter]
+    public MainLayout MainLayout { get; private set; }
 
+    
     private async Task OpenAddRoomDialog()
     {
         var options = new DialogOptions
@@ -106,6 +109,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        MainLayout.SubTitle = "Hotel Management Module";
         await LoadRoomsList();
         await base.OnInitializedAsync();
     }

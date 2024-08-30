@@ -33,5 +33,12 @@
     </MudStack>
 </MudStack>
 @code {
+    [CascadingParameter]
+    public MainLayout MainLayout { get; private set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        MainLayout.SubTitle = "Gas Station Management Module";
+        await base.OnInitializedAsync();
+    }
 }

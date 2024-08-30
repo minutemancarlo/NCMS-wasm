@@ -113,6 +113,9 @@
 </MudDialog>
 
 @code {
+    [CascadingParameter]
+    public MainLayout MainLayout { get; private set; }
+
     [Parameter] public Employee employeeInfo { get; set; }
     MudForm form;
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
@@ -141,21 +144,15 @@
             await form.Validate();
             if (form.IsValid)
             {
-                var userId = String.Empty;
-                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-                var user = authState.User;
-                if (user.Identity.IsAuthenticated)
-                {
-                    userId = user.FindFirst(c => c.Type == "sub")?.Value;
-                }
+                
 
                 if (String.IsNullOrEmpty(employeeInfo.IDNumber))
                 {
-                    employeeInfo.CreatedBy = userId;                    
+                    employeeInfo.CreatedBy = MainLayout.currentUserId;                    
                 }
                 else
                 {
-                    employeeInfo.UpdatedBy = userId;                    
+                    employeeInfo.UpdatedBy = MainLayout.currentUserId;
                 }
 
                 var response = await httpClient.PostAsJsonAsync("Employee/AddUpdateEmployee", employeeInfo);

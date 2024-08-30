@@ -1,0 +1,12 @@
+﻿@page "/portal-requests"
+<h3>Requests</h3>
+@code{
+    [CascadingParameter]
+    public MainLayout MainLayout { get; private set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        MainLayout.SubTitle = "Employee Portal Module";
+        await base.OnInitializedAsync();
+    }
+}

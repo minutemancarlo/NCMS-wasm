@@ -41,6 +41,8 @@
 </MudStack>
 
 @code {
+    [CascadingParameter]
+    public MainLayout MainLayout { get; private set; }   
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] IDialogService? DialogService { get; set; }
     private List<LoyaltyCardInfo> cards = new List<LoyaltyCardInfo>();
@@ -67,6 +69,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        MainLayout.SubTitle = "Gas Station Management Module";
         await LoadCardsList();
         await base.OnInitializedAsync();
     }
