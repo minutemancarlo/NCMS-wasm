@@ -1,27 +1,43 @@
-﻿<CascadingAuthenticationState>
+﻿@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 
-<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">        
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <Authorizing>
                     <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
                         <p>Determining session state, please wait...</p>
-                    </MudStack>                    
+                    </MudStack>
                 </Authorizing>
                 <NotAuthorized>
-                    
+                    @code {
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+                if (returnUrl == "portal")
+                {
+                        await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "returnUrl", returnUrl);
+                        Navigation.NavigateTo("authentication/login", true);
+                }
+            }
+        }
+                    }
+
                     <MudStack>
                         <h3>Sorry</h3>
-                        <p>You're not authorized to reach this page. You need to <a class="fw-bold" href="authentication/login">log in</a> .</p>
+                        <p>You're not authorized to reach this page. Redirecting to login...</p>
                     </MudStack>
                 </NotAuthorized>
             </AuthorizeRouteView>
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
 </CascadingAuthenticationState>

@@ -1,6 +1,7 @@
 ﻿@page "/"
 @* @layout NoLayout *@
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 @using System.Security.Claims
 <PageTitle>Index</PageTitle>
 
@@ -23,7 +24,7 @@
         if (authenticationState is not null)
         {
             var state = await authenticationState;
-
+            var returnUrl = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "returnUrl");
             if (state.User.Identity.IsAuthenticated)
             {
                 var user = authenticationState.Result.User;
@@ -35,16 +36,37 @@
 
                 if (user.IsInRole("Front Desk"))
                 {
-                    Navigation.NavigateTo("/hotel-dashboard");
+                    if (returnUrl == "portal")
+                    {
+                        Navigation.NavigateTo("/portal");
+                    }
+                    else
+                    {
+                        Navigation.NavigateTo("/hotel-dashboard");
+                    }
                 }
 
                 if (user.IsInRole("Human Resource"))
                 {
-                    Navigation.NavigateTo("/hr-dashboard");
+                    if(returnUrl == "portal")
+                    {
+                        Navigation.NavigateTo("/portal");
+                    }
+                    else
+                    {                        
+                        Navigation.NavigateTo("/hr-dashboard");
+                    }
                 }
                 if (user.IsInRole("Gas Employee"))
                 {
-                    Navigation.NavigateTo("/gas-dashboard");
+                    if (returnUrl == "portal")
+                    {
+                        Navigation.NavigateTo("/portal");
+                    }
+                    else
+                    {
+                        Navigation.NavigateTo("/gas-dashboard");
+                    }
                 }
                 if (user.IsInRole("Guest"))
                 {

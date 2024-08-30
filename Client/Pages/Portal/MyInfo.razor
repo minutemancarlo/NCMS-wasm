@@ -1,5 +1,6 @@
 ﻿@page "/portal"
-<h3>Dashboard</h3>
+@attribute [Authorize(Roles = "Human Resource, Front Desk, Gas Employee")]
+<h3>My Info</h3>
 
 @code{
     [CascadingParameter]

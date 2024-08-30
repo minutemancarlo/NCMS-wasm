@@ -1,7 +1,7 @@
 ﻿@inject NavigationManager Navigation
 
 <MudNavMenu Class="mud-width-full">
-    <MudDivider Class="mb-1" />    
+    <MudDivider Class="mb-1" />
     <AuthorizeView Roles="Administrator">
         <Authorized>
             <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
@@ -9,17 +9,17 @@
             <MudDivider Class="my-2" />
             <MudNavLink Href="/admin-dashboard" IconColor="Color.Primary" Icon="fas fa-chart-line">Dashboard</MudNavLink>
             <MudNavLink Href="/admin-usersmanagement" IconColor="Color.Success" Icon="fas fa-users">User Management</MudNavLink>
-        </Authorized>       
+        </Authorized>
     </AuthorizeView>
     <AuthorizeView Roles="Human Resource">
         <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
         <MudText Typo="Typo.body2" Class="px-4 text-muted">Human Resource</MudText>
         <MudDivider Class="my-2" />
         @if (currentPage.Contains("portal"))
-        {            
-                <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
-                <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
-                <MudNavLink Icon="fas fa-vote-yea" IconColor="Color.Primary" Href="/portal-requests">My Requests</MudNavLink>                            
+        {
+            <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
+            <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
+            <MudNavLink Icon="fas fa-vote-yea" IconColor="Color.Primary" Href="/portal-requests">My Requests</MudNavLink>
         }
         else
         {
@@ -27,24 +27,24 @@
             <MudNavLink Href="/hr-employees" Icon="fas fa-users" IconColor="Color.Success">Employee Management</MudNavLink>
             <MudNavLink Href="/hr-requests" Icon="fas fa-user-tag" IconColor="Color.Info">Requests</MudNavLink>
             <MudNavLink Href="/hr-reports" Icon="fas fa-file-invoice" IconColor="Color.Secondary">Reports</MudNavLink>
-        }        
+        }
     </AuthorizeView>
     <AuthorizeView Roles="Front Desk">
         <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
         <MudText Typo="Typo.body2" Class="px-4 text-muted">Front Desk</MudText>
         <MudDivider Class="my-2" />
         @if (currentPage.Contains("portal"))
-        {            
-                <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
-                <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
-                <MudNavLink Icon="fas fa-vote-yea" IconColor="Color.Primary" Href="/portal-requests">My Requests</MudNavLink>                            
+        {
+            <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
+            <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
+            <MudNavLink Icon="fas fa-vote-yea" IconColor="Color.Primary" Href="/portal-requests">My Requests</MudNavLink>
         }
         else
         {
             <MudNavLink Href="/hotel-dashboard" Icon="fas fa-chart-line" IconColor="Color.Primary">Dashboard</MudNavLink>
             <MudNavLink Href="/hotel-roomsmanagement" Icon="fas fa-hotel">Room Management</MudNavLink>
             <MudNavLink Href="/hotel-guests" IconColor="Color.Secondary" Icon="fas fa-users">Guest Management</MudNavLink>
-            <MudNavLink Href="/hotel-devices" Icon="fas fa-cogs" IconColor="Color.Success">Device Settings</MudNavLink>            
+            <MudNavLink Href="/hotel-devices" Icon="fas fa-cogs" IconColor="Color.Success">Device Settings</MudNavLink>
         }
 
     </AuthorizeView>
@@ -52,11 +52,19 @@
         <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
         <MudText Typo="Typo.body2" Class="px-4 text-muted">Gas Employee</MudText>
         <MudDivider Class="my-2" />
-        <MudNavLink Href="/gas-dashboard" Icon="fas fa-chart-line" IconColor="Color.Primary">Dashboard</MudNavLink>
-        <MudNavLink Href="/gas-cards" IconColor="Color.Dark" Icon="fas fa-credit-card">Card Management</MudNavLink>
-        <MudNavLink Href="/gas-pos" Icon="fas fa-cash-register" IconColor="Color.Error">Point of Sales</MudNavLink>
-        <MudNavLink Href="/gas-tanks" Icon="fas fa-gas-pump" IconColor="Color.Success">Tank Management</MudNavLink>
-        <MudNavLink Href="/hr-reports" Icon="fas fa-people-arrows">Employee Portal</MudNavLink>
+        @if (currentPage.Contains("portal"))
+        {
+            <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
+            <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
+            <MudNavLink Icon="fas fa-vote-yea" IconColor="Color.Primary" Href="/portal-requests">My Requests</MudNavLink>
+        }
+        else
+        {
+            <MudNavLink Href="/gas-dashboard" Icon="fas fa-chart-line" IconColor="Color.Primary">Dashboard</MudNavLink>
+            <MudNavLink Href="/gas-cards" IconColor="Color.Dark" Icon="fas fa-credit-card">Card Management</MudNavLink>
+            <MudNavLink Href="/gas-pos" Icon="fas fa-cash-register" IconColor="Color.Error">Point of Sales</MudNavLink>
+            <MudNavLink Href="/gas-tanks" Icon="fas fa-gas-pump" IconColor="Color.Success">Tank Management</MudNavLink>
+        }
     </AuthorizeView>
 </MudNavMenu>
 
@@ -71,6 +79,6 @@
         await base.OnInitializedAsync();
     }
 
-   
+
 
 }
