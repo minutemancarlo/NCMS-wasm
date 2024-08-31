@@ -1,5 +1,5 @@
 ﻿@inject NavigationManager Navigation
-
+@inject IJSRuntime JSRuntime
 <MudNavMenu Class="mud-width-full">
     <MudDivider Class="mb-1" />
     <AuthorizeView Roles="Administrator">
@@ -19,6 +19,7 @@
         {
             <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
             <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
+            <MudNavLink Icon="fas fa-file-invoice" IconColor="Color.Success" Href="/portal-payslips">My Payslips</MudNavLink>
             <MudNavLink Icon="fas fa-vote-yea" IconColor="Color.Primary" Href="/portal-requests">My Requests</MudNavLink>
         }
         else
@@ -37,6 +38,7 @@
         {
             <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
             <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
+            <MudNavLink Icon="fas fa-file-invoice" IconColor="Color.Success" Href="/portal-payslips">My Payslips</MudNavLink>
             <MudNavLink Icon="fas fa-vote-yea" IconColor="Color.Primary" Href="/portal-requests">My Requests</MudNavLink>
         }
         else
@@ -56,6 +58,7 @@
         {
             <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
             <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
+            <MudNavLink Icon="fas fa-file-invoice" IconColor="Color.Success" Href="/portal-payslips">My Payslips</MudNavLink>
             <MudNavLink Icon="fas fa-vote-yea" IconColor="Color.Primary" Href="/portal-requests">My Requests</MudNavLink>
         }
         else
@@ -73,8 +76,8 @@
     private string currentPage = String.Empty;
 
     protected override async Task OnInitializedAsync()
-    {
-        currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
+    {        
+        currentPage = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "returnUrl");
         StateHasChanged();
         await base.OnInitializedAsync();
     }

@@ -1,8 +1,8 @@
-﻿@page "/portal"
+﻿@page "/portal-payslips"
 @attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
 <h3>My Info</h3>
 
-@code{
+@code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
 

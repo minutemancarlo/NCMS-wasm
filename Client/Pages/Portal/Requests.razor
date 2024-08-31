@@ -1,5 +1,5 @@
 ﻿@page "/portal-requests"
-<h3>Requests</h3>
+@attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
 @code{
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }

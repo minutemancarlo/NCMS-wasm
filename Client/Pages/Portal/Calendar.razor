@@ -1,13 +1,157 @@
 ﻿@page "/portal-calendar"
-<h3>My Calendar</h3>
+@using NCMS_wasm.Shared
+@attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
+<MudStack Class="w-100">
+    <MudText Typo="Typo.h5">HR Dashboard</MudText>
+    <MudOverlay @bind-Visible="_overlayVisible" DarkBackground AutoClose="false">
+        <MudLoading @bind-Loading="_overlayVisible" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+                    Color="Color.Primary" />
+    </MudOverlay>
+    <MudCalendar HighlightToday
+                 ShowWorkWeek="false"
+                 ShowWeek="false"
+                 ShowDay="false"
+                 Elevation="1"
+                 ShowTodayButton="false"
+                 Style="width: 100%"
+                 CellClicked="CellClicked"
+                 ItemClicked="ItemClicked"
+                 MonthCellMinHeight="100"
+                 Items="_events">
+        <ToolbarContent>
+            <MudSpacer />
+            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Warning" Size="Size.Small" /> Holiday</MudText>
+            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" /> Approved Leave</MudText>
+            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Info" Size="Size.Small" /> For Approval Leave</MudText>
+        </ToolbarContent>
+        <CellTemplate>
+            <div style="background-color: @GetColor(((CustomItem)context).Color)" class="pa-2 d-flex gap-1">
+                <MudText Style="color: white" Class="fw-bold" Typo="Typo.body2">@context.Text</MudText>
+            </div>
+        </CellTemplate>
+    </MudCalendar>
 
+</MudStack>
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    private List<Events> eventsList = new List<Events>();
+    private List<CustomItem> _events = new();
+    private bool _overlayVisible;
 
     protected override async Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "Employee Portal Module";
+        await LoadEventsList();
         await base.OnInitializedAsync();
     }
+    
+    private class CustomItem : CalendarItem
+    {
+        public int Id { get; set; } = 0;
+        public Color Color { get; set; } = Color.Primary;
+        public EventsType Type { get; set; } = EventsType.Holiday;
+        public string SubType { get; set; } = "Regular Holiday";
+    }
+
+    private async Task LoadEventsList()
+    {
+
+        try
+        {
+            _overlayVisible = true;
+            _events = new();
+            eventsList = await httpClient.GetFromJsonAsync<List<Events>>($"Events/GetEvents");
+            foreach (var events in eventsList)
+            {
+                var customItem = new CustomItem
+                    {
+                        Id = events.EventId,
+                        Start = events.EventStart,
+                        End = events.EventEnd,
+                        Text = events.EventName,
+                        Color = events.EventType == EventsType.Holiday ? Color.Warning : Color.Info,
+                        Type = events.EventType,
+                        SubType = events.SubType
+                    };
+                _events.Add(customItem);
+            }
+        }
+        catch (Exception ex)
+        {
+            _overlayVisible = false;
+            Snackbar.Add($"Exception Occured: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            _overlayVisible = false;
+        }
+    }
+
+    private string GetColor(Color color) => $"var(--mud-palette-{color.ToDescriptionString()})";
+
+    private async Task CellClicked(DateTime dateTime)
+    {
+        // var options = new DialogOptions
+        //     {
+        //         CloseOnEscapeKey = false,
+        //         FullWidth = true,
+        //         MaxWidth = MaxWidth.Small,
+        //         BackdropClick = true,
+        //         CloseButton = true
+        //     };
+        // var parameters = new DialogParameters<AddEventDialog>
+        //     {
+        //      {x => x.StartDate,dateTime},
+        //      {x => x.EndDate,dateTime}
+        //     };
+        // var dialog = await DialogService.ShowAsync<AddEventDialog>("Simple Dialog", parameters, options);
+        // var result = await dialog.Result;
+        // if (!result.Canceled)
+        // {
+        //     await LoadEventsList();
+        //     StateHasChanged();
+        // }
+        
+    }
+
+    private async Task ItemClicked(CalendarItem item)
+    {
+        // var options = new DialogOptions
+        //     {
+        //         CloseOnEscapeKey = false,
+        //         FullWidth = true,
+        //         MaxWidth = MaxWidth.Small,
+        //         BackdropClick = true,
+        //         CloseButton = true
+        //     };
+
+
+        // if (item is CustomItem customItem)
+        // {
+        //     var parameters = new DialogParameters<ShowEventDialog>
+        //     {
+        //      {x => x.eventId,customItem.Id},
+        //      {x => x.from,customItem.Start},
+        //      {x => x.to,customItem.End},
+        //      {x => x.description,customItem.Text},
+        //      {x => x.eventType,customItem.Type},
+        //      {x => x.type,customItem.SubType},
+        //      {x => x.enableDelete,customItem.Type == EventsType.Holiday ? true : false }
+        //     };
+
+        //     var dialog = await DialogService.ShowAsync<ShowEventDialog>("Simple Dialog", parameters, options);
+        //     var result = await dialog.Result;
+        //     if (!result.Canceled)
+        //     {
+        //         await LoadEventsList();
+        //         StateHasChanged();
+        //     }
+        // }
+    }
+
 }
