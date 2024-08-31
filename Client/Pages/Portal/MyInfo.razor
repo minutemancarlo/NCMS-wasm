@@ -1,6 +1,55 @@
 ﻿@page "/portal"
 @attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
-<h3>My Info</h3>
+<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                <MudText Typo="Typo.h6">Leave Credits</MudText>
+                <MudText Typo="Typo.body1"><strong>Vacation Leave: </strong>0</MudText>
+                <MudText Typo="Typo.body1"><strong>Sick Leave: </strong>0</MudText>
+                <MudText Typo="Typo.body1"><strong>Emergency Leave: </strong>0</MudText>                
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+                <MudText Typo="Typo.h6">My Info</MudText>
+                <MudText Typo="Typo.body1"><strong>Employee ID: </strong>0</MudText>
+                <MudText Typo="Typo.body1"><strong>Full Name: </strong>John Doe</MudText>
+                <MudText Typo="Typo.body1"><strong>Position: </strong>Gas Attendant</MudText>
+                <MudText Typo="Typo.body1"><strong>Department: </strong>Gasoline Station</MudText>
+                <MudText Typo="Typo.body1"><strong>Branch: </strong>Branch 1</MudText>
+                <MudText Typo="Typo.body1"><strong>Employment Status: </strong>Regular</MudText>
+                <MudText Typo="Typo.body1"><strong>Employment Date: </strong>01/01/2021</MudText>
+                <MudText Typo="Typo.body1"><strong>Birthdate: </strong>01/01/1990</MudText>                
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
 
 @code{
     [CascadingParameter]
