@@ -75,7 +75,18 @@
         }
     }
 
-    public string currentUserId;
+    private string currentUserId;
+
+    public string CurrentUserId
+    {
+        get => currentUserId;
+        set
+        {
+            currentUserId = value;
+            InvokeAsync(() => StateHasChanged());
+        }
+   
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -83,7 +94,7 @@
         var user = authState.User;
         if (user.Identity.IsAuthenticated)
         {
-            currentUserId = user.FindFirst(c => c.Type == "sub")?.Value;
+            CurrentUserId = user.FindFirst(c => c.Type == "sub")?.Value;
         }
        
         await base.OnInitializedAsync();

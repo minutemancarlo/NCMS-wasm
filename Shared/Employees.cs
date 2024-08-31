@@ -8,7 +8,7 @@ namespace NCMS_wasm.Shared
 {
     public class Employee : BaseModel
     {
-        public string? IDNumber { get; set; } = null;
+        public string? IDNumber { get; set; } = "0";
         public string Name { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }

@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Auth0.ManagementApi;
+using Microsoft.AspNetCore.Mvc;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
+using Nextended.Core.Extensions;
 
 namespace NCMS_wasm.Server.Controllers
 {
@@ -12,13 +14,14 @@ namespace NCMS_wasm.Server.Controllers
         private readonly EmployeeRepository _employeeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _env;
-
-        public EmployeeController(ILogger<EmployeeController> logger, EmployeeRepository employeeRepository, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env)
+        private readonly IManagementApiClient _managementApiClient;
+        public EmployeeController(ILogger<EmployeeController> logger, EmployeeRepository employeeRepository, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env, IManagementApiClient managementApiClient)
         {
             _logger = logger;
             _employeeRepository = employeeRepository;
             _httpContextAccessor = httpContextAccessor;
             _env = env;
+            _managementApiClient = managementApiClient;
         }
 
         [HttpPost("AddUpdateEmployee")]
@@ -30,9 +33,18 @@ namespace NCMS_wasm.Server.Controllers
                 {
 
                 }
-                int Id = await _employeeRepository.AddUpdateEmployeeAsync(employeeInfo);
-                _logger.LogInformation("Employee added/updated successfully.");
-                return Ok(Id);
+                var users = await _managementApiClient.Users.GetUsersByEmailAsync(employeeInfo.Email);
+                if (users.Count == 0)
+                {
+                    int Id = await _employeeRepository.AddUpdateEmployeeAsync(employeeInfo);
+                    _logger.LogInformation("Employee added/updated successfully.");
+                    return Ok(Id);
+                }
+                else
+                {
+                    return Conflict("Email Already Exists");
+                }
+                
             }
             catch (Exception ex)
             {

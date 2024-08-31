@@ -5,8 +5,10 @@ using Auth0.ManagementApi.Paging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using NCMS_wasm.Client.Pages.Administrator;
 using NCMS_wasm.Shared;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 
 namespace NCMS_wasm.Server.Controllers
 {
@@ -168,6 +170,29 @@ namespace NCMS_wasm.Server.Controllers
             var result = _managementApiClient.Users.GetRolesAsync(userid);
             var userRole = result.Result.FirstOrDefault()?.Id;
             return userRole;
+        }
+
+        [HttpGet("GetUserByEmail")]
+        public async Task<ActionResult<List<UserInfo>>> GetUserByEmail([FromQuery] string email)
+        {
+            try
+            {
+                var users = await _managementApiClient.Users.GetUsersByEmailAsync(email);
+                if (users.IsNullOrEmpty())
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("User Already Exists");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception Occured: {ex.Message}");
+                return BadRequest($"Exception Occured: {ex.Message}");
+            }
         }
 
     }
