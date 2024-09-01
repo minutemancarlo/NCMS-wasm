@@ -101,6 +101,31 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("GetMyInfo")]
+        public async Task<ActionResult<Employee>> GetMyInfo([FromBody] string auth_id)
+        {
+            try
+            {
+                var employee = await _employeeRepository.GetMyInfoAsync(auth_id);
+
+                if (employee == null)
+                {
+                    _logger.LogInformation($"Employee not bound yet.");
+                    return NotFound($"Employee not bound yet.");
+                }
+                else
+                {                   
+                    _logger.LogInformation($"Employee information retrieved successfully");
+                    return Ok(employee);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving employee info: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
+            }
+        }
+
 
         private string SaveImageToDisk(string base64String)
         {

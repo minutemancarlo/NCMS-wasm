@@ -85,6 +85,18 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteAsync(query, parameters);
         }
 
+        public async Task<Employee> GetMyInfoAsync(string auth_id)
+        {
+            var parameters = new DynamicParameters();
+            
+            parameters.Add("@Id",auth_id);
+
+            string query = "SELECT TOP 1 * FROM Employee WHERE Auth0_Id = @Id";
+
+            var employee = await _dbConnection.QueryFirstOrDefaultAsync<Employee>(query, parameters);
+
+            return employee;
+        }
 
     }
 }

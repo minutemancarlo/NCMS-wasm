@@ -15,7 +15,7 @@
         <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
         <MudText Typo="Typo.body2" Class="px-4 text-muted">Human Resource</MudText>
         <MudDivider Class="my-2" />
-        @if (currentPage.Contains("portal"))
+        @if (currentPage?.Contains("portal") == true)
         {
             <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
             <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
@@ -34,7 +34,7 @@
         <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
         <MudText Typo="Typo.body2" Class="px-4 text-muted">Front Desk</MudText>
         <MudDivider Class="my-2" />
-        @if (currentPage.Contains("portal"))
+        @if (currentPage?.Contains("portal") == true)
         {
             <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
             <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
@@ -54,7 +54,7 @@
         <MudText Typo="Typo.body2" Class="px-4 fw-bold">@context.User.Identity.Name</MudText>
         <MudText Typo="Typo.body2" Class="px-4 text-muted">Gas Employee</MudText>
         <MudDivider Class="my-2" />
-        @if (currentPage.Contains("portal"))
+        @if (currentPage?.Contains("portal") == true)
         {
             <MudNavLink Icon="fas fa-info-circle" IconColor="Color.Info" Href="/portal">My Info</MudNavLink>
             <MudNavLink Icon="fas fa-calendar-week" IconColor="Color.Warning" Href="/portal-calendar">My Calendar</MudNavLink>
@@ -72,12 +72,16 @@
 </MudNavMenu>
 
 @code {
-
-    private string currentPage = String.Empty;
+    private string? currentPage { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {        
-        currentPage = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "returnUrl");
+        currentPage = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "returnUrl");        
+        if (String.IsNullOrEmpty(currentPage))
+        {
+            await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "returnUrl", "/");
+        }
+
         StateHasChanged();
         await base.OnInitializedAsync();
     }

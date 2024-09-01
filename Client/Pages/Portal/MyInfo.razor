@@ -1,59 +1,95 @@
 ﻿@page "/portal"
 @using NCMS_wasm.Shared
+@using System.Globalization
 @layout MainLayout
 @attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
     <MudGrid>
         <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
-                <MudText Typo="Typo.h6">Leave Credits</MudText>
-                <MudText Typo="Typo.body1"><strong>Vacation Leave: </strong>0</MudText>
-                <MudText Typo="Typo.body1"><strong>Sick Leave: </strong>0</MudText>
-                <MudText Typo="Typo.body1"><strong>Emergency Leave: </strong>0</MudText>                
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;background-color: #1abc9c; ">
+                <MudCard Elevation="0" Style="background-color: inherit; color: white;" >
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-calendar-alt" Size="Size.Medium"></MudIcon> Leave Credits</MudText>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body1"><strong>Vacation Leave: </strong>0</MudText>
+                        <MudText Typo="Typo.body1"><strong>Sick Leave: </strong>0</MudText>                        
+                    </MudCardContent>                    
+                </MudCard>                
             </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px; background-color: #2ecc71">
+                <MudCard Elevation="0" Style="background-color: inherit; color: white;">
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-calendar-check" Size="Size.Medium"></MudIcon> For Approval Leaves</MudText>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body1"><strong>Vacation Leave: </strong>0</MudText>
+                        <MudText Typo="Typo.body1"><strong>Sick Leave: </strong>0</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;background-color: #3498db"></MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudGrid>
                 <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-                </MudItem>
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+                        <MudText Typo="Typo.h6">Personal Details</MudText>
+                        <br/>
+                        <MudText Typo="Typo.body1"><strong>Employee ID: </strong>@employee.IDNumber</MudText>
+                        <MudText Typo="Typo.body1"><strong>Full Name: </strong>@employee.Name</MudText>
+                        <MudText Typo="Typo.body1"><strong>Email: </strong>@employee.Email</MudText>
+                        <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.Phone</MudText>
+                        <MudText Typo="Typo.body1"><strong>Address: </strong>@employee.Address</MudText>
+                        <MudText Typo="Typo.body1"><strong>Gender: </strong>@employee.Gender</MudText>
+                        <MudText Typo="Typo.body1"><strong>Civil Status: </strong>@employee.CivilStatus</MudText>
+                        <MudText Typo="Typo.body1"><strong>Place of Birth: </strong>@employee.PlaceOfBirth</MudText>
+                        <MudText Typo="Typo.body1"><strong>Date of Birth: </strong>@($"{employee.DateOfBirth:MMMM d, yyyy}")</MudText>
+                    </MudPaper>
+                </MudItem>               
             </MudGrid>
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
-                <MudText Typo="Typo.h6">My Info</MudText>
-                <MudText Typo="Typo.body1"><strong>Employee ID: </strong>@employee.IDNumber</MudText>
-                <MudText Typo="Typo.body1"><strong>Full Name: </strong></MudText>
-                <MudText Typo="Typo.body1"><strong>Position: </strong>Gas Attendant</MudText>
-                <MudText Typo="Typo.body1"><strong>Department: </strong>Gasoline Station</MudText>
-                <MudText Typo="Typo.body1"><strong>Branch: </strong>Branch 1</MudText>
-                <MudText Typo="Typo.body1"><strong>Employment Status: </strong>Regular</MudText>
-                <MudText Typo="Typo.body1"><strong>Employment Date: </strong>01/01/2021</MudText>
-                <MudText Typo="Typo.body1"><strong>Birthdate: </strong>01/01/1990</MudText>                
+                <MudText Typo="Typo.h6">Employment Details</MudText>
+                <br />
+                <MudText Typo="Typo.body1"><strong>Position: </strong>@employee.Position</MudText>
+                <MudText Typo="Typo.body1"><strong>Department: </strong>@employee.Department.ToString()</MudText>
+                <MudText Typo="Typo.body1"><strong>Employment Status: </strong>@employee.EmploymentStatus.ToString()</MudText>
+                <MudText Typo="Typo.body1"><strong>Employment Date: </strong>@($"{employee.DateHired:MMMM d, yyyy}")</MudText>
+                <MudText Typo="Typo.body1"><strong>Salary: </strong>@string.Format(new CultureInfo("en-PH"), "{0:C}", employee.Salary)</MudText>
+                <MudText Typo="Typo.body1"><strong>SSS Number: </strong>@employee.SSS</MudText>
+                <MudText Typo="Typo.body1"><strong>PHIC Number: </strong>@employee.PHIC</MudText>
+                <MudText Typo="Typo.body1"><strong>Pag-Ibig Number: </strong>@employee.PagIbig</MudText>
             </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                <MudText Typo="Typo.h6">Emergency Contact Details</MudText>
+                <br />
+                <MudText Typo="Typo.body1"><strong>Name: </strong>@employee.EmergencyContactName</MudText>
+                <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.EmergencyContactPhone</MudText>
+                <MudText Typo="Typo.body1"><strong>Address: </strong>@employee.EmergencyContactAddress</MudText>
+                <MudText Typo="Typo.body1"><strong>Relationship: </strong>@employee.EmergencyContactRelationship</MudText>
+            </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                <MudText Typo="Typo.h6">Beneficiary Details</MudText>
+                <br />
+                <MudText Typo="Typo.body1"><strong>Name: </strong>@employee.BeneficiaryName</MudText>
+                <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.BeneficiaryContactInfo</MudText>
+                <MudText Typo="Typo.body1"><strong>Relationship: </strong>@employee.BeneficiaryRelationship</MudText>
+            </MudPaper>
+        </MudItem>        
     </MudGrid>
 </MudContainer>
 
-@code{
+@code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
     [Inject] HttpClient? httpClient { get; set; }
@@ -74,7 +110,7 @@
         try
         {
             // Send a POST request with the ID in the request body
-            var response = await httpClient.PostAsJsonAsync("Employee/GetEmployeeInfo", id);
+            var response = await httpClient.PostAsJsonAsync("Employee/GetMyInfo", id);
 
             // Ensure the request was successful
             if (response.IsSuccessStatusCode)
@@ -85,13 +121,13 @@
             }
             else
             {
-                
+
                 var errorMessage = await response.Content.ReadAsStringAsync();
                 throw new HttpRequestException($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
             }
         }
         catch (Exception ex)
-        {            
+        {
             Console.WriteLine($"Exception occurred: {ex.Message}");
             throw;
         }
