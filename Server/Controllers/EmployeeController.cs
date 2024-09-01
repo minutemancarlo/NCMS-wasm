@@ -34,17 +34,30 @@ namespace NCMS_wasm.Server.Controllers
 
                 }
 
-                var users = await _managementApiClient.Users.GetUsersByEmailAsync(employeeInfo.Email);
-                if (users.Count == 0)
+
+                if(employeeInfo.IDNumber != "0")
                 {
-                    int Id = await _employeeRepository.AddUpdateEmployeeAsync(employeeInfo);
-                    _logger.LogInformation("Employee added/updated successfully.");
-                    return Ok(Id);
+                    
+                        int Id = await _employeeRepository.AddUpdateEmployeeAsync(employeeInfo);
+                        _logger.LogInformation("Employee added/updated successfully.");
+                        return Ok(Id);
+                   
                 }
                 else
                 {
-                    return Conflict("Email Already Exists");
+                    var users = await _managementApiClient.Users.GetUsersByEmailAsync(employeeInfo.Email);
+                    if (users.Count == 0)
+                    {
+                        int Id = await _employeeRepository.AddUpdateEmployeeAsync(employeeInfo);
+                        _logger.LogInformation("Employee added/updated successfully.");
+                        return Ok(Id);
+                    }
+                    else
+                    {
+                        return Conflict("Email Already Exists");
+                    }
                 }
+               
                 
             }
             catch (Exception ex)
