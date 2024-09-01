@@ -9,6 +9,7 @@ namespace NCMS_wasm.Shared
     public class Employee : BaseModel
     {
         public string? IDNumber { get; set; }
+        public string? Auth0_Id { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }

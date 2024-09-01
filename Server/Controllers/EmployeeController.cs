@@ -70,6 +70,38 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("GetEmployeeInfo")]
+        public async Task<ActionResult<Employee>> GetEmployeeInfo([FromBody]string email)
+        {            
+            try
+            {
+                var employee = await _employeeRepository.GetEmployeeInfoAsync(email);
+
+                if (employee == null)
+                {
+                    _logger.LogInformation($"Employee with email '{email}' not found.");
+                    return NotFound($"Employee with email '{email}' not found.");
+                }
+                else
+                {
+                    var userInfo = await _managementApiClient.Users.GetUsersByEmailAsync(employee.Email);
+                    if (userInfo.Count > 0)
+                    {
+                        employee.Auth0_Id = userInfo[0].UserId;
+                    }
+                    await _employeeRepository.BindUserAccountAsync(employee);
+                    _logger.LogInformation($"Employee information retrieved successfully for email '{email}'.");
+                    return Ok(employee);
+                }                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving employee info for email '{email}': {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
+            }
+        }
+
+
         private string SaveImageToDisk(string base64String)
         {
             var request = _httpContextAccessor.HttpContext.Request;

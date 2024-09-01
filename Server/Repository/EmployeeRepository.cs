@@ -61,6 +61,30 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.QueryAsync<Employee>(query);
         }
 
+        public async Task<Employee> GetEmployeeInfoAsync(string email)
+        {
+            var parameters = new DynamicParameters();
+            // Adding wildcard characters for partial match using the LIKE operator
+            parameters.Add("@Email", "%" + email + "%");
+
+            string query = "SELECT TOP 1 * FROM Employee WHERE Email LIKE @Email";
+
+            var employee = await _dbConnection.QueryFirstOrDefaultAsync<Employee>(query, parameters);
+
+            return employee;
+        }
+
+        public async Task<int> BindUserAccountAsync(Employee employee)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@IDNumber", employee.IDNumber);
+            parameters.Add("@AuthId", employee.Auth0_Id);
+
+            string query = "UPDATE Employee SET Auth0_Id = @AuthId WHERE IDNumber = @IDNumber";
+            
+            return await _dbConnection.ExecuteAsync(query, parameters);
+        }
+
 
     }
 }

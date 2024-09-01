@@ -40,11 +40,14 @@
                 </CellTemplate>
             </TemplateColumn>
             <PropertyColumn Property="x => x.Last_Login" Title="Last Login" Filterable="true" />
-            <TemplateColumn Title="Actions" Sortable="false" Hideable="false" Filterable="false">
+            <TemplateColumn Title="Actions" HeaderStyle="text-align: center;" Sortable="false" Hideable="false" Filterable="false">
                 <CellTemplate>
                     <MudStack Row>
                         <MudTooltip Text="Roles" Arrow="true" Color="Color.Primary" Placement="Placement.Top">
-                            <MudIconButton Icon="@Icons.Material.Filled.Security" OnClick="@(() => OpenRoleAccessDialog(context.Item))"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Filled.Security" Color="Color.Error" OnClick="@(() => OpenRoleAccessDialog(context.Item))"></MudIconButton>
+                        </MudTooltip>
+                        <MudTooltip Text="Bind Account" Arrow="true" Color="Color.Primary" Placement="Placement.Top">
+                            <MudIconButton Icon="@Icons.Material.Filled.Link" Color="Color.Success" OnClick="@(() => SearchUserByEmail(context.Item.Email))"></MudIconButton>
                         </MudTooltip>
                         @* <MudTooltip Text="Disable/Enable" Arrow="true" Color="Color." Placement="Placement.Top">
                             <MudIconButton Icon="@Icons.Material.Filled.LockPerson"></MudIconButton>
@@ -73,11 +76,12 @@
     public MainLayout MainLayout { get; private set; }
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] IDialogService? DialogService { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
     private List<UserDto> usersList = new List<UserDto>();
     private bool isLoading = true;
     private string roleid { get; set; }
+    private Employee? employee = new();
 
-  
     protected override async Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "Admin Management Module";
@@ -157,6 +161,34 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Exception Occurred: {ex.Message}");
+        }
+    }
+
+
+    private async Task SearchUserByEmail(string email)
+    {
+        try
+        {            
+            var response = await httpClient.PostAsJsonAsync("Employee/GetEmployeeInfo", email);
+
+
+            if (response.IsSuccessStatusCode)
+            {                
+                var employee = await response.Content.ReadFromJsonAsync<Employee>();
+                Snackbar.Add($"User account successfully linked to Employee: {employee.Name}",Severity.Success);
+            }
+            else
+            {
+                
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"{errorMessage}", Severity.Error);
+                Console.WriteLine($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Exception Occured: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Exception occurred: {ex.Message}");            
         }
     }
 
