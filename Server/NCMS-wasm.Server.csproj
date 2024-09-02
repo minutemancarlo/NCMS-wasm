@@ -10,12 +10,37 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\Reports\dsEmployee.Designer.cs" />
+    <Content Remove="wwwroot\Reports\dsEmployee.xsc" />
+    <Content Remove="wwwroot\Reports\dsEmployee.xsd" />
+    <Content Remove="wwwroot\Reports\dsEmployee.xss" />
+    <Content Remove="wwwroot\Reports\Report1.rdlc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="wwwroot\Reports\dsEmployee.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\Reports\Report1.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.Reporting" Version="2.1.0" />
     <PackageReference Include="Auth0Net.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.18" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.16" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="System.CodeDom" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="System.Security.Permissions" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,7 +49,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <Folder Include="Reports\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Reports\dsEmployee.xsc" />
+    <None Include="wwwroot\Reports\dsEmployee.xsd">
+      <SubType>Designer</SubType>
+      <LastGenOutput>dsEmployee.Designer.cs</LastGenOutput>
+      <Generator>MSDataSetGenerator</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Reports\dsEmployee.xss" />
   </ItemGroup>
 
 

@@ -8,6 +8,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCMS-wasm.Client", "Client\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCMS-wasm.Shared", "Shared\NCMS-wasm.Shared.csproj", "{711AC0AB-219F-45AC-9B23-8026D602EDDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsForRDLCDesign", "WindowsFormsForRDLCDesign\WindowsFormsForRDLCDesign.csproj", "{03FC889A-07E0-4113-99D3-A7BBE088708D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,18 @@ Global
 		{711AC0AB-219F-45AC-9B23-8026D602EDDA}.Release|x64.Build.0 = Release|Any CPU
 		{711AC0AB-219F-45AC-9B23-8026D602EDDA}.Release|x86.ActiveCfg = Release|Any CPU
 		{711AC0AB-219F-45AC-9B23-8026D602EDDA}.Release|x86.Build.0 = Release|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Debug|x64.Build.0 = Debug|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Debug|x86.Build.0 = Debug|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Release|x64.ActiveCfg = Release|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Release|x64.Build.0 = Release|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Release|x86.ActiveCfg = Release|Any CPU
+		{03FC889A-07E0-4113-99D3-A7BBE088708D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
