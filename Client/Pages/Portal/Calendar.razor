@@ -20,10 +20,11 @@
                  MonthCellMinHeight="100"
                  Items="_events">
         <ToolbarContent>
-            <MudSpacer />
-            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Warning" Size="Size.Small" /> Holiday</MudText>
-            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" /> Approved Leave</MudText>
-            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Info" Size="Size.Small" /> For Approval Leave</MudText>
+            <MudSpacer />            
+                <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Warning" Size="Size.Small" /> Holiday</MudText>
+                <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" /> Approved Leave</MudText>
+                <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Info" Size="Size.Small" /> For Approval Leave</MudText>
+                <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Error" Size="Size.Small" /> Rejected Leave</MudText>            
         </ToolbarContent>
         <CellTemplate>
             <div style="background-color: @GetColor(((CustomItem)context).Color)" class="pa-2 d-flex gap-1">
@@ -49,7 +50,7 @@
         await LoadEventsList();
         await base.OnInitializedAsync();
     }
-    
+
     private class CustomItem : CalendarItem
     {
         public int Id { get; set; } = 0;
@@ -117,7 +118,7 @@
         //     await LoadEventsList();
         //     StateHasChanged();
         // }
-        
+
     }
 
     private async Task ItemClicked(CalendarItem item)
