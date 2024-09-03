@@ -27,8 +27,8 @@ namespace NCMS_wasm.Server.Controllers
             string mimeType = "";
             int extenstion = 1;
             //var path = $"{this._webHostEnvironment.WebRootPath}\\Reports\\Report1.rdlc";
-            //var path =Path.Combine(_webHostEnvironment.WebRootPath, "Reports", "Report1.rdlc");
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "Reports", "Report1.rdlc");
+            var path = Path.Combine(_webHostEnvironment.WebRootPath, "Reports", "Report1.rdlc");
+            //var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "Reports", "Report1.rdlc");
 
             if (!System.IO.File.Exists(path))
             {

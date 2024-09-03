@@ -19,7 +19,7 @@ namespace NCMS_wasm.Server.Controllers
 
 
         [HttpPost("AddUpdateEvent")]
-        public async Task<ActionResult<int>> AddUpdateEvent(Events events)
+        public async Task<ActionResult<int>> AddUpdateEvent(LeaveRequests events)
         {
             try
             {
@@ -31,6 +31,22 @@ namespace NCMS_wasm.Server.Controllers
             {
                 _logger.LogError($"Exception occurred while adding/updating event: {ex.Message}");
                 return BadRequest($"Exception occurred while adding/updating event: {ex.Message}");
+            }
+        }
+
+        [HttpPost("ApprovalRequest")]
+        public async Task<ActionResult<int>> ApprovalRequest(LeaveRequests events)
+        {
+            try
+            {
+                _ = await _eventsRepository.ApproveLeaveRequestAsync(events);
+                _logger.LogInformation("Leave Request updated successfully.");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while updating leave request: {ex.Message}");
+                return BadRequest($"Exception occurred while updating leave request: {ex.Message}");
             }
         }
 
@@ -50,14 +66,14 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
-        [HttpGet("GetEvents")]
-        public async Task<ActionResult<List<Events>>> GetEvents()
+        [HttpPost("GetEvents")]
+        public async Task<ActionResult<List<LeaveRequests>>> GetEvents([FromBody] EventFilter filter)
         {
             try
             {
-                var devices = await _eventsRepository.GetAllEventsAsync();
+                var events = await _eventsRepository.GetAllEventsAsync(filter);
                 _logger.LogInformation("Events retrieved successfully.");
-                return Ok(devices);
+                return Ok(events);
             }
             catch (Exception ex)
             {

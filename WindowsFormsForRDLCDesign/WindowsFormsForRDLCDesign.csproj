@@ -72,6 +72,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Report1.rdlc" />
+    <EmbeddedResource Include="SingleEmployee.rdlc" />
     <None Include="dsEmployee.xsc">
       <DependentUpon>dsEmployee.xsd</DependentUpon>
     </None>

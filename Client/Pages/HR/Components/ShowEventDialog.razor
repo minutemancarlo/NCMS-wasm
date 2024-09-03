@@ -10,16 +10,16 @@
         <MudText Typo="Typo.body1">Type: <strong>@eventType.ToString()</strong> </MudText>
         @if(eventType == EventsType.Leave)
         {
-            <MudText Typo="Typo.body1">Employee Name: <strong>@description</strong> </MudText>
-            <MudText Typo="Typo.body1">Leave Type: <strong>@type</strong> </MudText>
+            <MudText Typo="Typo.body1">Employee Name: <strong>@description.Split(" - ")[0]</strong> </MudText>
+            <MudText Typo="Typo.body1">Leave Type: <strong>@description.Split(" - ")[1]</strong> </MudText>
         }
         else
         {
             <MudText Typo="Typo.body1">Holiday Description: <strong>@description</strong> </MudText>
             <MudText Typo="Typo.body1">Holiday Type: <strong>@type</strong> </MudText>
         }
-        <MudText Typo="Typo.body1">From: <strong>@from.ToString()</strong> </MudText>
-        <MudText Typo="Typo.body1">To: <strong>@to.ToString()</strong> </MudText>
+        <MudText Typo="Typo.body1">From: <strong>@($"{from:MMMM d, yyyy}")</strong> </MudText>
+        <MudText Typo="Typo.body1">To: <strong>@($"{to:MMMM d, yyyy}")</strong> </MudText>
 
     </DialogContent>
     <DialogActions>

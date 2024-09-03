@@ -40,7 +40,7 @@
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
-    private List<Events> eventsList = new List<Events>();
+    private List<LeaveRequests> eventsList = new List<LeaveRequests>();
     private List<CustomItem> _events = new();
     private bool _overlayVisible;
 
@@ -118,21 +118,35 @@
         {
             _overlayVisible = true;
             _events = new();
-            eventsList = await httpClient.GetFromJsonAsync<List<Events>>($"Events/GetEvents");
-            foreach (var events in eventsList)
+            var filter = new EventFilter
+                {
+                    IsUser = false                     
+                };
+            var response = await httpClient.PostAsJsonAsync("Events/GetEvents", filter);
+
+            if (response.IsSuccessStatusCode)
             {
-                var customItem = new CustomItem
+                eventsList = await response.Content.ReadFromJsonAsync<List<LeaveRequests>>();
+                foreach (var events in eventsList)
+                {
+                    if(events.IsApproved != ApprovalType.Rejected)
                     {
-                        Id = events.EventId,
-                        Start = events.EventStart,
-                        End = events.EventEnd,
-                        Text = events.EventName,
-                        Color = events.EventType==EventsType.Holiday?Color.Warning:Color.Info,
-                        Type = events.EventType,
-                        SubType = events.SubType
-                    };
-                _events.Add(customItem);
+                        var customItem = new CustomItem
+                            {
+                                Id = events.EventId,
+                                Start = events.EventStart,
+                                End = events.EventEnd,
+                                Text = events.EventName,
+                                Color = events.EventType == EventsType.Holiday ? Color.Warning : events.IsApproved == ApprovalType.ForApproval ? Color.Info : events.IsApproved == ApprovalType.Approved ? Color.Success : Color.Error,
+                                Type = events.EventType,
+                                SubType = events.SubType
+                            };
+                        _events.Add(customItem);
+                    }                   
+                }
             }
+            
+            
         }
         catch (Exception ex)
         {

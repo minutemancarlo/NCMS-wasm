@@ -3,7 +3,7 @@
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.HR.Components
 <PageTitle>Employees | NCMS</PageTitle>
-<MudStack>
+<MudStack Class="w-100">
     <MudText Typo="Typo.h5">Employee Management</MudText>
     <MudDataGrid Items="@employeeList" T="Employee" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon="false"
                  HorizontalScrollbar="true"
@@ -58,7 +58,7 @@
                                                     <MudText Typo="Typo.body1"><strong>Phone: </strong> @context.Item.Phone</MudText>
                                                     <MudText Typo="Typo.body1"><strong>Gender: </strong> @context.Item.Gender</MudText>
                                                     <MudText Typo="Typo.body1"><strong>Civil Status: </strong> @context.Item.CivilStatus</MudText>
-                                                    <MudText Typo="Typo.body1"><strong>Date of Birth: </strong> @context.Item.DateOfBirth</MudText>
+                                                    <MudText Typo="Typo.body1"><strong>Date of Birth: </strong> @($"{context.Item.DateOfBirth:MMMM d, yyyy}")</MudText>
                                                     <MudText Typo="Typo.body1"><strong>Place of Birth: </strong> @context.Item.PlaceOfBirth</MudText>
                                                 </MudCardContent>
                                             </MudCard>
@@ -93,6 +93,7 @@
                                 <MudCardContent>
                                     <MudText Typo="Typo.body1"><strong>ID Number: </strong> @context.Item.IDNumber</MudText>
                                     <MudText Typo="Typo.body1"><strong>Employment Status: </strong> @context.Item.EmploymentStatus</MudText>
+                                    <MudText Typo="Typo.body1"><strong>Date Hired: </strong> @($"{context.Item.DateHired:MMMM d, yyyy}")</MudText>
                                     <MudText Typo="Typo.body1"><strong>Department: </strong> @context.Item.Department.ToString()</MudText>
                                     <MudText Typo="Typo.body1"><strong>Position: </strong> @context.Item.Position</MudText>
                                     <MudText Typo="Typo.body1"><strong>Salary: </strong> @context.Item.Salary</MudText>
