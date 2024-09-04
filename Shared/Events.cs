@@ -32,7 +32,18 @@ namespace NCMS_wasm.Shared
         public LeaveType LeaveType { get; set; }
     }
 
-    public enum EventsType
+    public class LeaveReportFilter
+    {
+        public LeaveType? LeaveType { get; set; } 
+        public DateTime? StartDate { get; set; } = DateTime.Today;
+        public DateTime? EndDate { get; set; } = DateTime.Today;
+        public DateTime? FileDateFrom { get; set; } = DateTime.Today;
+        public DateTime? FileDateTo { get; set; } = DateTime.Today;
+        public string? EmployeeName { get; set; } 
+        public ApprovalType? ApprovalType { get; set; }
+    }
+
+        public enum EventsType
     {
         Holiday = 0,
         Leave = 1

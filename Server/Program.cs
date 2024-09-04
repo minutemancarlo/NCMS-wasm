@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Data;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Client.Pages.Hotel;
+using NCMS_wasm.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 // Register your database connection
@@ -20,6 +21,9 @@ builder.Services.AddTransient<CardRepository>();
 builder.Services.AddTransient<HotelRepository>();
 builder.Services.AddTransient<EventsRepository>();
 builder.Services.AddTransient<EmployeeRepository>();
+
+//Add Services
+builder.Services.AddScoped<LeaveRequestService>();
 
 // Add services to the container.
 builder.Services.AddAuthentication(options =>

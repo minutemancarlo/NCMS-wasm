@@ -49,6 +49,7 @@
         events = new LeaveRequests();
         events.EventStart = StartDate ?? DateTime.Today;
         events.EventEnd = EndDate ?? DateTime.Today;
+        events.LeaveType = LeaveType.Vacation;
         await base.OnInitializedAsync();
     }
 

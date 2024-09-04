@@ -63,5 +63,17 @@
     <None Include="wwwroot\Reports\dsEmployee.xss" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\Reports\dsLeaveRequest.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>dsLeaveRequest.xsd</DependentUpon>
+    </Content>
+    <Content Update="wwwroot\Reports\dsLeaveRequest.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsLeaveRequest.Designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+
 
 </Project>

@@ -4,17 +4,149 @@
 <PageTitle>Reports | NCMS</PageTitle>
 <MudStack>
     <MudText Typo="Typo.h5">Reports</MudText>
+    <MudForm @ref="form" Model="@leaveReportFilter">
+        <MudCard Style="background-color: #ecf0f1;">
+            <MudCardHeader>
+                <MudText Typo="Typo.h6">Leave Requests Report</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Row AlignItems="AlignItems.Baseline">
+                    <MudText Typo="Typo.body1">Select Leave Type</MudText>
+                    <MudRadioGroup T="LeaveType?" @bind-Value="leaveReportFilter.LeaveType">
+                        <MudRadio T="LeaveType?" Color="Color.Success" Value="null" Size="Size.Small">All</MudRadio>
+                        <MudRadio T="LeaveType?" Value="@(LeaveType.Vacation)" Color="Color.Success" Size="Size.Small">Vacation</MudRadio>
+                        <MudRadio T="LeaveType?" Value="@(LeaveType.Sick)" Color="Color.Success" Size="Size.Small">Sick</MudRadio>
+                    </MudRadioGroup>
+                </MudStack>
+
+                <MudStack Row AlignItems="AlignItems.Baseline">
+                    <MudText Typo="Typo.body1">Select Approval Type</MudText>
+                    <MudRadioGroup T="ApprovalType?" @bind-Value="leaveReportFilter.ApprovalType">
+                        <MudRadio T="ApprovalType?" Color="Color.Success" Value="null" Size="Size.Small">All</MudRadio>
+                        <MudRadio T="ApprovalType?" Value="@(ApprovalType.ForApproval)" Color="Color.Success" Size="Size.Small">For Approval</MudRadio>
+                        <MudRadio T="ApprovalType?" Value="@(ApprovalType.Approved)" Color="Color.Success" Size="Size.Small">Approved</MudRadio>
+                        <MudRadio T="ApprovalType?" Value="@(ApprovalType.Rejected)" Color="Color.Success" Size="Size.Small">Approved</MudRadio>
+                    </MudRadioGroup>
+                </MudStack>
+
+                <MudStack Row AlignItems="AlignItems.Baseline">
+                    <MudText Typo="Typo.body1">Leave Duration</MudText>
+                    <MudCheckBox @bind-Value="isChecked_Duration" Label="All Dates"></MudCheckBox>
+                    <MudDatePicker Label="From Date" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.StartDate" Disabled="isChecked_Duration" />
+                    <MudDatePicker Label="To Date" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.EndDate" Disabled="isChecked_Duration" />
+                </MudStack>
+
+                <MudStack Row AlignItems="AlignItems.Baseline">
+                    <MudText Typo="Typo.body1" Class="">Filed Date</MudText>
+                    <MudCheckBox @bind-Value="isChecked_Filed" Label="All Dates"></MudCheckBox>
+                    <MudDatePicker Label="From Date" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.FileDateFrom" Disabled="isChecked_Filed" />
+                    <MudDatePicker Label="To Date" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.FileDateTo" Disabled="isChecked_Filed" />
+                </MudStack>
+                
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GenerateLeaveRequestReport" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Print">Print</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudForm>
+    
 </MudStack>
 
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
+    private List<LeaveRequests> leaveRequests = new List<LeaveRequests>();
+    private bool isLoading = false;
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    MudForm form;
+    private LeaveReportFilter leaveReportFilter { get; set; } = new();
+    private bool isChecked_Duration = true;
+    private bool isChecked_Filed = true;
+    [Inject] private HttpClient Http { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    private async Task GenerateLeaveRequestReport()
+    {
+        try
+        {
+            var filter = leaveReportFilter;
+
+           
+            var query = new List<string>();
+            if (filter.LeaveType.HasValue) query.Add($"LeaveType={filter.LeaveType}");
+            if (filter.StartDate.HasValue) query.Add($"StartDate={filter.StartDate.Value.ToString("yyyy-MM-dd")}");
+            if (filter.EndDate.HasValue) query.Add($"EndDate={filter.EndDate.Value.ToString("yyyy-MM-dd")}");
+            if (!string.IsNullOrWhiteSpace(filter.EmployeeName)) query.Add($"EmployeeName={filter.EmployeeName}");
+            if (filter.ApprovalType.HasValue) query.Add($"ApprovalType={filter.ApprovalType}");
+
+            var queryString = string.Join("&", query);
+            var url = $"Report/GetLeaveRequestReport?{queryString}";
+
+           
+
+            var response = await Http.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var pdfContent = await response.Content.ReadAsByteArrayAsync();
+                var blobUrl = $"data:application/pdf;base64,{Convert.ToBase64String(pdfContent)}";
+                var timestamp = DateTime.Now.ToString("MMddyyyyHHmmss");
+                var fileName = $"LeaveRequestReport_{timestamp}.pdf";
+                await JSRuntime.InvokeVoidAsync("downloadFile", blobUrl, fileName);
+            }
+            else
+            {
+                // Handle the error appropriately
+                Console.WriteLine("Failed to generate the report.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
 
     protected async override Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "HR Management Module";
-     
+        await LoadEventsList();
         await base.OnInitializedAsync();
+    }
+
+    private async Task LoadEventsList()
+    {
+
+        try
+        {
+            isLoading = true;
+            var filter = new EventFilter
+                {
+                    IsUser = false
+                };
+            var response = await httpClient.PostAsJsonAsync("Events/GetEvents", filter);
+            if (response.IsSuccessStatusCode)
+            {
+                leaveRequests = await response.Content.ReadFromJsonAsync<List<LeaveRequests>>();
+                if (leaveRequests != null)
+                {
+
+                    leaveRequests = leaveRequests
+                        .Where(request => request.EventType == EventsType.Leave)
+                        .OrderByDescending(request => request.CreatedOn)
+                        .ToList();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            isLoading = false;
+            Snackbar.Add($"Exception Occured: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
 }
