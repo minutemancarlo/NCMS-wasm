@@ -5,9 +5,7 @@
 @attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
 
 <MudTabs Elevation="4" Rounded="true" Class="pt-3 w-100" Centered="false" Color="@Color.Primary">
-    <MudTabPanel Icon="fas fa-vote-yea" IconColor="Color.Success" Text="My Requests">
-
-    </MudTabPanel>
+   
     <MudTabPanel Icon="fas fa-calendar-week" IconColor="Color.Warning" Text="Requests Calendar">
         <MudStack Class="w-100">            
             <MudOverlay @bind-Visible="_overlayVisible" DarkBackground AutoClose="false">
@@ -41,6 +39,83 @@
 
         </MudStack>
     </MudTabPanel>
+    <MudTabPanel Icon="fas fa-vote-yea" IconColor="Color.Success" Text="My Requests">
+        <MudStack>            
+            <MudDataGrid Items="@leaveRequests" T="LeaveRequests" Loading="@isLoading" HeaderClass="mud-theme-default text-wrap" ShowMenuIcon="false"
+                         HorizontalScrollbar="true"
+                         ColumnResizeMode="ResizeMode.Column">
+                <ToolBarContent>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadEventsList">Refresh</MudButton>
+                    @* <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.FamilyRestroom" OnClick="OpenAddGuestDialog">Add Guest</MudButton> *@
+                    <MudSpacer />
+                </ToolBarContent>
+                <Columns>
+                   @*  <TemplateColumn Title="Action">
+                        <CellTemplate>
+                            @if (context.Item.IsApproved == ApprovalType.ForApproval)
+                            {
+                                <MudTooltip Arrow="true" Text="Approve" Placement="Placement.Top">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Medium" OnClick="(() => UpdateRequests(context.Item,ApprovalType.Approved))" Variant="Variant.Filled" Color="Color.Success"></MudIconButton>
+                                </MudTooltip>
+                                <MudTooltip Arrow="true" Text="Reject" Placement="Placement.Top">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Medium" OnClick="(() => UpdateRequests(context.Item,ApprovalType.Rejected))" Variant="Variant.Filled" Color="Color.Error"></MudIconButton>
+                                </MudTooltip>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn> *@
+                    <PropertyColumn Title="Name" Property="x => x.EventName" Filterable="true">
+                        <CellTemplate>
+                            @context.Item.EventName.Split(" - ")[1]
+                        </CellTemplate>
+                    </PropertyColumn>
+                    <PropertyColumn Title="Leave Type" Property="x => x.LeaveType.ToString()" Filterable="true" />
+                    <PropertyColumn Title="Status" Property="x => x.IsApproved" Filterable="true">
+                        <CellTemplate>
+                            @if (context.Item.IsApproved == ApprovalType.Approved)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Success">Approved</MudChip>
+                            }
+                            else if (context.Item.IsApproved == ApprovalType.ForApproval)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Info">For Approval</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Error">Rejected</MudChip>
+                            }
+                        </CellTemplate>
+                    </PropertyColumn>
+                    <PropertyColumn Title="Duration" Property="x => x.EventStart" Filterable="false">
+                        <CellTemplate>
+                            @($"{context.Item.EventStart:MM/dd/yyyy} - {context.Item.EventEnd:MM/dd/yyyy}")
+                        </CellTemplate>
+                    </PropertyColumn>
+                    <TemplateColumn Title="Created By">
+                        <CellTemplate>
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.caption" Class="fst-italic">@context.Item.EventName.Split(" - ")[1]</MudText>
+                                <MudText Typo="Typo.caption" Class="fst-italic">@($"{context.Item.CreatedOn:MM/dd/yyyy}")</MudText>
+                            </MudStack>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Updated By">
+                        <CellTemplate>
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.caption" Class="fst-italic">@context.Item.UpdatedBy</MudText>
+                                <MudText Typo="Typo.caption" Class="fst-italic">@($"{context.Item.UpdatedOn:MM/dd/yyyy}")</MudText>
+                            </MudStack>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <NoRecordsContent>
+                    <MudText>No Records to show</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Loading Content...</MudText>
+                </LoadingContent>
+            </MudDataGrid>
+        </MudStack>
+    </MudTabPanel>
 </MudTabs>
 
 @code{
@@ -52,6 +127,8 @@
     private List<LeaveRequests> eventsList = new List<LeaveRequests>();
     private List<CustomItem> _events = new();    
     private bool _overlayVisible;
+    private List<LeaveRequests> leaveRequests = new List<LeaveRequests>();
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,7 +161,10 @@
 
             if (response.IsSuccessStatusCode)
             {
+                eventsList = new();
+                leaveRequests = new();
                 eventsList = await response.Content.ReadFromJsonAsync<List<LeaveRequests>>();
+                leaveRequests.AddRange(eventsList);
                 foreach (var events in eventsList)
                 {
                     var customItem = new CustomItem

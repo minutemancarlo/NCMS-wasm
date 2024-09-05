@@ -1,0 +1,155 @@
+﻿@page "/hr-payslips"
+@attribute [Authorize(Roles = "Human Resource")]
+@using NCMS_wasm.Shared
+<PageTitle>Payslips | NCMS</PageTitle>
+
+<MudStack>
+    <MudText Typo="Typo.h5">Payslip Upload Facility</MudText>
+    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Download the template to fill payslip for employees. Click <MudLink Href="@BaseUrl" Underline="Underline.Always">here</MudLink></MudAlert>
+    <MudStack>
+        <MudDataGrid Items="@payslipUploads" T="PayslipUpload" Loading="@isLoading" HeaderClass="mud-theme-default text-wrap" ShowMenuIcon="false"
+                     HorizontalScrollbar="true"
+                     ColumnResizeMode="ResizeMode.Column">
+            <ToolBarContent>
+                <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadFileUploads">Refresh</MudButton>
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".xlsx">
+                    <ActivatorContent>
+                        <MudLoadingButton Variant="Variant.Filled"
+                                          Color="Color.Primary"
+                                          Size="Size.Medium"
+                                          StartIcon="@Icons.Material.Filled.CloudUpload"
+                                          Loading="@(uploading)"                                          
+                                          ButtonType="ButtonType.Button">
+                            <LoadingContent>Uploading...</LoadingContent>
+                            <ChildContent>Upload Payslip</ChildContent>
+                        </MudLoadingButton>                        
+                    </ActivatorContent>
+                </MudFileUpload>
+                <MudSpacer />
+            </ToolBarContent>
+            <Columns>
+                <PropertyColumn Title="Upload ID" Property="x => x.UploadId" Filterable="true" />
+                <PropertyColumn Title="File Name" Property="x => x.FileName" Filterable="true" />
+                <PropertyColumn Title="Status" Property="x => x.PayslipFileStatus" Filterable="true">
+                    <CellTemplate>
+                        @if (context.Item.PayslipFileStatus == PayslipFileStatus.Success)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Success">Success</MudChip>
+                        }
+                        else if (context.Item.PayslipFileStatus == PayslipFileStatus.Processing)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Info">Processing</MudChip>
+                        }
+                        else if (context.Item.PayslipFileStatus == PayslipFileStatus.OnQueue)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Default">On Queue</MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Error">Failed</MudChip>
+                        }
+                    </CellTemplate>
+                </PropertyColumn>
+                <PropertyColumn Title="Duration" Property="x => x.UploadedOn" Filterable="false" />
+            </Columns>
+            <NoRecordsContent>
+                <MudText>No Records to show</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading Content...</MudText>
+            </LoadingContent>
+        </MudDataGrid>
+    </MudStack>
+</MudStack>
+
+
+@code {
+    [Inject] NavigationManager navigationManager { get; set; }
+    [Inject] HttpClient httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    private string BaseUrl = String.Empty;
+    private bool isLoading = false;
+    private List<PayslipUpload> payslipUploads = new List<PayslipUpload>();
+    private bool uploading = false;
+
+    protected override async Task OnInitializedAsync()
+    {        
+        BaseUrl = $"{navigationManager.BaseUri}Templates/PayslipTemplate.xlsx";
+        await LoadFileUploads();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadFileUploads()
+    {
+        try
+        {
+            isLoading = true;
+
+            var response = await httpClient.PostAsJsonAsync("Payslip/GetPayslipsUploads","");
+
+            if (response.IsSuccessStatusCode)
+            {              
+                payslipUploads = await response.Content.ReadFromJsonAsync<List<PayslipUpload>>();               
+            }
+        }
+        catch (Exception ex)
+        {
+
+            Snackbar.Add($"Exception Occured: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+
+    private async Task UploadFiles(IBrowserFile file)
+    {
+        uploading = true;
+
+        try
+        {
+            // Check file type and size
+            if (file.ContentType != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            {
+                Snackbar.Add("Invalid file format. Only Excel files are allowed.", Severity.Error);
+                uploading = false;
+                return;
+            }
+
+            var content = new MultipartFormDataContent();
+            var fileStream = file.OpenReadStream(10 * 1024 * 1024); // Limit to 10 MB
+            var streamContent = new StreamContent(fileStream);
+            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+
+            // Add the file to the form data
+            content.Add(streamContent, "file", file.Name);
+
+            // Send file to the server
+            var response = await httpClient.PostAsync("Payslip/UploadPayslipFile", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadFileUploads();
+                Snackbar.Add("File uploaded successfully.", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Error uploading file: {response.ReasonPhrase}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error uploading file: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            uploading = false;
+        }
+    }
+
+
+}

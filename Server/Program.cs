@@ -21,10 +21,15 @@ builder.Services.AddTransient<CardRepository>();
 builder.Services.AddTransient<HotelRepository>();
 builder.Services.AddTransient<EventsRepository>();
 builder.Services.AddTransient<EmployeeRepository>();
+builder.Services.AddTransient<PayslipRepository>();
 
 //Add Services
 builder.Services.AddScoped<LeaveRequestService>();
 builder.Services.AddScoped<EmployeeService>();
+
+//Add Background Services
+builder.Services.AddHostedService<PayslipProcessor>();
+
 
 // Add services to the container.
 builder.Services.AddAuthentication(options =>
