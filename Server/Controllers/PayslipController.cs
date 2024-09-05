@@ -32,6 +32,23 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+
+        [HttpPost("GetMyPayslips")]
+        public async Task<ActionResult<List<PayslipModel>>> GetMyPayslips([FromBody] string id)
+        {
+            try
+            {
+                var payslips = await _payslipRepository.GetMyPayslipsAsync(id);
+                _logger.LogInformation("Payslip upload files retrieved successfully.");
+                return Ok(payslips);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving payslip upload files: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving payslip upload files: {ex.Message}");
+            }
+        }
+
         [HttpPost("UploadPayslipFile")]
         public async Task<IActionResult> UploadPayslipFile(IFormFile file)
         {

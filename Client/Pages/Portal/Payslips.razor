@@ -1,15 +1,123 @@
 ﻿@page "/portal-payslips"
 @layout MainLayout
+@using NCMS_wasm.Shared
 @attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
-<h3>My Info</h3>
-
+<PageTitle>NCMS | My Payslip</PageTitle>
+<MudStack>
+    <MudDataGrid Items="@payslips" T="PayslipModel" Loading="@isLoading" HeaderClass="mud-theme-default text-wrap" ShowMenuIcon="false"
+                 HorizontalScrollbar="true"
+                 ColumnResizeMode="ResizeMode.Column">
+        <ToolBarContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(() => LoadPayslips(employeeId))">Refresh</MudButton>
+            <MudSpacer />
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Title="ID" Property="x => x.PayslipId" Filterable="true" />
+       
+            <PropertyColumn Title="Payroll Date" Property="x => x.PayrollDate" Filterable="false">
+                <CellTemplate>
+                    @($"{context.Item.PayrollDate:MM/dd/yyyy}")
+                </CellTemplate>
+            </PropertyColumn>
+            <TemplateColumn Title="Action">
+                <CellTemplate>
+                    <MudLoadingButton Variant="Variant.Filled"
+                                      Color="Color.Primary"
+                                      Size="Size.Small"
+                                      StartIcon="@Icons.Material.Filled.Download"
+                                      Loading="@(downloading)"
+                                      ButtonType="ButtonType.Button">
+                        <LoadingContent>Generating...</LoadingContent>
+                        <ChildContent>Download</ChildContent>
+                    </MudLoadingButton>
+                </CellTemplate> 
+            </TemplateColumn>
+            
+        </Columns>
+        <NoRecordsContent>
+            <MudText>No Records to show</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Loading Content...</MudText>
+        </LoadingContent>
+    </MudDataGrid>
+</MudStack>
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
+    [Inject] HttpClient httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    private string employeeId;
+    private List<PayslipModel> payslips = new();
+    private bool downloading = false;
+    private string currentUserId;
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
+        currentUserId = MainLayout.CurrentUserId;
         MainLayout.SubTitle = "Employee Portal Module";
+        employeeId = await GetEmployeeInfoAsync(currentUserId);
+        await LoadPayslips(employeeId);
         await base.OnInitializedAsync();
     }
+
+    private async Task LoadPayslips(string id)
+    {
+        try
+        {
+            isLoading = true;
+
+            var response = await httpClient.PostAsJsonAsync("Payslip/GetMyPayslips", employeeId);
+
+            if (response.IsSuccessStatusCode)
+            {
+                payslips = await response.Content.ReadFromJsonAsync<List<PayslipModel>>();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Exception Occured: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    
+    private async Task Download()
+    {
+        
+    }
+
+    public async Task<string> GetEmployeeInfoAsync(string id)
+    {
+        try
+        {
+            // Send a POST request with the ID in the request body
+            var response = await httpClient.PostAsJsonAsync("Employee/GetMyInfo", id);
+
+            // Ensure the request was successful
+            if (response.IsSuccessStatusCode)
+            {
+                // Deserialize the response to an Employee object
+                var employee = await response.Content.ReadFromJsonAsync<Employee>();
+                return employee.IDNumber;
+            }
+            else
+            {
+
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception occurred: {ex.Message}");
+            throw;
+        }
+    }
+
 }

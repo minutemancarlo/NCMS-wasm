@@ -37,6 +37,14 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.QueryAsync<PayslipUpload>(query);
         }
 
+        public async Task<IEnumerable<PayslipModel>> GetMyPayslipsAsync(string EmployeeId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@EmployeeId", EmployeeId);
+            string query = "SELECT * FROM Payslip Where EmployeeId=@EmployeeId order by PayrollDate desc";
+            return await _dbConnection.QueryAsync<PayslipModel>(query,parameters);
+        }
+
         public async Task<int> AddPayslipUploadAsync(string id, string filename)
         {
             var parameters = new DynamicParameters();
