@@ -5,11 +5,12 @@
 <MudStack>
     <MudText Typo="Typo.h5">Reports</MudText>
     <MudForm @ref="form" Model="@leaveReportFilter">
-        <MudCard Style="background-color: #ecf0f1;">
+        <MudCard Elevation="2">
             <MudCardHeader>
                 <MudText Typo="Typo.h6">Leave Requests Report</MudText>
             </MudCardHeader>
             <MudCardContent>
+                <MudTextField Label="Employee Name" Variant="Variant.Outlined" @bind-Value="leaveReportFilter.EmployeeName" />
                 <MudStack Row AlignItems="AlignItems.Baseline">
                     <MudText Typo="Typo.body1">Select Leave Type</MudText>
                     <MudRadioGroup T="LeaveType?" @bind-Value="leaveReportFilter.LeaveType">
@@ -45,7 +46,16 @@
                 
             </MudCardContent>
             <MudCardActions>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GenerateLeaveRequestReport" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Print">Print</MudButton>
+                <MudLoadingButton Variant="Variant.Filled"
+                                  Color="Color.Primary"
+                                  Size="Size.Large"
+                                  Loading="@(_loadingLeaveRequestReport)"
+                                  OnClick="GenerateLeaveRequestReport"
+                                  ButtonType="ButtonType.Button">
+                    <LoadingContent>Generating...</LoadingContent>
+                    <ChildContent>Generate</ChildContent>
+                </MudLoadingButton>
+                
             </MudCardActions>
         </MudCard>
     </MudForm>
@@ -65,13 +75,14 @@
     private bool isChecked_Filed = true;
     [Inject] private HttpClient Http { get; set; }
     [Inject] IJSRuntime JSRuntime { get; set; }
+    private bool _loadingLeaveRequestReport = false;
     private async Task GenerateLeaveRequestReport()
     {
         try
         {
             var filter = leaveReportFilter;
 
-           
+            _loadingLeaveRequestReport = true;
             var query = new List<string>();
             if (filter.LeaveType.HasValue) query.Add($"LeaveType={filter.LeaveType}");
             if (filter.StartDate.HasValue) query.Add($"StartDate={filter.StartDate.Value.ToString("yyyy-MM-dd")}");
@@ -82,8 +93,6 @@
             var queryString = string.Join("&", query);
             var url = $"Report/GetLeaveRequestReport?{queryString}";
 
-           
-
             var response = await Http.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
@@ -92,17 +101,20 @@
                 var blobUrl = $"data:application/pdf;base64,{Convert.ToBase64String(pdfContent)}";
                 var timestamp = DateTime.Now.ToString("MMddyyyyHHmmss");
                 var fileName = $"LeaveRequestReport_{timestamp}.pdf";
-                await JSRuntime.InvokeVoidAsync("downloadFile", blobUrl, fileName);
+                await JSRuntime.InvokeVoidAsync("downloadFile", blobUrl, fileName);                
             }
             else
             {
-                // Handle the error appropriately
-                Console.WriteLine("Failed to generate the report.");
+                Snackbar.Add("Failed to generate the report.", Severity.Error);                
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            Snackbar.Add($"Failed to generate the report. Error Info: {ex.Message}", Severity.Error);            
+        }
+        finally
+        {
+            _loadingLeaveRequestReport = false;
         }
     }
 

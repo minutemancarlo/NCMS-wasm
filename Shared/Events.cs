@@ -35,10 +35,10 @@ namespace NCMS_wasm.Shared
     public class LeaveReportFilter
     {
         public LeaveType? LeaveType { get; set; } 
-        public DateTime? StartDate { get; set; } = DateTime.Today;
-        public DateTime? EndDate { get; set; } = DateTime.Today;
-        public DateTime? FileDateFrom { get; set; } = DateTime.Today;
-        public DateTime? FileDateTo { get; set; } = DateTime.Today;
+        public DateTime? StartDate { get; set; } = null;
+        public DateTime? EndDate { get; set; } = null;
+        public DateTime? FileDateFrom { get; set; } = null;
+        public DateTime? FileDateTo { get; set; } = null;
         public string? EmployeeName { get; set; } 
         public ApprovalType? ApprovalType { get; set; }
     }
@@ -62,4 +62,6 @@ namespace NCMS_wasm.Shared
         Vacation = 1,
         Sick = 2
     }
+
+
 }

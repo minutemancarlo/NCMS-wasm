@@ -24,6 +24,7 @@ builder.Services.AddTransient<EmployeeRepository>();
 
 //Add Services
 builder.Services.AddScoped<LeaveRequestService>();
+builder.Services.AddScoped<EmployeeService>();
 
 // Add services to the container.
 builder.Services.AddAuthentication(options =>

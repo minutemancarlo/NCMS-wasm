@@ -56,6 +56,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>dsLeaveRequest.xsd</DependentUpon>
     </Compile>
+    <Compile Include="EmployeeInfoSingle.cs">
+      <DependentUpon>EmployeeInfoSingle.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeeInfoSingle.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EmployeeInfoSingle.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +72,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="EmployeeInfoSingle.rdlc" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -100,6 +109,17 @@
     </None>
     <None Include="dsLeaveRequest.xss">
       <DependentUpon>dsLeaveRequest.xsd</DependentUpon>
+    </None>
+    <None Include="EmployeeInfoSingle.xsc">
+      <DependentUpon>EmployeeInfoSingle.xsd</DependentUpon>
+    </None>
+    <None Include="EmployeeInfoSingle.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>EmployeeInfoSingle.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="EmployeeInfoSingle.xss">
+      <DependentUpon>EmployeeInfoSingle.xsd</DependentUpon>
     </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -73,6 +73,15 @@
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>dsLeaveRequest.Designer.cs</LastGenOutput>
     </Content>
+    <Content Update="wwwroot\Reports\EmployeeInfoSingle.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EmployeeInfoSingle.xsd</DependentUpon>
+    </Content>
+    <Content Update="wwwroot\Reports\EmployeeInfoSingle.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>EmployeeInfoSingle.Designer.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
 
 

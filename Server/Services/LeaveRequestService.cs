@@ -30,6 +30,7 @@ namespace NCMS_wasm.Server.Services
             events = events.Where(request => request.EventType == EventsType.Leave)
                         .OrderByDescending(request => request.CreatedOn)
                         .ToList();
+            events = FilterLeaveRequests((List<LeaveRequests>)events, filter);
             foreach (var x in events)
             {
                 string leaveType = x.LeaveType == LeaveType.Vacation ? "Vacation" : "Sick";
@@ -39,5 +40,38 @@ namespace NCMS_wasm.Server.Services
 
             return dt;
         }
+
+        public List<LeaveRequests> FilterLeaveRequests(List<LeaveRequests> leaveRequests, LeaveReportFilter filter)
+        {
+            var filteredLeaveRequests = leaveRequests.AsQueryable();
+
+            if (filter.LeaveType.HasValue)
+            {
+                filteredLeaveRequests = filteredLeaveRequests.Where(lr => lr.LeaveType == filter.LeaveType.Value);
+            }
+
+            if (!string.IsNullOrEmpty(filter.EmployeeName))
+            {
+                filteredLeaveRequests = filteredLeaveRequests.Where(lr => lr.EmployeeId == filter.EmployeeName);
+            }
+
+            if (filter.StartDate.HasValue && filter.EndDate.HasValue)
+            {
+                filteredLeaveRequests = filteredLeaveRequests.Where(lr => lr.EventStart >= filter.StartDate.Value && lr.EventEnd <= filter.EndDate.Value);
+            }
+
+            if (filter.FileDateFrom.HasValue && filter.FileDateTo.HasValue)
+            {
+                filteredLeaveRequests = filteredLeaveRequests.Where(lr => lr.CreatedOn >= filter.FileDateFrom.Value && lr.CreatedOn <= filter.FileDateTo.Value);
+            }
+
+            if (filter.ApprovalType.HasValue)
+            {
+                filteredLeaveRequests = filteredLeaveRequests.Where(lr => lr.IsApproved == filter.ApprovalType.Value);
+            }
+
+            return filteredLeaveRequests.ToList();
+        }
+
     }
 }

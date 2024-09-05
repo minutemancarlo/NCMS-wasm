@@ -1,30 +1,95 @@
-﻿using System.Data;
+﻿using NCMS_wasm.Server.Repository;
+using NCMS_wasm.Shared;
+using System.Data;
 
 namespace NCMS_wasm.Server.Services
 {
     public class EmployeeService
     {
-        public DataTable GetEmployees()
+        private readonly EmployeeRepository _employeeRepository;
+        public EmployeeService(EmployeeRepository employeeRepository)
         {
-            DataTable dt = new DataTable();
-            dt.Columns.Add("Id");
-            dt.Columns.Add("Name");
-            dt.Columns.Add("Department");
-            dt.Columns.Add("Designation");
-            dt.Columns.Add("Salary");
+            _employeeRepository = employeeRepository;
+        }
 
-            dt.Rows.Add(1, "John", "IT", "Manager", 5000);
-            dt.Rows.Add(2, "Smith", "HR", "Executive", 3000);
-            dt.Rows.Add(3, "Mark", "IT", "Developer", 4000);
-            dt.Rows.Add(4, "Mary", "HR", "Manager", 5000);
-            dt.Rows.Add(5, "Sara", "IT", "Developer", 4000);
-            dt.Rows.Add(6, "David", "IT", "Developer", 4000);
-            dt.Rows.Add(7, "Peter", "HR", "Executive", 3000);
-            dt.Rows.Add(8, "Julie", "HR", "Manager", 5000);
-            dt.Rows.Add(9, "Tom", "IT", "Developer", 4000);
-            dt.Rows.Add(10, "Jerry", "IT", "Developer", 4000);
+        public async Task<DataTable> GetEmployeeInfoAsync(string idNumber)
+        {
+
+            DataTable dt = new DataTable();
+            
+            dt.Columns.Add("IDNumber", typeof(string));
+            dt.Columns.Add("Auth0_Id", typeof(string));
+            dt.Columns.Add("Name", typeof(string));
+            dt.Columns.Add("Address", typeof(string));
+            dt.Columns.Add("Phone", typeof(string));
+            dt.Columns.Add("SSS", typeof(string));
+            dt.Columns.Add("PagIbig", typeof(string));
+            dt.Columns.Add("PHIC", typeof(string));
+            dt.Columns.Add("Profile", typeof(string));
+            dt.Columns.Add("DateOfBirth", typeof(DateTime));
+            dt.Columns.Add("PlaceOfBirth", typeof(string));
+            dt.Columns.Add("Gender", typeof(string));
+            dt.Columns.Add("CivilStatus", typeof(string));
+            dt.Columns.Add("Email", typeof(string));
+            dt.Columns.Add("Position", typeof(string));
+            dt.Columns.Add("Department", typeof(string));
+            dt.Columns.Add("EmploymentStatus", typeof(string));
+            dt.Columns.Add("DateHired", typeof(DateTime));
+            dt.Columns.Add("DateResigned", typeof(DateTime));
+            dt.Columns.Add("Salary", typeof(decimal));
+            dt.Columns.Add("EmergencyContactName", typeof(string));
+            dt.Columns.Add("EmergencyContactRelationship", typeof(string));
+            dt.Columns.Add("EmergencyContactPhone", typeof(string));
+            dt.Columns.Add("EmergencyContactAddress", typeof(string));
+            dt.Columns.Add("BeneficiaryName", typeof(string));
+            dt.Columns.Add("BeneficiaryRelationship", typeof(string));
+            dt.Columns.Add("BeneficiaryContactInfo", typeof(string));
+
+
+            var employeeInfo = await _employeeRepository.GetEmployeeInfoSingleAsync(idNumber);
+
+
+            if (employeeInfo != null)
+            {
+
+                DataRow row = dt.NewRow();
+                
+                row["IDNumber"] = employeeInfo.IDNumber ?? string.Empty;
+                row["Auth0_Id"] = employeeInfo.Auth0_Id ?? string.Empty;
+                row["Name"] = employeeInfo.Name;
+                row["Address"] = employeeInfo.Address;
+                row["Phone"] = employeeInfo.Phone;
+                row["SSS"] = employeeInfo.SSS;
+                row["PagIbig"] = employeeInfo.PagIbig;
+                row["PHIC"] = employeeInfo.PHIC;
+                row["Profile"] = employeeInfo.Profile;
+                row["DateOfBirth"] = employeeInfo.DateOfBirth;
+                row["PlaceOfBirth"] = employeeInfo.PlaceOfBirth;
+                row["Gender"] = employeeInfo.Gender;
+                row["CivilStatus"] = employeeInfo.CivilStatus;
+                row["Email"] = employeeInfo.Email;
+                row["Position"] = employeeInfo.Position;
+                row["Department"] = employeeInfo.Department.ToString();
+                row["EmploymentStatus"] = employeeInfo.EmploymentStatus.ToString();
+                row["DateHired"] = employeeInfo.DateHired;
+                row["DateResigned"] =  DBNull.Value;
+                row["Salary"] = employeeInfo.Salary;
+                row["EmergencyContactName"] = employeeInfo.EmergencyContactName;
+                row["EmergencyContactRelationship"] = employeeInfo.EmergencyContactRelationship;
+                row["EmergencyContactPhone"] = employeeInfo.EmergencyContactPhone;
+                row["EmergencyContactAddress"] = employeeInfo.EmergencyContactAddress;
+                row["BeneficiaryName"] = employeeInfo.BeneficiaryName;
+                row["BeneficiaryRelationship"] = employeeInfo.BeneficiaryRelationship;
+                row["BeneficiaryContactInfo"] = employeeInfo.BeneficiaryContactInfo;
+
+                
+                dt.Rows.Add(row);
+            }
 
             return dt;
         }
+
+
+
     }
 }

@@ -13,9 +13,7 @@ namespace NCMS_wasm.Server.Repository
         }
 
         public async Task<int> AddUpdateEmployeeAsync(Employee employeeInfo)
-        {
-
-            
+        {            
                 var parameters = new DynamicParameters();
                 parameters.Add("@IDNumber", employeeInfo.IDNumber);
                 parameters.Add("@Name", employeeInfo.Name);
@@ -97,6 +95,21 @@ namespace NCMS_wasm.Server.Repository
 
             return employee;
         }
+
+        public async Task<Employee> GetEmployeeInfoSingleAsync(string idNumber)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@Id", idNumber);
+
+            string query = "SELECT TOP 1 * FROM Employee WHERE IDNumber = @Id";
+
+            var employee = await _dbConnection.QueryFirstOrDefaultAsync<Employee>(query, parameters);
+
+            return employee;
+        }
+
+
 
     }
 }
