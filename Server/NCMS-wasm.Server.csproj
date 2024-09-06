@@ -87,6 +87,15 @@
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>EmployeeInfoSingle.Designer.cs</LastGenOutput>
     </Content>
+    <Content Update="wwwroot\Reports\Payslip.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Payslip.xsd</DependentUpon>
+    </Content>
+    <Content Update="wwwroot\Reports\Payslip.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Payslip.Designer.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
 
 

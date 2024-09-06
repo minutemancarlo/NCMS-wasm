@@ -7,9 +7,11 @@ namespace NCMS_wasm.Server.Services
     public class EmployeeService
     {
         private readonly EmployeeRepository _employeeRepository;
-        public EmployeeService(EmployeeRepository employeeRepository)
+        private readonly PayslipRepository _payslipRepository;
+        public EmployeeService(EmployeeRepository employeeRepository, PayslipRepository payslipRepository)
         {
             _employeeRepository = employeeRepository;
+            _payslipRepository = payslipRepository;
         }
 
         public async Task<DataTable> GetEmployeeInfoAsync(string idNumber)
@@ -82,6 +84,44 @@ namespace NCMS_wasm.Server.Services
                 row["BeneficiaryRelationship"] = employeeInfo.BeneficiaryRelationship;
                 row["BeneficiaryContactInfo"] = employeeInfo.BeneficiaryContactInfo;
 
+                
+                dt.Rows.Add(row);
+            }
+
+            return dt;
+        }
+
+        public async Task<DataTable> GetMyPayslipAsync(int idNumber)
+        {
+            DataTable dt = new DataTable();
+            var payslipInfo = await _payslipRepository.GetMyPayslipInfoAsync(idNumber);
+
+            dt.Columns.Add("PayslipId", typeof(int));            
+            dt.Columns.Add("EmployeeId", typeof(string));
+            dt.Columns.Add("EmployeeName", typeof(string));
+            dt.Columns.Add("Position", typeof(string));
+            dt.Columns.Add("PayrollDate", typeof(DateTime));
+            dt.Columns.Add("BasicSalary", typeof(decimal));
+            dt.Columns.Add("SSS", typeof(decimal));
+            dt.Columns.Add("PagIbig", typeof(decimal));
+            dt.Columns.Add("PHIC", typeof(decimal));
+            dt.Columns.Add("Tax", typeof(decimal));
+            dt.Columns.Add("TotalNetPay", typeof(decimal));
+
+            if (payslipInfo != null)
+            {                
+                DataRow row = dt.NewRow();
+                row["PayslipId"] = payslipInfo.PayslipId;     
+                row["EmployeeId"] = payslipInfo.EmployeeId ?? string.Empty;
+                row["EmployeeName"] = payslipInfo.EmployeeName ?? string.Empty;
+                row["Position"] = payslipInfo.Position ?? string.Empty;
+                row["PayrollDate"] = payslipInfo.PayrollDate;
+                row["BasicSalary"] = payslipInfo.BasicSalary;
+                row["SSS"] = payslipInfo.SSS;
+                row["PagIbig"] = payslipInfo.PagIbig;
+                row["PHIC"] = payslipInfo.PHIC;
+                row["Tax"] = payslipInfo.Tax;
+                row["TotalNetPay"] = payslipInfo.TotalNetPay;
                 
                 dt.Rows.Add(row);
             }

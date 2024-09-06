@@ -70,6 +70,11 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Payslip.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Payslip.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="EmployeeInfoSingle.rdlc" />
@@ -77,6 +82,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LeaveRequest.rdlc" />
+    <EmbeddedResource Include="Payslip.rdlc" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -120,6 +126,17 @@
     </None>
     <None Include="EmployeeInfoSingle.xss">
       <DependentUpon>EmployeeInfoSingle.xsd</DependentUpon>
+    </None>
+    <None Include="Payslip.xsc">
+      <DependentUpon>Payslip.xsd</DependentUpon>
+    </None>
+    <None Include="Payslip.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Payslip.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Payslip.xss">
+      <DependentUpon>Payslip.xsd</DependentUpon>
     </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

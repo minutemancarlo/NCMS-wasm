@@ -26,6 +26,7 @@
                                       Size="Size.Small"
                                       StartIcon="@Icons.Material.Filled.Download"
                                       Loading="@(downloading)"
+                                      OnClick="@(() => Generatepayslip(new MyPayslipFilter{PayslipId = context.Item.PayslipId, EmployeeId = context.Item.EmployeeId}))"
                                       ButtonType="ButtonType.Button">
                         <LoadingContent>Generating...</LoadingContent>
                         <ChildContent>Download</ChildContent>
@@ -52,6 +53,7 @@
     private bool downloading = false;
     private string currentUserId;
     private bool isLoading = false;
+    [Inject] IJSRuntime jSRuntime { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -86,10 +88,10 @@
             isLoading = false;
         }
     }
-    
+
     private async Task Download()
     {
-        
+
     }
 
     public async Task<string> GetEmployeeInfoAsync(string id)
@@ -119,5 +121,46 @@
             throw;
         }
     }
+
+    private async Task Generatepayslip(MyPayslipFilter filter)
+    {
+        try
+        {
+            
+
+            downloading = true;
+            var query = new List<string>();
+            if (filter.PayslipId!=0) query.Add($"PayslipId={filter.PayslipId}");            
+            if (!string.IsNullOrEmpty(filter.EmployeeId)) query.Add($"EmployeeId={filter.EmployeeId}");
+            var queryString = string.Join("&", query);
+            var url = $"Report/GetPayslipReport?{queryString}";
+
+            var response = await httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var pdfContent = await response.Content.ReadAsByteArrayAsync();
+                var blobUrl = $"data:application/pdf;base64,{Convert.ToBase64String(pdfContent)}";
+                var timestamp = DateTime.Now.ToString("MMddyyyyHHmmss");
+                var fileName = $"Payslipt_{filter.EmployeeId}_{timestamp}.pdf";
+                await jSRuntime.InvokeVoidAsync("downloadFile", blobUrl, fileName);
+            }
+            else
+            {
+                Snackbar.Add("Failed to generate the payslip.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to generate the payslip. Error Info: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            downloading = false;
+        }
+    }
+    
+        
+    
 
 }

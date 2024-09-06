@@ -21,5 +21,12 @@ namespace NCMS_wasm.Shared
         public decimal Tax { get; set; } = 0;        
         public decimal TotalNetPay { get; set; } = 0;
     }
+
+    public class MyPayslipFilter
+    {
+        public string EmployeeId { get; set; }
+        public int PayslipId { get; set; }
+    }
+
 }
 
