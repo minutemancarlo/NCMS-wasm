@@ -4,6 +4,10 @@
 @layout MainLayout
 @attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+    <MudOverlay @bind-Visible="_overlayVisible" DarkBackground AutoClose="false">
+        <MudLoading @bind-Loading="_overlayVisible" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+                    Color="Color.Primary" />
+    </MudOverlay>
     <MudGrid>
         <MudItem xs="12" sm="6" md="4">
             <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;background-color: #1abc9c; ">
@@ -38,6 +42,7 @@
             <MudGrid>
                 <MudItem xs="12">
                     <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+                  
                         <MudText Typo="Typo.h6">Personal Details</MudText>
                         <br/>
                         <MudText Typo="Typo.body1"><strong>Employee ID: </strong>@employee.IDNumber</MudText>
@@ -54,7 +59,7 @@
             </MudGrid>
         </MudItem>
         <MudItem xs="12" sm="6">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">           
                 <MudText Typo="Typo.h6">Employment Details</MudText>
                 <br />
                 <MudText Typo="Typo.body1"><strong>Position: </strong>@employee.Position</MudText>
@@ -68,7 +73,7 @@
             </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">            
                 <MudText Typo="Typo.h6">Emergency Contact Details</MudText>
                 <br />
                 <MudText Typo="Typo.body1"><strong>Name: </strong>@employee.EmergencyContactName</MudText>
@@ -78,7 +83,8 @@
             </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+            
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">               
                 <MudText Typo="Typo.h6">Beneficiary Details</MudText>
                 <br />
                 <MudText Typo="Typo.body1"><strong>Name: </strong>@employee.BeneficiaryName</MudText>
@@ -95,7 +101,7 @@
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
     private Employee? employee = new();
-
+    private bool _overlayVisible = false;
     private string? currentUserId;
     protected override async Task OnInitializedAsync()
     {
@@ -109,6 +115,7 @@
     {
         try
         {
+            _overlayVisible = true;
             // Send a POST request with the ID in the request body
             var response = await httpClient.PostAsJsonAsync("Employee/GetMyInfo", id);
 
@@ -130,6 +137,10 @@
         {
             Console.WriteLine($"Exception occurred: {ex.Message}");
             throw;
+        }
+        finally
+        {
+            _overlayVisible = false;
         }
     }
 
