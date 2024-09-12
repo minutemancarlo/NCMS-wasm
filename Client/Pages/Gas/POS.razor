@@ -1,16 +1,158 @@
 ﻿@page "/gas-pos"
 @attribute [Authorize(Roles = "Gas Employee")]
+@using NCMS_wasm.Client.Pages.Gas.Components
+
 <PageTitle>Point of Sales | NCMS</PageTitle>
-<MudStack>
-    <MudText Typo="Typo.h5">Point of Sales</MudText>
+
+<MudStack Class="w-100">
+    <MudText Typo="Typo.h5" Class="p-1">Point of Sales</MudText>
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Width="100%">
+                <MudStack AlignItems="AlignItems.End" Justify="Justify.FlexEnd">
+
+
+
+                    @* <MudNumericField @bind-Value="DecimalValue" Label="" FullWidth Clearable HideSpinButtons Lines="5" Class="fs-6" Variant="Variant.Outlined" Step=".2M" /> *@
+                    <MudText Typo="Typo.h1" Class="p-3">₱ 0.00</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #A8E6CF">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                        <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.h6">UNLEADED</MudText>
+                            <MudText Typo="Typo.body1">55.45 / Liter</MudText>
+                        </MudStack>
+                    </MudStack>
+                    <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                        <MudText Typo="Typo.subtitle1">
+                            <b class="text-white">90%</b>
+                        </MudText>
+                    </MudProgressLinear>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #4A90E2">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                        <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.h6">PREMIUM</MudText>
+                            <MudText Typo="Typo.body1">55.45 / Liter</MudText>
+                        </MudStack>
+                    </MudStack>
+                    <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                        <MudText Typo="Typo.subtitle1">
+                            <b class="text-white">90%</b>
+                        </MudText>
+                    </MudProgressLinear>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #FFA726">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                        <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.h6">REGULAR</MudText>
+                            <MudText Typo="Typo.body1">55.45 / Liter</MudText>
+                        </MudStack>
+                    </MudStack>
+                    <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                        <MudText Typo="Typo.subtitle1">
+                            <b class="text-white">90%</b>
+                        </MudText>
+                    </MudProgressLinear>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                        <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.h6">DIESEL</MudText>
+                            <MudText Typo="Typo.body1">55.45 / Liter</MudText>
+                        </MudStack>
+                    </MudStack>
+                    <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                        <MudText Typo="Typo.subtitle1">
+                            <b class="text-white">90%</b>
+                        </MudText>
+                    </MudProgressLinear>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                        <MudIcon Icon="fas fa-tag" Size="Size.Large" Class="mr-2" />
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.h6">DISCOUNT</MudText>              
+                        </MudStack>
+                    </MudStack>               
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                        <MudIcon Icon="fas fa-money-bill" Size="Size.Large" Class="mr-2" />
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.h6">CASH</MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                        <MudIcon Icon="fas fa-credit-card" Size="Size.Large" Class="mr-2" />
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.h6">CARD</MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                        <MudIcon Icon="fas fa-gifts" Size="Size.Large" Class="mr-2" />
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.h6">POINTS</MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
 </MudStack>
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    public decimal? DecimalValue { get; set; } = 0.00M;
+
 
     protected override async Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "Gas Station Management Module";
         await base.OnInitializedAsync();
     }
+
+
 }
