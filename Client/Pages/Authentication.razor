@@ -48,6 +48,14 @@
             <MudText Typo="Typo.body2" Class="fw-bolder">Logging you out, please wait...</MudText>
         </MudStack>
     </LogOutSucceeded>
+        <Registering>
+            @{
+                var authority = (string)Configuration["Auth0:Authority"];
+                var clientId = (string)Configuration["Auth0:ClientId"];
+
+                Navigation.NavigateTo($"{authority}/authorize?client_id={clientId}&response_type=code&screen_hint=signup");
+            }
+        </Registering>
   
 </RemoteAuthenticatorView>
 </div>
