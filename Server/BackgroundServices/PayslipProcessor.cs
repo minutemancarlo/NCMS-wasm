@@ -24,10 +24,32 @@ public class PayslipProcessor : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
+            CreateDirectories();
             await ProcessFilesAsync();
             await Task.Delay(10000, stoppingToken); // Runs every 10 seconds
         }
     }
+
+    private void CreateDirectories()
+    {
+        if (!Directory.Exists(onQueuePath))
+        {
+            Directory.CreateDirectory(onQueuePath);
+        }
+        if (!Directory.Exists(processingPath))
+        {
+            Directory.CreateDirectory(processingPath);
+        }
+        if (!Directory.Exists(successPath))
+        {
+            Directory.CreateDirectory(successPath);
+        }
+        if (!Directory.Exists(failedPath))
+        {
+            Directory.CreateDirectory(failedPath);
+        }
+    }
+
 
     private async Task ProcessFilesAsync()
     {
