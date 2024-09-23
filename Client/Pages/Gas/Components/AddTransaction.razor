@@ -1,0 +1,86 @@
+﻿@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Validations
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.CardTravel"></MudIcon>
+            Add Transaction for @GasClassification
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form">
+            <MudText Typo="Typo.h6">Price/L: @Price</MudText>
+            <MudNumericField @bind-Value="GasTransaction.GasValue" AutoFocus Immediate OnKeyUp="HandleKeyUp" Label="Value" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" />
+            <MudNumericField @bind-Value="GasTransaction.GasAmount" Immediate OnKeyUp="@HandleKeyUp" Label="Amount" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"
+                          Loading="@(_loading)"
+                          OnClick="OnSubmit"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Submitting...</LoadingContent>
+            <ChildContent>Submit</ChildContent>
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public string GasClassification { get; set; }
+    [Parameter] public decimal Price { get; set; }
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    MudForm form;
+    private bool _loading = false;
+    private GasTransaction GasTransaction { get; set; } = default!;
+    protected override async Task OnInitializedAsync()
+    {
+        GasTransaction = new GasTransaction
+            {
+                GasValue = 1,
+                GasAmount = Price
+            };
+        await base.OnInitializedAsync();
+    }
+
+
+    void Cancel() => MudDialog.Cancel();
+
+    private void OnSubmit() => MudDialog.Close(DialogResult.Ok(GasTransaction));
+
+    private void HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            OnSubmit();
+        }
+        else if (e.Key == "Escape")
+        {
+            Cancel();
+        }
+        else
+        {
+            OnChangeValue(GasTransaction.GasValue, true);
+        }
+    }
+
+    private void OnChangeValue(decimal value, bool IsValue)
+    {
+        if (IsValue)
+        {
+            GasTransaction.GasAmount = value * Price;
+        }
+        else
+        {
+            GasTransaction.GasValue = value / Price;
+        }
+    }
+
+
+
+}

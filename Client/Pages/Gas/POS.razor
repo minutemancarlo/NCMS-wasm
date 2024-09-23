@@ -1,142 +1,217 @@
 ﻿@page "/gas-pos"
 @attribute [Authorize(Roles = "Gas Employee")]
 @using NCMS_wasm.Client.Pages.Gas.Components
-
+@using NCMS_wasm.Shared
+@using System.Globalization
 <PageTitle>Point of Sales | NCMS</PageTitle>
 
 <MudStack Class="w-100">
     <MudText Typo="Typo.h5" Class="p-1">Point of Sales</MudText>
     <MudGrid>
         <MudItem xs="12">
-            <MudPaper Width="100%">
-                <MudStack AlignItems="AlignItems.End" Justify="Justify.FlexEnd">
+            <MudPaper Width="100%" Height="200">
+                <MudOverlay @bind-Visible="isLoadingGasPrice" DarkBackground AutoClose="false">
+                    <MudLoading @bind-Loading="isLoadingGasPrice" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+                                Color="Color.Primary" />
+                </MudOverlay>
+                <MudStack Row AlignItems="AlignItems.Start" Justify="Justify.SpaceEvenly">
+                    <MudPaper Class="px-2">
+                        <MudDataGrid Items="@subTransaction.AsEnumerable().Reverse().ToList()" T="SubTransaction" Filterable="false" Elevation="0" ShowFilterIcons="false" HorizontalScrollbar="true" Dense RowsPerPage="5" Striped>
+                            <Columns>
+                                <PropertyColumn Property="x => x.GasType" HeaderStyle="background-color: black; color: white" Title="Gas Type" Sortable="false">
+                                    <CellTemplate>
+                                        @context.Item.GasType.ToString()
+                                    </CellTemplate>
+                                </PropertyColumn>
+                                <PropertyColumn Property="x => x.Price" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
+                                <PropertyColumn Property="x => x.Value" HeaderStyle="background-color: black; color: white" Title="Liters" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
+                                <PropertyColumn Property="x => x.VAT" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
+                                <PropertyColumn Property="x => x.NetAmount" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
+                                <PropertyColumn Property="x => x.Amount" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
+                                <PropertyColumn Property="x => x.SubTotal" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Title="Sub Total" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
+                            </Columns>
+                            <NoRecordsContent>
+                                <MudText>No Records to show</MudText>
+                            </NoRecordsContent>
+                            <PagerContent>
+                                <MudDataGridPager PageSizeSelector="false" T="SubTransaction" />
+                            </PagerContent>
+                        </MudDataGrid>
+                    </MudPaper>
 
-
-
-                    @* <MudNumericField @bind-Value="DecimalValue" Label="" FullWidth Clearable HideSpinButtons Lines="5" Class="fs-6" Variant="Variant.Outlined" Step=".2M" /> *@
-                    <MudText Typo="Typo.h1" Class="p-3">₱ 0.00</MudText>
-                </MudStack>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #A8E6CF">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                        <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
-                        <MudStack Spacing="1">
-                            <MudText Typo="Typo.h6">UNLEADED</MudText>
-                            <MudText Typo="Typo.body1">55.45 / Liter</MudText>
-                        </MudStack>
-                    </MudStack>
-                    <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
-                        <MudText Typo="Typo.subtitle1">
-                            <b class="text-white">90%</b>
-                        </MudText>
-                    </MudProgressLinear>
-                </MudStack>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #4A90E2">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                        <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
-                        <MudStack Spacing="1">
-                            <MudText Typo="Typo.h6">PREMIUM</MudText>
-                            <MudText Typo="Typo.body1">55.45 / Liter</MudText>
-                        </MudStack>
-                    </MudStack>
-                    <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
-                        <MudText Typo="Typo.subtitle1">
-                            <b class="text-white">90%</b>
-                        </MudText>
-                    </MudProgressLinear>
-                </MudStack>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #FFA726">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                        <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
-                        <MudStack Spacing="1">
-                            <MudText Typo="Typo.h6">REGULAR</MudText>
-                            <MudText Typo="Typo.body1">55.45 / Liter</MudText>
-                        </MudStack>
-                    </MudStack>
-                    <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
-                        <MudText Typo="Typo.subtitle1">
-                            <b class="text-white">90%</b>
-                        </MudText>
-                    </MudProgressLinear>
-                </MudStack>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                        <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
-                        <MudStack Spacing="1">
-                            <MudText Typo="Typo.h6">DIESEL</MudText>
-                            <MudText Typo="Typo.body1">55.45 / Liter</MudText>
-                        </MudStack>
-                    </MudStack>
-                    <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
-                        <MudText Typo="Typo.subtitle1">
-                            <b class="text-white">90%</b>
-                        </MudText>
-                    </MudProgressLinear>
-                </MudStack>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                        <MudIcon Icon="fas fa-tag" Size="Size.Large" Class="mr-2" />
-                        <MudStack Spacing="1">
-                            <MudText Typo="Typo.h6">DISCOUNT</MudText>              
-                        </MudStack>
-                    </MudStack>               
-                </MudStack>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                        <MudIcon Icon="fas fa-money-bill" Size="Size.Large" Class="mr-2" />
-                        <MudStack Spacing="1">
-                            <MudText Typo="Typo.h6">CASH</MudText>
-                        </MudStack>
+                    <MudSpacer />
+                    <MudStack AlignItems="AlignItems.End">
+                        @{
+                            string formattedTotal = (Transaction?.Total ?? 0m).ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                        }
+                        <MudText Typo="Typo.h1" Class="p-3"> @formattedTotal</MudText>
+                        @if (Transaction is not null)
+                        {
+                            <MudText Typo="Typo.h6">Change: <strong style="color: red;">@Transaction.Change</strong></MudText>
+                            <MudStack Row Class="px-2 py-2">
+                                <MudIconButton OnClick="TenderTransaction" Icon="@Icons.Material.Filled.Check" Color="Color.Success" Variant="Variant.Filled" Size="Size.Large" />
+                                <MudIconButton OnClick="Clear" Icon="@Icons.Material.Filled.Close" Color="Color.Error" Variant="Variant.Filled" Size="Size.Large" />
+                            </MudStack>
+                        }
                     </MudStack>
                 </MudStack>
             </MudPaper>
         </MudItem>
         <MudItem xs="6" sm="3">
-            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                        <MudIcon Icon="fas fa-credit-card" Size="Size.Large" Class="mr-2" />
-                        <MudStack Spacing="1">
-                            <MudText Typo="Typo.h6">CARD</MudText>
+            <MudLink OnClick="@(async () => await ShowAddTransaction(GasType.Unleaded))" Underline="Underline.None">
+                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #27ae60">
+                    <MudStack AlignItems="AlignItems.Center">
+                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                            <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.h6">UNLEADED</MudText>
+                                <MudText Typo="Typo.body1">@GasPrices.Unleaded / Liter</MudText>
+                            </MudStack>
                         </MudStack>
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                            <MudText Typo="Typo.subtitle1">
+                                <b class="text-white">90%</b>
+                            </MudText>
+                        </MudProgressLinear>
                     </MudStack>
-                </MudStack>
-            </MudPaper>
+                </MudPaper>
+            </MudLink>
         </MudItem>
         <MudItem xs="6" sm="3">
-            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                        <MudIcon Icon="fas fa-gifts" Size="Size.Large" Class="mr-2" />
-                        <MudStack Spacing="1">
-                            <MudText Typo="Typo.h6">POINTS</MudText>
+            <MudLink OnClick="@(async () => await ShowAddTransaction(GasType.Premium))" Underline="Underline.None">
+                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #4A90E2">
+                    <MudStack AlignItems="AlignItems.Center">
+                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                            <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.h6">PREMIUM</MudText>
+                                <MudText Typo="Typo.body1">@GasPrices.Premium / Liter</MudText>
+                            </MudStack>
+                        </MudStack>
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                            <MudText Typo="Typo.subtitle1">
+                                <b class="text-white">90%</b>
+                            </MudText>
+                        </MudProgressLinear>
+                    </MudStack>
+                </MudPaper>
+            </MudLink>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudLink OnClick="@(async () => await ShowAddTransaction(GasType.Regular))" Underline="Underline.None">
+                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #FFA726">
+                    <MudStack AlignItems="AlignItems.Center">
+                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                            <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.h6">REGULAR</MudText>
+                                <MudText Typo="Typo.body1">@GasPrices.Regular / Liter</MudText>
+                            </MudStack>
+                        </MudStack>
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                            <MudText Typo="Typo.subtitle1">
+                                <b class="text-white">90%</b>
+                            </MudText>
+                        </MudProgressLinear>
+                    </MudStack>
+                </MudPaper>
+            </MudLink>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudLink OnClick="@(async () => await ShowAddTransaction(GasType.Diesel))" Underline="Underline.None">
+                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #B0BEC5">
+                    <MudStack AlignItems="AlignItems.Center">
+                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                            <MudIcon Icon="fas fa-gas-pump" Size="Size.Large" Class="mr-2" />
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.h6">DIESEL</MudText>
+                                <MudText Typo="Typo.body1">@GasPrices.Diesel / Liter</MudText>
+                            </MudStack>
+                        </MudStack>
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                            <MudText Typo="Typo.subtitle1">
+                                <b class="text-white">90%</b>
+                            </MudText>
+                        </MudProgressLinear>
+                    </MudStack>
+                </MudPaper>
+            </MudLink>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudLink Href="#" Underline="Underline.None">
+                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #e74c3c">
+                    <MudStack AlignItems="AlignItems.Center">
+                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                            <MudIcon Icon="fas fa-tag" Size="Size.Large" Class="mr-2" />
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.h6">DISCOUNT</MudText>
+                            </MudStack>
                         </MudStack>
                     </MudStack>
-                </MudStack>
-            </MudPaper>
+                </MudPaper>
+            </MudLink>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudLink OnClick="@(async () => ShowAddPayment(TransactionType.Points))" Underline="Underline.None">
+                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #f1c40f">
+                    <MudStack AlignItems="AlignItems.Center">
+                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                            <MudIcon Icon="fas fa-gifts" Size="Size.Large" Class="mr-2" />
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.h6">POINTS</MudText>
+                            </MudStack>
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+            </MudLink>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudLink OnClick="@(async () => ShowAddPayment(TransactionType.Cash))" Underline="Underline.None">
+                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #1abc9c">
+                    <MudStack AlignItems="AlignItems.Center">
+                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                            <MudIcon Icon="fas fa-money-bill" Size="Size.Large" Class="mr-2" />
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.h6">CASH</MudText>
+                            </MudStack>
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+            </MudLink>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudLink OnClick="@(async () => ShowAddPayment(TransactionType.Card))" Underline="Underline.None">
+                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #1abc9c">
+                    <MudStack AlignItems="AlignItems.Center">
+                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                            <MudIcon Icon="fas fa-credit-card" Size="Size.Large" Class="mr-2" />
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.h6">CARD</MudText>
+                            </MudStack>
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+            </MudLink>
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Typo="Typo.h6" Class="pt-2">Transaction History</MudText>
+            <MudDataGrid Items="@GasModels" Elevation="4">
+                <Columns>
+                    <PropertyColumn Property="x => x.TransactionId" Title="Transaction ID" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: #ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.GasValues.GasValue" Title="Value" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.GasValues.GasAmount" Title="Amount" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.TransactionType" Title="Transaction Type" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.CardTransactionId" Title="Card Transaction ID" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.IsVoid" Title="Is Void" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.IsCard" Title="Is Card" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.Points" Title="Points" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.Discounts" Title="Discounts" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.VAT" Title="VAT" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.Total" Title="Total" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                </Columns>
+            </MudDataGrid>
         </MudItem>
     </MudGrid>
 
@@ -145,14 +220,242 @@
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
     [Inject] IJSRuntime JSRuntime { get; set; }
-    public decimal? DecimalValue { get; set; } = 0.00M;
+    [Inject] IDialogService? DialogService { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
 
+    public decimal? DecimalValue { get; set; } = 0.00M;
+    private List<GasModel> GasModels = new();
+    private GasModel? Transaction { get; set; }
+    private GasPrices GasPrices { get; set; } = new();
+    private List<SubTransaction> subTransaction { get; set; } = new();
+    private bool isLoadingGasPrice = false;
+    private List<GasPrice> gasPrices = new();
 
     protected override async Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "Gas Station Management Module";
+        var sampleGasModel = new GasModel
+            {
+                TransactionId = "TXN123456",
+                TransactionType = TransactionType.Card,
+                CardTransactionId = "CARD7890",
+                IsVoid = false,
+                IsCard = true,
+                Points = 100.00M,
+                Discounts = 5.00M,
+                VAT = 10.00M,
+                Total = 115.00M
+            };
+        GasModels.Add(sampleGasModel);
+        await GetGasPrices();
+
+
         await base.OnInitializedAsync();
     }
 
+    private async Task GetPOSHistory()
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task GetGasPrices()
+    {
+        isLoadingGasPrice = true;
+
+        try
+        {
+            gasPrices = await httpClient.GetFromJsonAsync<List<GasPrice>>("Gas/GetGasPrices");
+            if (gasPrices is not null)
+            {
+                GasPrices = new GasPrices
+                    {
+                        Diesel = gasPrices.FirstOrDefault(x => x.GasType == GasType.Diesel).Price,
+                        Premium = gasPrices.FirstOrDefault(x => x.GasType == GasType.Premium).Price,
+                        Regular = gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular).Price,
+                        Unleaded = gasPrices.FirstOrDefault(x => x.GasType == GasType.Unleaded).Price
+                    };
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingGasPrice = false;
+        }
+    }
+
+    private void Clear()
+    {
+        subTransaction = new();
+        Transaction = null;
+    }
+
+    private async Task TenderTransaction()
+    {
+        if (Transaction.IsCard)
+        {
+            if (string.IsNullOrEmpty(Transaction.CardTransactionId))
+            {
+                Snackbar.Add("Please add card transaction id", Severity.Error);
+                return;
+            }
+
+        }
+
+        if (!Transaction.IsCard)
+        {
+
+            if (Transaction.CashReceived <= decimal.Zero)
+            {
+                Snackbar.Add("Please get the payment in cash", Severity.Error);
+                return;
+            }
+        }
+
+
+
+        await Task.CompletedTask;
+    }
+
+    private async Task ShowAddPayment(TransactionType transactionType)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = true,
+                CloseButton = true
+            };
+
+        if (Transaction is null)
+        {
+            Snackbar.Add("Please add transaction", Severity.Error);
+            return;
+        }
+
+        var parameters = new DialogParameters<AddPaymentDialog>
+        {
+            {x => x.Title, transactionType.ToString()},
+            {x => x.Total, Transaction.Total}
+        };
+        var dialog = await DialogService.ShowAsync<AddPaymentDialog>("Simple Dialog", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var model = result.Data as Payment;
+
+            if (model != null)
+            {
+                if (transactionType == TransactionType.Card)
+                {
+                    if (string.IsNullOrEmpty(model.CardTransactionId))
+                    {
+                        Snackbar.Add("Please add card transaction id", Severity.Error);
+                        return;
+                    }
+                    Transaction.CardTransactionId = model.CardTransactionId;
+                }
+
+                if (transactionType == TransactionType.Cash)
+                {
+                    if (model.CashReceived <= decimal.Zero)
+                    {
+                        Snackbar.Add("Please add amount to cash received", Severity.Error);
+                        return;
+                    }
+                    Transaction.Change = model.Change;
+                    Transaction.CashReceived = model.CashReceived;
+                    Transaction.VAT = subTransaction.Sum(p => p.VAT);
+                }
+            }
+
+            StateHasChanged();
+        }
+    }
+
+
+    private async Task ShowAddTransaction(GasType gasType)
+    {
+
+
+
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = false,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = true,
+                CloseButton = false
+            };
+
+        decimal price = 0.00M;
+        switch (gasType)
+        {
+            case GasType.Unleaded:
+                price = GasPrices.Unleaded;
+                break;
+            case GasType.Premium:
+                price = GasPrices.Premium;
+                break;
+            case GasType.Regular:
+                price = GasPrices.Regular;
+                break;
+            case GasType.Diesel:
+                price = GasPrices.Diesel;
+                break;
+        }
+        var parameters = new DialogParameters<AddTransaction>
+        {
+            {x => x.GasClassification, gasType.ToString()},
+            {x => x.Price, price}
+        };
+        var dialog = await DialogService.ShowAsync<AddTransaction>("Simple Dialog", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var model = result.Data as GasTransaction;
+
+            if (model != null)
+            {
+                decimal total = model.GasValue * model.GasAmount;
+                decimal VAT = total * 0.12M;
+                if (total <= decimal.Zero)
+                {
+                    Snackbar.Add("Invalid Value/Amount", Severity.Error);
+                    return;
+                }
+                if (Transaction is null)
+                {
+                    Transaction = new();
+                }
+
+
+
+                var subTrans = new SubTransaction
+                    {
+                        GasType = gasType,
+                        Amount = model.GasAmount,
+                        Price = price,
+                        Value = model.GasValue,
+                        VAT = VAT,
+                        NetAmount = total - VAT,
+                        SubTotal = total
+                    };
+                subTransaction.Add(subTrans);
+                Transaction.GasValues.GasValue = Transaction.GasValues.GasValue + model.GasValue;
+                Transaction.GasValues.GasAmount = Transaction.GasValues.GasAmount + model.GasAmount;
+                Transaction.Total = Transaction.Total + total;
+                
+
+
+            }
+
+            StateHasChanged();
+        }
+    }
 
 }

@@ -1,27 +1,37 @@
-﻿<MudDialog>
+﻿<MudDialog DefaultFocus="DefaultFocus.LastChild">
     <TitleContent>
-        <MudText Typo="Typo.h6">
+        <MudText Typo="Typo.h3">
             <MudIcon Icon="@Icons.Material.Filled.Help"></MudIcon>
-            Confirm Action
         </MudText>
     </TitleContent>
     <DialogContent>
-        @Action
+
+        <MudText Typo="Typo.h6">
+            @Action
+        </MudText>
+
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="@(() => OnSubmit(false))">Cancel</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => OnSubmit(true))">Confirm</MudButton>
+        <MudFocusTrap Disabled="false" DefaultFocus="DefaultFocus.FirstChild">
+            <MudButton tabindex="1" @onfocus="@(() => btnFocus(true))" OnClick="@(() => OnSubmit(false))">Cancel</MudButton>
+            <MudButton tabindex="2" @onfocus="@(() => btnFocus(false))" Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => OnSubmit(true))">Confirm</MudButton>
+        </MudFocusTrap>
     </DialogActions>
 </MudDialog>
+
+
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-
     [Parameter] public string Action { get; set; }
+    MudButton cancelBtn;
+    MudButton submitBtn;
+    [Inject] ISnackbar Snackbar { get; set; }
 
     private void OnSubmit(bool choice)
     {
         if (choice)
         {
+
             MudDialog.Close(DialogResult.Ok(true));
         }
         else
@@ -29,5 +39,17 @@
             MudDialog.Close(DialogResult.Ok(false));
         }
     }
-    
+
+    private void btnFocus(bool isCancel)
+    {
+        if (isCancel)
+        {
+            Snackbar.Add("Cancel Focused", Severity.Normal);
+        }
+        else
+        {
+            Snackbar.Add("Submit Focused", Severity.Success);
+        }
+    }
+
 }

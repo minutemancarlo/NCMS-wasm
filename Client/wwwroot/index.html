@@ -47,6 +47,23 @@
             document.body.removeChild(link);
         }
 
+        window.rfidReader = {
+            initialize: function () {
+                // Initialize the RFID reader
+                console.log("RFID reader initialized.");
+            },
+            scanCard: function () {
+                // Simulate scanning an RFID card
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        const cardId = "1234-5678-ABCD-EFGH"; // Simulated card ID
+                        resolve(cardId);
+                    }, 10);
+                });
+            }
+        };
+
+
     </script>
 </body>
 
