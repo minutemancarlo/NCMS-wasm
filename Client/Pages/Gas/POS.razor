@@ -1,22 +1,28 @@
 ﻿@page "/gas-pos"
 @attribute [Authorize(Roles = "Gas Employee")]
 @using NCMS_wasm.Client.Pages.Gas.Components
+@using NCMS_wasm.Client.Pages.GeneralComponents
+
 @using NCMS_wasm.Shared
 @using System.Globalization
+
 <PageTitle>Point of Sales | NCMS</PageTitle>
+
+
 
 <MudStack Class="w-100">
     <MudText Typo="Typo.h5" Class="p-1">Point of Sales</MudText>
     <MudGrid>
         <MudItem xs="12">
-            <MudPaper Width="100%" Height="200">
+            <MudPaper Width="100%" Height="260px">
                 <MudOverlay @bind-Visible="isLoadingGasPrice" DarkBackground AutoClose="false">
                     <MudLoading @bind-Loading="isLoadingGasPrice" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
                                 Color="Color.Primary" />
                 </MudOverlay>
                 <MudStack Row AlignItems="AlignItems.Start" Justify="Justify.SpaceEvenly">
                     <MudPaper Class="px-2">
-                        <MudDataGrid Items="@subTransaction.AsEnumerable().Reverse().ToList()" T="SubTransaction" Filterable="false" Elevation="0" ShowFilterIcons="false" HorizontalScrollbar="true" Dense RowsPerPage="5" Striped>
+                        <MudDataGrid Items="@subTransaction.AsEnumerable().Reverse().ToList()" T="SubTransaction" FixedFooter Hover
+                                     Filterable="false" Elevation="0" ShowFilterIcons="false" HorizontalScrollbar="true" Dense RowsPerPage="5" Striped>
                             <Columns>
                                 <PropertyColumn Property="x => x.GasType" HeaderStyle="background-color: black; color: white" Title="Gas Type" Sortable="false">
                                     <CellTemplate>
@@ -29,6 +35,13 @@
                                 <PropertyColumn Property="x => x.NetAmount" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
                                 <PropertyColumn Property="x => x.Amount" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
                                 <PropertyColumn Property="x => x.SubTotal" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Title="Sub Total" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
+                                <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="background-color: black; color: white" Title="Action" Format="C" Sortable="false">
+                                    <CellTemplate>
+                                        <MudTooltip Text="Remove Item" Color="Color.Primary" Placement="Placement.Top">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@(() => RemoveItem(context.Item))" />
+                                        </MudTooltip>
+                                    </CellTemplate>
+                                </TemplateColumn>
                             </Columns>
                             <NoRecordsContent>
                                 <MudText>No Records to show</MudText>
@@ -36,6 +49,7 @@
                             <PagerContent>
                                 <MudDataGridPager PageSizeSelector="false" T="SubTransaction" />
                             </PagerContent>
+
                         </MudDataGrid>
                     </MudPaper>
 
@@ -43,16 +57,15 @@
                     <MudStack AlignItems="AlignItems.End">
                         @{
                             string formattedTotal = (Transaction?.Total ?? 0m).ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                            string formattedChange = (Transaction?.Change ?? 0m).ToString("C", new System.Globalization.CultureInfo("en-PH"));
                         }
                         <MudText Typo="Typo.h1" Class="p-3"> @formattedTotal</MudText>
-                        @if (Transaction is not null)
-                        {
-                            <MudText Typo="Typo.h6">Change: <strong style="color: red;">@Transaction.Change</strong></MudText>
-                            <MudStack Row Class="px-2 py-2">
-                                <MudIconButton OnClick="TenderTransaction" Icon="@Icons.Material.Filled.Check" Color="Color.Success" Variant="Variant.Filled" Size="Size.Large" />
-                                <MudIconButton OnClick="Clear" Icon="@Icons.Material.Filled.Close" Color="Color.Error" Variant="Variant.Filled" Size="Size.Large" />
-                            </MudStack>
-                        }
+                        <MudText Typo="Typo.h6">Change: <strong style="color: red;">@formattedChange</strong></MudText>
+                        <MudStack Row Class="px-1 py-1">
+                            @* <MudIconButton OnClick="TenderTransaction" Disabled="@(Transaction is not null? false:true)" Icon="@Icons.Material.Filled.Check" Color="Color.Success" Variant="Variant.Filled" Size="Size.Large" /> *@
+                            <MudIconButton OnClick="Clear" Disabled="@(Transaction is not null? false:true)" Icon="@Icons.Material.Filled.Close" Color="Color.Error" Variant="Variant.Filled" Size="Size.Large" />
+                        </MudStack>
+
                     </MudStack>
                 </MudStack>
             </MudPaper>
@@ -293,6 +306,41 @@
         Transaction = null;
     }
 
+    private async Task RemoveItem(SubTransaction item)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = false,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = false,
+                CloseButton = false
+
+            };
+
+        var confirmationParameters = new DialogParameters<ConfirmationDialog>
+                {
+                    { x => x.Action, "Remove Item from list?"}
+                };
+
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("", confirmationParameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var confirmed = (bool)result.Data;
+            if (confirmed == true)
+            {
+                Transaction.Total = Transaction.Total - item.SubTotal;
+                subTransaction.Remove(item);
+                if (subTransaction.Count() == 0)
+                {
+                    Transaction = null;
+                }
+                Snackbar.Add("Item Removed.", Severity.Success);
+            }
+        }
+    }
+
     private async Task TenderTransaction()
     {
         if (Transaction.IsCard)
@@ -337,6 +385,15 @@
             return;
         }
 
+
+        if (transactionType == TransactionType.Points)
+        {
+
+            return;
+        }
+
+
+
         var parameters = new DialogParameters<AddPaymentDialog>
         {
             {x => x.Title, transactionType.ToString()},
@@ -358,6 +415,12 @@
                         return;
                     }
                     Transaction.CardTransactionId = model.CardTransactionId;
+                    Transaction.CreatedBy = MainLayout.CurrentUserId;
+                    Transaction.VAT = subTransaction.Sum(p => p.VAT);
+                    Transaction.Points = CalculateLoyaltyOrRedemption(Transaction.Total, false);
+
+                    //TODO: Save to DB
+                    Clear();
                 }
 
                 if (transactionType == TransactionType.Cash)
@@ -370,6 +433,38 @@
                     Transaction.Change = model.Change;
                     Transaction.CashReceived = model.CashReceived;
                     Transaction.VAT = subTransaction.Sum(p => p.VAT);
+                    Transaction.Points = CalculateLoyaltyOrRedemption(Transaction.Total, false);
+                    Transaction.CreatedBy = MainLayout.CurrentUserId;
+                    //TODO: Save to DB
+
+                    try
+                    {
+                        var payload = new TransactionRequest
+                            {
+                                Transaction = Transaction,
+                                SubTransactions = subTransaction
+                            };
+
+                        var response = await httpClient.PostAsJsonAsync("Gas/InsertTransaction", payload);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var invoiceNo = await response.Content.ReadAsStringAsync();
+                            Snackbar.Add(invoiceNo, Severity.Success);
+                            Clear();
+                        }
+                        else
+                        {
+                       
+                            var errorMessage = await response.Content.ReadAsStringAsync();
+                            Snackbar.Add($"Failed to insert transaction: {response.StatusCode} - {errorMessage}", Severity.Error);
+                            Console.WriteLine($"Failed to insert transaction: {response.StatusCode} - {errorMessage}");
+                        }                        
+                    }
+                    catch (Exception ex)
+                    {
+                        Snackbar.Add($"Failed to insert transaction: {ex.Message}", Severity.Error);
+                    }
                 }
             }
 
@@ -377,12 +472,28 @@
         }
     }
 
+    static decimal CalculateLoyaltyOrRedemption(decimal amount, bool isRedeem)
+    {
+        const decimal pointsPerCurrencyUnit = 1.5m; // Example: 1.5 points per peso
+        const decimal valuePerPoint = 0.10m; // Example: ₱0.10 per point
+
+        if (isRedeem)
+        {
+            // Calculate loyalty points first
+            decimal loyaltyPoints = amount * pointsPerCurrencyUnit;
+            // Calculate redemption value
+            return loyaltyPoints * valuePerPoint;
+        }
+        else
+        {
+            // Calculate loyalty points
+            return amount * pointsPerCurrencyUnit;
+        }
+    }
+
 
     private async Task ShowAddTransaction(GasType gasType)
     {
-
-
-
         var options = new DialogOptions
             {
                 CloseOnEscapeKey = false,
@@ -413,7 +524,7 @@
             {x => x.GasClassification, gasType.ToString()},
             {x => x.Price, price}
         };
-        var dialog = await DialogService.ShowAsync<AddTransaction>("Simple Dialog", parameters, options);
+        var dialog = await DialogService.ShowAsync<AddTransaction>("", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
         {
@@ -432,9 +543,6 @@
                 {
                     Transaction = new();
                 }
-
-
-
                 var subTrans = new SubTransaction
                     {
                         GasType = gasType,
@@ -443,15 +551,13 @@
                         Value = model.GasValue,
                         VAT = VAT,
                         NetAmount = total - VAT,
-                        SubTotal = total
+                        SubTotal = total,
+                        CreatedBy = MainLayout.CurrentUserId
                     };
                 subTransaction.Add(subTrans);
                 Transaction.GasValues.GasValue = Transaction.GasValues.GasValue + model.GasValue;
                 Transaction.GasValues.GasAmount = Transaction.GasValues.GasAmount + model.GasAmount;
                 Transaction.Total = Transaction.Total + total;
-                
-
-
             }
 
             StateHasChanged();

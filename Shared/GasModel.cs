@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace NCMS_wasm.Shared
@@ -11,10 +12,11 @@ namespace NCMS_wasm.Shared
     /// </summary>
     public class GasModel : BaseModel
     {
+       
         /// <summary>
         /// Gets or sets the transaction ID. Automatically generated in database
         /// </summary>
-        public string TransactionId { get; set; }
+        public string? TransactionId { get; set; }
 
         /// <summary>
         /// Gets or sets the type of transaction. Default to Cash
@@ -70,6 +72,16 @@ namespace NCMS_wasm.Shared
         /// Gets or sets the change.
         /// </summary>
         public decimal Change { get; set; } = 0.00M;
+
+        /// <summary>
+        /// Gets or sets the scanned loyalty ID Card.
+        /// </summary>
+        public string? LoyaltyCardId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Invoice No of the Transaction
+        /// </summary>
+        public string? InvoiceNo { get; set; }
 
     }
 
@@ -135,10 +147,10 @@ namespace NCMS_wasm.Shared
     /// <summary>
     /// Gets or sets the Items per Transaction 
     /// </summary>
-    public class SubTransaction
+    public class SubTransaction : BaseModel
     {
         public int SubTransactionId { get; set; } = 0;
-        public string TransactionId { get; set; }
+        public string? TransactionId { get; set; }
         public GasType GasType { get; set; }
         public decimal Price { get; set; } = 0.00M;
         public decimal Value { get; set; } = 0.00M;
@@ -147,7 +159,19 @@ namespace NCMS_wasm.Shared
         public decimal Amount { get; set; } = 0.00M;
         public decimal SubTotal { get; set; } = 0.00M;
 
+        public string? InvoiceNo { get; set; }
+
     }
+
+    /// <summary>
+    /// Used to Pass the parameter to endpoint
+    /// </summary>
+    public class TransactionRequest
+    {
+        public GasModel Transaction { get; set; }
+        public List<SubTransaction> SubTransactions { get; set; }
+    }
+
 
     /// <summary>
     /// Cash = 1, Card = 2, Points = 3

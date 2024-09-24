@@ -76,7 +76,7 @@
                     { x => x.Action, "Confirm Payment."}
                 };
 
-        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Simple Dialog", confirmationParameters, options);
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("", confirmationParameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
         {

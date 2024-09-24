@@ -33,6 +33,30 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("InsertTransaction")]
+        public async Task<ActionResult<string>> InsertTransaction(TransactionRequest request)
+        {
+            try
+            {
+                var invoiceNo = await _gasRepository.InsertTransactionAsync(request.Transaction);
+                request.SubTransactions.ForEach(subTransaction => subTransaction.InvoiceNo = invoiceNo);
+                foreach (var subTransaction in request.SubTransactions)
+                {                 
+                    await _gasRepository.InsertSubTransactionAsync(subTransaction);
+                }
+
+
+
+                _logger.LogInformation("Transaction inserted successfully with InvoiceNo: {InvoiceNo}", invoiceNo);
+                return Ok(invoiceNo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while inserting transaction: {ex.Message}");
+                return BadRequest($"Exception occurred while inserting transaction: {ex.Message}");
+            }
+        }
+
 
     }
 }
