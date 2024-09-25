@@ -55,7 +55,7 @@ namespace NCMS_wasm.Server.Repository
 
             var id = await _dbConnection.QuerySingleAsync<int>(
                 "InsertSubTransaction",
-                parameters,
+                parameters, 
                 commandType: CommandType.StoredProcedure
             );
             return id;

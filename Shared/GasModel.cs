@@ -141,7 +141,7 @@ namespace NCMS_wasm.Shared
         /// </summary>
         public decimal CashReceived { get; set; } = 0.00M;
 
-
+       
     }
 
     /// <summary>

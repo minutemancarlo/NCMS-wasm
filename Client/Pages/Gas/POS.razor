@@ -418,8 +418,12 @@
                     Transaction.CreatedBy = MainLayout.CurrentUserId;
                     Transaction.VAT = subTransaction.Sum(p => p.VAT);
                     Transaction.Points = CalculateLoyaltyOrRedemption(Transaction.Total, false);
+                    Transaction.IsCard = true;
+                    Transaction.TransactionType = TransactionType.Card;
 
-                    //TODO: Save to DB
+
+                    await OnSubmit(Transaction, subTransaction);
+
                     Clear();
                 }
 
@@ -435,40 +439,46 @@
                     Transaction.VAT = subTransaction.Sum(p => p.VAT);
                     Transaction.Points = CalculateLoyaltyOrRedemption(Transaction.Total, false);
                     Transaction.CreatedBy = MainLayout.CurrentUserId;
-                    //TODO: Save to DB
+                   
+                    await OnSubmit(Transaction, subTransaction);
 
-                    try
-                    {
-                        var payload = new TransactionRequest
-                            {
-                                Transaction = Transaction,
-                                SubTransactions = subTransaction
-                            };
-
-                        var response = await httpClient.PostAsJsonAsync("Gas/InsertTransaction", payload);
-
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var invoiceNo = await response.Content.ReadAsStringAsync();
-                            Snackbar.Add(invoiceNo, Severity.Success);
-                            Clear();
-                        }
-                        else
-                        {
-                       
-                            var errorMessage = await response.Content.ReadAsStringAsync();
-                            Snackbar.Add($"Failed to insert transaction: {response.StatusCode} - {errorMessage}", Severity.Error);
-                            Console.WriteLine($"Failed to insert transaction: {response.StatusCode} - {errorMessage}");
-                        }                        
-                    }
-                    catch (Exception ex)
-                    {
-                        Snackbar.Add($"Failed to insert transaction: {ex.Message}", Severity.Error);
-                    }
                 }
             }
 
             StateHasChanged();
+        }
+    }
+
+
+    private async Task OnSubmit(GasModel transactions, List<SubTransaction> subTransactions)
+    {
+        try
+        {
+            var payload = new TransactionRequest
+                {
+                    Transaction = transactions,
+                    SubTransactions = subTransactions
+                };
+
+            var response = await httpClient.PostAsJsonAsync("Gas/InsertTransaction", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var invoiceNo = await response.Content.ReadAsStringAsync();
+                Snackbar.Add(invoiceNo, Severity.Success);
+                Clear();
+            }
+            else
+            {
+
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to insert transaction: {response.StatusCode} - {errorMessage}", Severity.Error);
+                Console.WriteLine($"Failed to insert transaction: {response.StatusCode} - {errorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to insert transaction: {ex.Message}", Severity.Error);
         }
     }
 

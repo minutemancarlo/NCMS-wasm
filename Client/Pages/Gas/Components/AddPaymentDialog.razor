@@ -68,7 +68,7 @@
                 MaxWidth = MaxWidth.Small,
                 BackdropClick = false,
                 CloseButton = false
-                
+
             };
 
         var confirmationParameters = new DialogParameters<ConfirmationDialog>
@@ -83,6 +83,7 @@
             var confirmed = (bool)result.Data;
             if (confirmed == true)
             {
+                
                 Snackbar.Add("Transaction Tendered.", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(payment));
             }
@@ -97,7 +98,7 @@
     {
         if (e.Key == "Enter")
         {
-          await OnSubmit();
+            await OnSubmit();
         }
         else
         {
@@ -105,6 +106,7 @@
             {
                 payment.Change = payment.CashReceived - Total;
             }
+            
         }
     }
 
@@ -118,7 +120,11 @@
     {
         if (firstRender)
         {
-            await numericField.SelectRangeAsync(0, numericField.Value.ToString().Length);
+            if(Title == "Cash")
+            {
+                await numericField.SelectRangeAsync(0, numericField.Value.ToString().Length);
+            }
+            
         }
         await base.OnAfterRenderAsync(firstRender);
     }
