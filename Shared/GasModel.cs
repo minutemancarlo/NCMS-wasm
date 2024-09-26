@@ -116,8 +116,9 @@ namespace NCMS_wasm.Shared
     {
         public int ID { get; set; }
         public GasType GasType { get; set; }
-        public decimal Price { get; set; }
-        public decimal CapacityRemaining { get; set; }
+        public decimal Price { get; set; } = 0.00M;
+        public double CapacityRemaining { get; set; } = 0.00;
+        public int Capacity { get; set; } = 0;
     }
 
 

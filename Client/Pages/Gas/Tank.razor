@@ -1,44 +1,180 @@
 ﻿@page "/gas-tanks"
 @attribute [Authorize(Roles = "Gas Employee")]
+@using NCMS_wasm.Shared
+@using System.Globalization
+
+
+
 <PageTitle>Tank Management | NCMS</PageTitle>
 <MudStack>
     <MudText Typo="Typo.h5">Tank Management</MudText>
-    <MudStack Row>
-        <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.AddCard">Add Tank</MudButton>
-    </MudStack>
+
     <MudStack Row Wrap="Wrap.Wrap">
-        <MudCard>
+        <MudCard Elevation="4" Style="background-color: #27ae60">
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Tank 1</MudText>
+                    <MudText Typo="Typo.h6">Unleaded</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" />
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
                 <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
                     <MudIcon Icon="fas fa-gas-pump"></MudIcon>
                     <MudStack>
-                        <MudText>Last Filled: 02/02/2024</MudText>
-                        <MudProgressLinear Color="Color.Warning" Size="Size.Large" Value="25" Class="my-7">
+                        <MudText>Updated On: @dt_unleaded</MudText>
+                        <MudText>Current Price: @pr_unleaded.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_unleaded" Class="my-7">
                             <MudText Typo="Typo.subtitle1" Color="Color.Dark">
-                                <b>25%</b>
+                                <b class="text-white">@($"{cap_unleaded}")%</b>
                             </MudText>
                         </MudProgressLinear>
                     </MudStack>
                 </MudStack>
-            </MudCardContent>          
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard Elevation="4" Style="background-color: #4A90E2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Premium</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
+                    <MudIcon Icon="fas fa-gas-pump"></MudIcon>
+                    <MudStack>
+                        <MudText>Updated On: @dt_premium</MudText>
+                        <MudText>Current Price: @pr_premium.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_premium" Class="my-7">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                                <b class="text-white">@($"{cap_premium}")%</b>
+                            </MudText>
+                        </MudProgressLinear>
+                    </MudStack>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard Elevation="4" Style="background-color: #FFA726">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Regular</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
+                    <MudIcon Icon="fas fa-gas-pump"></MudIcon>
+                    <MudStack>
+                        <MudText>Updated On: @dt_regular</MudText>
+                        <MudText>Current Price: @pr_regular.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_regular" Class="my-7">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                                <b class="text-white">@($"{cap_regular}")%</b>
+                            </MudText>
+                        </MudProgressLinear>
+                    </MudStack>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard Elevation="4" Style="background-color: #B0BEC5">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Diesel</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
+                    <MudIcon Icon="fas fa-gas-pump"></MudIcon>
+                    <MudStack>
+                        <MudText>Updated On: @dt_diesel</MudText>
+                        <MudText>Current Price: @pr_diesel.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_diesel" Class="my-7">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                                <b class="text-white">@($"{cap_diesel}")%</b>
+                            </MudText>
+                        </MudProgressLinear>
+                    </MudStack>
+                </MudStack>
+            </MudCardContent>
         </MudCard>
     </MudStack>
 </MudStack>
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
+    [Inject] HttpClient? httpClient { get; set; }
+
+
+    private List<GasPrice> gasPrices = new();
+    private bool isLoadingGasPrice = false;
+
+    #region Gas Capacity
+    private double cap_unleaded = 0.00;
+    private double cap_regular = 0.00;
+    private double cap_premium = 0.00;
+    private double cap_diesel = 0.00;
+    private decimal pr_unleaded = 0.00M;
+    private decimal pr_regular = 0.00M;
+    private decimal pr_premium = 0.00M;
+    private decimal pr_diesel = 0.00M;
+    private DateTime? dt_unleaded;
+    private DateTime? dt_regular;
+    private DateTime? dt_premium;
+    private DateTime? dt_diesel;
+    #endregion
 
     protected override async Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "Gas Station Management Module";
+        await GetGasPrices();
         await base.OnInitializedAsync();
+    }
+
+    private async Task GetGasPrices()
+    {
+        isLoadingGasPrice = true;
+
+        try
+        {
+            gasPrices = await httpClient.GetFromJsonAsync<List<GasPrice>>("Gas/GetGasPrices");
+            if (gasPrices is not null)
+            {
+
+                pr_diesel = gasPrices.FirstOrDefault(x => x.GasType == GasType.Diesel).Price;
+                pr_premium = gasPrices.FirstOrDefault(x => x.GasType == GasType.Premium).Price;
+                pr_regular = gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular).Price;
+                pr_unleaded = gasPrices.FirstOrDefault(x => x.GasType == GasType.Unleaded).Price;
+
+                cap_diesel = gasPrices.FirstOrDefault(x => x.GasType == GasType.Diesel).CapacityRemaining;
+                cap_regular = gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular).CapacityRemaining;
+                cap_premium = gasPrices.FirstOrDefault(x => x.GasType == GasType.Premium).CapacityRemaining;
+                cap_unleaded = gasPrices.FirstOrDefault(x => x.GasType == GasType.Unleaded).CapacityRemaining;
+
+                dt_diesel = gasPrices.FirstOrDefault(x => x.GasType == GasType.Diesel).UpdatedOn;
+                dt_regular = gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular).UpdatedOn;
+                dt_premium = gasPrices.FirstOrDefault(x => x.GasType == GasType.Premium).UpdatedOn;
+                dt_unleaded = gasPrices.FirstOrDefault(x => x.GasType == GasType.Unleaded).UpdatedOn;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingGasPrice = false;
+        }
     }
 }

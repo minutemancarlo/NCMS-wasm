@@ -1,15 +1,43 @@
 ﻿@page "/gas-dashboard"
 @attribute [Authorize(Roles = "Gas Employee")]
 <PageTitle>Dashboard | NCMS</PageTitle>
-<MudStack>
+<MudStack Class="w-100">
     <MudText Typo="Typo.h5">Dashboard</MudText>
+    <MudGrid Class="w-100">
+        <MudItem xs="12">
+            <MudPaper Elevation="4" Class="align-content-center">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Value Sales per Liter for @DateTime.Now.ToString("yyyy")</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <div>
+                            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+                        </div>
+                    </MudCardContent>                   
+                </MudCard>                                
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 </MudStack>
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
+    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
 
-    protected override async Task OnInitializedAsync()
+    public List<ChartSeries> Series = new List<ChartSeries>()
     {
+        new ChartSeries() { Name = "Premium",Data = new double[] { 40, 20, 25, 27, 46, 60, 48, 80, 15 } },
+        new ChartSeries() { Name = "Unleaded", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 31 } },
+        new ChartSeries() { Name = "Diesel", Data = new double[] { 8, 6, 11, 13, 4, 16, 10, 16, 18 } },
+        new ChartSeries() { Name = "Gasoline", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 31 } },
+
+    };
+    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep","Oct","Nov","Dec" };
+    protected override async Task OnInitializedAsync()
+    {        
         MainLayout.SubTitle = "Gas Station Management Module";
         await base.OnInitializedAsync();
     }

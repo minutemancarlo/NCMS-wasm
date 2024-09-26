@@ -12,7 +12,7 @@
         <MudForm @ref="form">
             <MudText Typo="Typo.h6">Price/L: @Price</MudText>
             <MudNumericField @bind-Value="GasTransaction.GasValue" AutoFocus Immediate OnKeyUp="HandleKeyUp" Label="Value" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" />
-            <MudNumericField @bind-Value="GasTransaction.GasAmount" Immediate OnKeyUp="@HandleKeyUp" Label="Amount" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" />
+            <MudNumericField @bind-Value="GasTransaction.GasAmount" Disabled Immediate OnKeyUp="@HandleKeyUpAmount" Label="Amount" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" />
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -66,6 +66,22 @@
         else
         {
             OnChangeValue(GasTransaction.GasValue, true);
+        }
+    }
+
+    private void HandleKeyUpAmount(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            OnSubmit();
+        }
+        else if (e.Key == "Escape")
+        {
+            Cancel();
+        }
+        else
+        {
+            OnChangeValue(GasTransaction.GasValue, false);
         }
     }
 

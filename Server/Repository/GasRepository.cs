@@ -17,6 +17,8 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.QueryAsync<GasPrice>("Select * from GasPrices", null, commandType: CommandType.Text);
         }
 
+       
+
         public async Task<string> InsertTransactionAsync(GasModel transaction)
         {
             var parameters = new DynamicParameters();

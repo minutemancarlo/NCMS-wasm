@@ -81,9 +81,9 @@
                                 <MudText Typo="Typo.body1">@GasPrices.Unleaded / Liter</MudText>
                             </MudStack>
                         </MudStack>
-                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_unleaded" Class="my-7">
                             <MudText Typo="Typo.subtitle1">
-                                <b class="text-white">90%</b>
+                                <b class="text-white">@($"{cap_unleaded}%")</b>
                             </MudText>
                         </MudProgressLinear>
                     </MudStack>
@@ -101,9 +101,9 @@
                                 <MudText Typo="Typo.body1">@GasPrices.Premium / Liter</MudText>
                             </MudStack>
                         </MudStack>
-                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_premium" Class="my-7">
                             <MudText Typo="Typo.subtitle1">
-                                <b class="text-white">90%</b>
+                                <b class="text-white">@($"{cap_premium}%")</b>
                             </MudText>
                         </MudProgressLinear>
                     </MudStack>
@@ -121,9 +121,9 @@
                                 <MudText Typo="Typo.body1">@GasPrices.Regular / Liter</MudText>
                             </MudStack>
                         </MudStack>
-                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_regular" Class="my-7">
                             <MudText Typo="Typo.subtitle1">
-                                <b class="text-white">90%</b>
+                                <b class="text-white">@($"{cap_regular}%")</b>
                             </MudText>
                         </MudProgressLinear>
                     </MudStack>
@@ -141,9 +141,9 @@
                                 <MudText Typo="Typo.body1">@GasPrices.Diesel / Liter</MudText>
                             </MudStack>
                         </MudStack>
-                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="50" Class="my-7">
+                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_diesel" Class="my-7">
                             <MudText Typo="Typo.subtitle1">
-                                <b class="text-white">90%</b>
+                                <b class="text-white">@($"{cap_diesel}%")</b>
                             </MudText>
                         </MudProgressLinear>
                     </MudStack>
@@ -245,6 +245,14 @@
     private bool isLoadingGasPrice = false;
     private List<GasPrice> gasPrices = new();
 
+    #region Gas Capacity
+    private double cap_unleaded = 0.00;
+    private double cap_regular = 0.00;
+    private double cap_premium = 0.00;
+    private double cap_diesel = 0.00;
+    #endregion
+
+
     protected override async Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "Gas Station Management Module";
@@ -288,6 +296,10 @@
                         Regular = gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular).Price,
                         Unleaded = gasPrices.FirstOrDefault(x => x.GasType == GasType.Unleaded).Price
                     };
+                cap_diesel = gasPrices.FirstOrDefault(x => x.GasType == GasType.Diesel).CapacityRemaining;
+                cap_regular = gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular).CapacityRemaining;
+                cap_premium = gasPrices.FirstOrDefault(x => x.GasType == GasType.Premium).CapacityRemaining;
+                cap_unleaded = gasPrices.FirstOrDefault(x => x.GasType == GasType.Unleaded).CapacityRemaining;
             }
         }
         catch (Exception ex)
@@ -439,7 +451,7 @@
                     Transaction.VAT = subTransaction.Sum(p => p.VAT);
                     Transaction.Points = CalculateLoyaltyOrRedemption(Transaction.Total, false);
                     Transaction.CreatedBy = MainLayout.CurrentUserId;
-                   
+
                     await OnSubmit(Transaction, subTransaction);
 
                 }
@@ -448,7 +460,6 @@
             StateHasChanged();
         }
     }
-
 
     private async Task OnSubmit(GasModel transactions, List<SubTransaction> subTransactions)
     {
@@ -500,7 +511,6 @@
             return amount * pointsPerCurrencyUnit;
         }
     }
-
 
     private async Task ShowAddTransaction(GasType gasType)
     {
