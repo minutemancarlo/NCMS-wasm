@@ -6,112 +6,131 @@
 
 
 <PageTitle>Tank Management | NCMS</PageTitle>
-<MudStack>
+<MudLoading @bind-Loading="isLoadingGasPrice" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+            Color="Color.Primary" />
+<MudStack Class="vh-100 w-100">
     <MudText Typo="Typo.h5">Tank Management</MudText>
-    <MudLoading @bind-Loading="isLoadingGasPrice" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
-                Color="Color.Primary" />
-    <MudStack Row Wrap="Wrap.Wrap">
+    <MudGrid>
+          <MudItem xs="12">
+            <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4">
+
+                <MudItem xs="6">
+                    <MudCard Elevation="4" Style="background-color: #27ae60">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Unleaded</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Unleaded)))" Color="Color.Inherit" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
+                                <MudIcon Icon="fas fa-gas-pump"></MudIcon>
+                                <MudStack>
+                                    <MudText>Updated On: @dt_unleaded</MudText>
+                                    <MudText>Current Price: @pr_unleaded.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+                                    <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_unleaded" Class="my-7">
+                                        <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                                            <b class="text-white">@($"{cap_unleaded}")%</b>
+                                        </MudText>
+                                    </MudProgressLinear>
+                                </MudStack>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudCard Elevation="4" Style="background-color: #4A90E2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Premium</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Inherit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Premium)))" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
+                                <MudIcon Icon="fas fa-gas-pump"></MudIcon>
+                                <MudStack>
+                                    <MudText>Updated On: @dt_premium</MudText>
+                                    <MudText>Current Price: @pr_premium.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+                                    <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_premium" Class="my-7">
+                                        <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                                            <b class="text-white">@($"{cap_premium}")%</b>
+                                        </MudText>
+                                    </MudProgressLinear>
+                                </MudStack>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12">
+            <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4">
+       
+                    <MudItem xs="6">
+                        <MudCard Elevation="4" Style="background-color: #FFA726">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">Regular</MudText>
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Inherit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular)))" />
+                                </CardHeaderActions>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
+                                    <MudIcon Icon="fas fa-gas-pump"></MudIcon>
+                                    <MudStack>
+                                        <MudText>Updated On: @dt_regular</MudText>
+                                        <MudText>Current Price: @pr_regular.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+                                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_regular" Class="my-7">
+                                            <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                                                <b class="text-white">@($"{cap_regular}")%</b>
+                                            </MudText>
+                                        </MudProgressLinear>
+                                    </MudStack>
+                                </MudStack>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudCard Elevation="4" Style="background-color: #B0BEC5">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">Diesel</MudText>
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Inherit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Diesel)))" />
+                                </CardHeaderActions>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
+                                    <MudIcon Icon="fas fa-gas-pump"></MudIcon>
+                                    <MudStack>
+                                        <MudText>Updated On: @dt_diesel</MudText>
+                                        <MudText>Current Price: @pr_diesel.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+                                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_diesel" Class="my-7">
+                                            <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                                                <b class="text-white">@($"{cap_diesel}")%</b>
+                                            </MudText>
+                                        </MudProgressLinear>
+                                    </MudStack>
+                                </MudStack>
+                            </MudCardContent>
+                        </MudCard>
+
+                    </MudItem>
         
-        <MudCard Elevation="4" Style="background-color: #27ae60">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Unleaded</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Unleaded)))" Color="Color.Inherit" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
-                    <MudIcon Icon="fas fa-gas-pump"></MudIcon>
-                    <MudStack>
-                        <MudText>Updated On: @dt_unleaded</MudText>
-                        <MudText>Current Price: @pr_unleaded.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
-                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_unleaded" Class="my-7">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Dark">
-                                <b class="text-white">@($"{cap_unleaded}")%</b>
-                            </MudText>
-                        </MudProgressLinear>
-                    </MudStack>
-                </MudStack>
-            </MudCardContent>
-        </MudCard>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
 
-        <MudCard Elevation="4" Style="background-color: #4A90E2">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Premium</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Inherit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Premium)))" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
-                    <MudIcon Icon="fas fa-gas-pump"></MudIcon>
-                    <MudStack>
-                        <MudText>Updated On: @dt_premium</MudText>
-                        <MudText>Current Price: @pr_premium.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
-                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_premium" Class="my-7">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Dark">
-                                <b class="text-white">@($"{cap_premium}")%</b>
-                            </MudText>
-                        </MudProgressLinear>
-                    </MudStack>
-                </MudStack>
-            </MudCardContent>
-        </MudCard>
-
-        <MudCard Elevation="4" Style="background-color: #FFA726">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Regular</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Inherit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular)))" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
-                    <MudIcon Icon="fas fa-gas-pump"></MudIcon>
-                    <MudStack>
-                        <MudText>Updated On: @dt_regular</MudText>
-                        <MudText>Current Price: @pr_regular.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
-                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_regular" Class="my-7">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Dark">
-                                <b class="text-white">@($"{cap_regular}")%</b>
-                            </MudText>
-                        </MudProgressLinear>
-                    </MudStack>
-                </MudStack>
-            </MudCardContent>
-        </MudCard>
-
-        <MudCard Elevation="4" Style="background-color: #B0BEC5">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Diesel</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Inherit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Diesel)))" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudStack Row AlignItems="AlignItems.Stretch" Justify="Justify.Center">
-                    <MudIcon Icon="fas fa-gas-pump"></MudIcon>
-                    <MudStack>
-                        <MudText>Updated On: @dt_diesel</MudText>
-                        <MudText>Current Price: @pr_diesel.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
-                        <MudProgressLinear Color="Color.Dark" Size="Size.Large" Value="@cap_diesel" Class="my-7">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Dark">
-                                <b class="text-white">@($"{cap_diesel}")%</b>
-                            </MudText>
-                        </MudProgressLinear>
-                    </MudStack>
-                </MudStack>
-            </MudCardContent>
-        </MudCard>
-    </MudStack>
+    
 </MudStack>
 @code {
     [CascadingParameter]
