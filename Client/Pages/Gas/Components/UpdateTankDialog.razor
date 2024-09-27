@@ -1,0 +1,89 @@
+﻿@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.GeneralComponents
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.CardTravel"></MudIcon>
+            Update @Title Price/Remaining
+        </MudText>
+    </TitleContent>
+    <DialogContent>        
+        <MudTextField AutoFocus Format="N2" Pattern="^\d+(\.\d+)?$" @bind-Value="Price" ShrinkLabel Label="Price" Variant="Variant.Outlined" Margin="Margin.Normal" />
+        <MudTextField AutoFocus Format="N0" Pattern="^\d+$" Immediate @bind-Value="Capacity" ShrinkLabel Label="Capacity" Variant="Variant.Outlined" Margin="Margin.Normal" />
+
+        @* <MudNumericField Min="1" Variant="Variant.Outlined"  @bind-bind-Value="Price" Label="Price" Margin="Margin.Dense" HideSpinButtons />
+        <MudNumericField Min="1" Max="100" Variant="Variant.Outlined" @bind-Value="Capacity"  Label="Capacity" HideSpinButtons Margin="Margin.Dense" /> *@
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"
+                          Loading="@(_loading)"
+                          OnClick = "OnSubmit"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Updating...</LoadingContent>
+            <ChildContent>Update</ChildContent>
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+
+    [Parameter] public string Title { get; set; }
+    [Parameter] public decimal Price { get; set; }
+    [Parameter] public double Capacity { get; set; }
+    [Parameter] public int Id { get; set; }
+    [Parameter] public string userId { get; set; }
+
+
+    private bool _loading = false;
+
+    void Cancel() => MudDialog.Cancel();
+
+    private async Task OnSubmit()
+    {
+        try
+        {
+            _loading = true;
+            var payload = new GasPrice
+                {
+                    ID = Id,
+                    Price = Price,
+                    CapacityRemaining = Capacity,
+                    UpdatedBy = userId
+                };
+            var response = await httpClient.PostAsJsonAsync("Gas/UpdateGasPrice", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // await response.Content.ReadAsStringAsync();
+                Snackbar.Add("Gas Information updated.", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to insert transaction: {response.StatusCode} - {errorMessage}", Severity.Error);
+                Console.WriteLine($"Failed to insert transaction: {response.StatusCode} - {errorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+
+
+}

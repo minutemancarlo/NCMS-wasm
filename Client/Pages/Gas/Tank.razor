@@ -2,21 +2,23 @@
 @attribute [Authorize(Roles = "Gas Employee")]
 @using NCMS_wasm.Shared
 @using System.Globalization
-
+@using NCMS_wasm.Client.Pages.Gas.Components
 
 
 <PageTitle>Tank Management | NCMS</PageTitle>
 <MudStack>
     <MudText Typo="Typo.h5">Tank Management</MudText>
-
+    <MudLoading @bind-Loading="isLoadingGasPrice" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+                Color="Color.Primary" />
     <MudStack Row Wrap="Wrap.Wrap">
+        
         <MudCard Elevation="4" Style="background-color: #27ae60">
             <MudCardHeader>
                 <CardHeaderContent>
                     <MudText Typo="Typo.h6">Unleaded</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Unleaded)))" Color="Color.Inherit" />
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
@@ -41,7 +43,7 @@
                     <MudText Typo="Typo.h6">Premium</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Inherit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Premium)))" />
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
@@ -66,7 +68,7 @@
                     <MudText Typo="Typo.h6">Regular</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Inherit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular)))" />
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
@@ -91,7 +93,7 @@
                     <MudText Typo="Typo.h6">Diesel</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Inherit" OnClick="@(()=>OpenTankDialog(gasPrices.FirstOrDefault(x => x.GasType == GasType.Diesel)))" />
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
@@ -115,7 +117,7 @@
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
     [Inject] HttpClient? httpClient { get; set; }
-
+    [Inject] IDialogService? DialogService { get; set; }
 
     private List<GasPrice> gasPrices = new();
     private bool isLoadingGasPrice = false;
@@ -177,4 +179,34 @@
             isLoadingGasPrice = false;
         }
     }
+
+    private async Task OpenTankDialog(GasPrice dto)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = false,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = false,
+                CloseButton = false
+
+            };
+
+        var confirmationParameters = new DialogParameters<UpdateTankDialog>
+                {
+                    { x => x.Title, dto.GasType.ToString()},
+                    { x => x.Price, dto.Price},
+                    { x => x.Capacity,dto.CapacityRemaining},
+                    { x => x.Id, dto.ID},
+                    { x => x.userId, MainLayout.CurrentUserId}
+                };
+
+        var dialog = await DialogService.ShowAsync<UpdateTankDialog>("", confirmationParameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await GetGasPrices();            
+        }
+    }
+
 }

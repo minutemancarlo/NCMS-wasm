@@ -57,6 +57,22 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("UpdateGasPrice")]
+        public async Task<ActionResult<int>> UpdateGasPrice(GasPrice gasPrice)
+        {
+            try
+            {
+                var id = await _gasRepository.UpdateGasPriceAsync(gasPrice);             
+                _logger.LogInformation("Gas Info Updated!", id);
+                return Ok(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while updating gas price: {ex.Message}");
+                return BadRequest($"Exception occurred while updating gas price: {ex.Message}");
+            }
+        }
+
 
     }
 }

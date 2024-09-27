@@ -475,8 +475,7 @@
 
             if (response.IsSuccessStatusCode)
             {
-                var invoiceNo = await response.Content.ReadAsStringAsync();
-                Snackbar.Add(invoiceNo, Severity.Success);
+                var invoiceNo = await response.Content.ReadAsStringAsync();               
                 Clear();
             }
             else

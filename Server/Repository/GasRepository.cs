@@ -64,5 +64,22 @@ namespace NCMS_wasm.Server.Repository
             
         }
 
+        public async Task<int> UpdateGasPriceAsync(GasPrice gasPrice)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@ID", gasPrice.ID);
+            parameters.Add("@Price", gasPrice.Price);
+            parameters.Add("@CapacityRemaining", gasPrice.CapacityRemaining);
+            parameters.Add("@UpdatedBy", gasPrice.UpdatedBy);
+            var id = await _dbConnection.ExecuteScalarAsync<int>(
+              "UpdateGasPrice",
+              parameters,
+              commandType: CommandType.StoredProcedure
+          );
+            return id;
+
+
+        }
+
     }
 }
