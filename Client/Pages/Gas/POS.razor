@@ -56,11 +56,19 @@
                     <MudSpacer />
                     <MudStack AlignItems="AlignItems.End">
                         @{
-                            string formattedTotal = (Transaction?.Total ?? 0m).ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                            string formattedTotal = (Transaction?.Total ?? 0.00m).ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                            if ((Transaction?.Discounts ?? 0.00m) != Decimal.Zero)
+                            {
+                                decimal discounted = (Transaction?.Total ?? 0.00m) - (Transaction?.Discounts ?? 0.00m);
+                                formattedTotal = discounted.ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                            }
+                            
                             string formattedChange = (Transaction?.Change ?? 0m).ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                            string formattedDiscount = (Transaction?.Discounts ?? 0m).ToString("C", new System.Globalization.CultureInfo("en-PH"));
                         }
-                        <MudText Typo="Typo.h1" Class="p-3"> @formattedTotal</MudText>
+                        <MudText Typo="Typo.h3" Class="p-3"> @formattedTotal</MudText>
                         <MudText Typo="Typo.h6">Change: <strong style="color: red;">@formattedChange</strong></MudText>
+                        <MudText Typo="Typo.h6">Discount: <strong style="color: #2ecc71;">@formattedDiscount</strong></MudText>
                         <MudStack Row Class="px-1 py-1">
                             @* <MudIconButton OnClick="TenderTransaction" Disabled="@(Transaction is not null? false:true)" Icon="@Icons.Material.Filled.Check" Color="Color.Success" Variant="Variant.Filled" Size="Size.Large" /> *@
                             <MudIconButton OnClick="Clear" Disabled="@(Transaction is not null? false:true)" Icon="@Icons.Material.Filled.Close" Color="Color.Error" Variant="Variant.Filled" Size="Size.Large" />
@@ -151,7 +159,7 @@
             </MudLink>
         </MudItem>
         <MudItem xs="6" sm="3">
-            <MudLink Href="#" Underline="Underline.None">
+            <MudLink Underline="Underline.None" OnClick="@(async () => ShowAddDiscount())">
                 <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #e74c3c">
                     <MudStack AlignItems="AlignItems.Center">
                         <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
@@ -405,11 +413,11 @@
         }
 
 
-
+        var total = (Transaction?.Discounts ?? 0.00m) != Decimal.Zero ? Transaction.DiscountedTotal : Transaction.Total;
         var parameters = new DialogParameters<AddPaymentDialog>
         {
             {x => x.Title, transactionType.ToString()},
-            {x => x.Total, Transaction.Total}
+            {x => x.Total, total }
         };
         var dialog = await DialogService.ShowAsync<AddPaymentDialog>("Simple Dialog", parameters, options);
         var result = await dialog.Result;
@@ -568,8 +576,8 @@
                         Amount = model.GasAmount,
                         Price = price,
                         Value = model.GasValue,
-                        VAT = VAT,
-                        NetAmount = total - VAT,
+                        VAT = Math.Round(VAT,2),
+                        NetAmount = total - Math.Round(VAT,2),
                         SubTotal = total,
                         CreatedBy = MainLayout.CurrentUserId
                     };
@@ -583,4 +591,42 @@
         }
     }
 
+    private async Task ShowAddDiscount()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = true,
+                CloseButton = true
+            };
+
+        if (Transaction is null)
+        {
+            Snackbar.Add("Please add transaction", Severity.Error);
+            return;
+        }
+
+        var parameters = new DialogParameters<AddDiscountDialog>
+        {
+            {x => x.Title, "Add Discount"},
+        { x => x.Discount, Transaction.Discounts }
+        };
+        var dialog = await DialogService.ShowAsync<AddDiscountDialog>("Simple Dialog", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var discount = (decimal)result.Data;
+
+            if (discount != null)
+            {
+                Snackbar.Add("Discount Added",Severity.Success);
+                Transaction.Discounts = discount;
+                Transaction.DiscountedTotal = Transaction.Total - discount;
+            }
+
+            StateHasChanged();
+        }
+    }
 }

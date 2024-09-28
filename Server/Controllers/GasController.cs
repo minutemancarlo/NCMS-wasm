@@ -28,8 +28,24 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception occurred while retrievinggas prices: {ex.Message}");
+                _logger.LogError($"Exception occurred while retrieving gas prices: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving gas prices: {ex.Message}");
+            }
+        }
+
+        [HttpGet("GetGasTransactions")]
+        public async Task<ActionResult<List<GasModel>>> GetGasTransactions()
+        {
+            try
+            {
+                var prices = await _gasRepository.GetTransactions();
+                _logger.LogInformation("Gas Transactions retrieved successfully.");
+                return Ok(prices);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving gas transactions: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving gas transactions: {ex.Message}");
             }
         }
 

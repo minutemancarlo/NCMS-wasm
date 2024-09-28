@@ -17,7 +17,12 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.QueryAsync<GasPrice>("Select * from GasPrices", null, commandType: CommandType.Text);
         }
 
-       
+        public async Task<IEnumerable<GasModel>> GetTransactions()
+        {
+            return await _dbConnection.QueryAsync<GasModel>("Select * from Transactions", null, commandType: CommandType.Text);
+        }
+
+
 
         public async Task<string> InsertTransactionAsync(GasModel transaction)
         {
@@ -27,6 +32,8 @@ namespace NCMS_wasm.Server.Repository
             parameters.Add("@IsVoid", transaction.IsVoid);
             parameters.Add("@IsCard", transaction.IsCard);
             parameters.Add("@Discounts", transaction.Discounts);
+            var discounted = transaction.Total - transaction.Discounts;
+            parameters.Add("@DiscountedTotal", discounted);
             parameters.Add("@VAT", transaction.VAT);
             parameters.Add("@Total", transaction.Total);
             parameters.Add("@CashReceived", transaction.CashReceived);

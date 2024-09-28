@@ -11,8 +11,8 @@
     <DialogContent>
         <MudForm @ref="form">
             <MudText Typo="Typo.h6">Price/L: @Price</MudText>
-            <MudNumericField @bind-Value="GasTransaction.GasValue" AutoFocus Immediate OnKeyUp="HandleKeyUp" Label="Value" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" />
-            <MudNumericField @bind-Value="GasTransaction.GasAmount" Disabled Immediate OnKeyUp="@HandleKeyUpAmount" Label="Amount" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" />
+            <MudNumericField @bind-Value="GasTransaction.GasValue" @ref="gasValueField" Format="N2" AutoFocus onfocus="@(() => OnfocusValue(true))" TextChanged="@(() => OnChangeValue(GasTransaction.GasValue, true))" OnKeyUp="HandleKeyUp" Label="Value" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" />
+            <MudNumericField @bind-Value="GasTransaction.GasAmount" @ref="@gasAmountField" Format="N2" onfocus="@(() => OnfocusValue(false))" TextChanged="@(() => OnChangeValue(GasTransaction.GasAmount, false))" OnKeyUp="@HandleKeyUpAmount" Label="Amount" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" />
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -38,6 +38,9 @@
     MudForm form;
     private bool _loading = false;
     private GasTransaction GasTransaction { get; set; } = default!;
+    MudNumericField<decimal> gasValueField;
+    MudNumericField<decimal> gasAmountField;
+
     protected override async Task OnInitializedAsync()
     {
         GasTransaction = new GasTransaction
@@ -52,6 +55,18 @@
     void Cancel() => MudDialog.Cancel();
 
     private void OnSubmit() => MudDialog.Close(DialogResult.Ok(GasTransaction));
+    private async Task OnfocusValue(bool isValue)
+    {
+        if(isValue){
+
+            await gasValueField.SelectRangeAsync(0, gasValueField.Value.ToString().Length);
+        }
+        else
+        {
+            await gasAmountField.SelectRangeAsync(0, gasAmountField.Value.ToString().Length);
+
+        }
+    }
 
     private void HandleKeyUp(KeyboardEventArgs e)
     {
@@ -65,7 +80,7 @@
         }
         else
         {
-            OnChangeValue(GasTransaction.GasValue, true);
+
         }
     }
 
@@ -81,7 +96,7 @@
         }
         else
         {
-            OnChangeValue(GasTransaction.GasValue, false);
+            // OnChangeValue(GasTransaction.GasValue, false);
         }
     }
 
@@ -89,11 +104,13 @@
     {
         if (IsValue)
         {
-            GasTransaction.GasAmount = value * Price;
+            var total = value * Price;
+            GasTransaction.GasAmount = Math.Round(total,2);
         }
         else
         {
-            GasTransaction.GasValue = value / Price;
+            var total = value / Price;
+            GasTransaction.GasValue = Math.Round(total,2);
         }
     }
 

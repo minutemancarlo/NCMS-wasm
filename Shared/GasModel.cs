@@ -64,6 +64,11 @@ namespace NCMS_wasm.Shared
         public decimal Total { get; set; } = 0.00M;
 
         /// <summary>
+        /// Gets or sets the total amount of the transaction with discount.
+        /// </summary>
+        public decimal DiscountedTotal { get; set; } = 0.00M;
+
+        /// <summary>
         /// Gets or sets the cash received
         /// </summary>
         public decimal CashReceived { get; set; } = 0.00M;
