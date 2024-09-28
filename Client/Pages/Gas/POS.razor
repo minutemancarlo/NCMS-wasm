@@ -32,7 +32,7 @@
                                 <PropertyColumn Property="x => x.Price" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
                                 <PropertyColumn Property="x => x.Value" HeaderStyle="background-color: black; color: white" Title="Liters" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
                                 <PropertyColumn Property="x => x.VAT" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
-                                <PropertyColumn Property="x => x.NetAmount" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
+                                <PropertyColumn Property="x => x.NetAmount" Title="Net Amount" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
                                 <PropertyColumn Property="x => x.Amount" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
                                 <PropertyColumn Property="x => x.SubTotal" Culture=@(new CultureInfo("en-PH")) HeaderStyle="background-color: black; color: white" Title="Sub Total" Format="C" Sortable="false" CellStyle="background-color: #95a5a6; color: white;" />
                                 <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="background-color: black; color: white" Title="Action" Format="C" Sortable="false">
@@ -179,7 +179,7 @@
                         <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
                             <MudIcon Icon="fas fa-gifts" Size="Size.Large" Class="mr-2" />
                             <MudStack Spacing="1">
-                                <MudText Typo="Typo.h6">POINTS</MudText>
+                                <MudText Typo="Typo.h6">SCAN LOYALTY CARD</MudText>
                             </MudStack>
                         </MudStack>
                     </MudStack>
@@ -218,20 +218,24 @@
     <MudGrid>
         <MudItem xs="12">
             <MudText Typo="Typo.h6" Class="pt-2">Transaction History</MudText>
-            <MudDataGrid Items="@GasModels" Elevation="4">
+            <MudDataGrid Items="@GasModels" Elevation="4" Striped Hover Dense>
                 <Columns>
-                    <PropertyColumn Property="x => x.TransactionId" Title="Transaction ID" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: #ecf0f1; color: black" />
-                    <PropertyColumn Property="x => x.GasValues.GasValue" Title="Value" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
-                    <PropertyColumn Property="x => x.GasValues.GasAmount" Title="Amount" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    <PropertyColumn Property="x => x.InvoiceNo" Title="Invoice No" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: #ecf0f1; color: black" />                    
                     <PropertyColumn Property="x => x.TransactionType" Title="Transaction Type" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
                     <PropertyColumn Property="x => x.CardTransactionId" Title="Card Transaction ID" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
-                    <PropertyColumn Property="x => x.IsVoid" Title="Is Void" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
-                    <PropertyColumn Property="x => x.IsCard" Title="Is Card" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
-                    <PropertyColumn Property="x => x.Points" Title="Points" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
+                    @* <PropertyColumn Property="x => x.IsVoid" Title="Is Void" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" /> *@
+                    @* <PropertyColumn Property="x => x.IsCard" Title="Is Card" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" /> *@
+                    <PropertyColumn Property="x => x.Points" Title="Points Earned" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
                     <PropertyColumn Property="x => x.Discounts" Title="Discounts" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
                     <PropertyColumn Property="x => x.VAT" Title="VAT" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
                     <PropertyColumn Property="x => x.Total" Title="Total" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
                 </Columns>
+                <NoRecordsContent>
+                    <MudText>No Records to show</MudText>
+                </NoRecordsContent>
+                <PagerContent>
+                    <MudDataGridPager T="GasModel" />
+                </PagerContent>
             </MudDataGrid>
         </MudItem>
     </MudGrid>
@@ -249,8 +253,9 @@
     private List<GasModel> GasModels = new();
     private GasModel? Transaction { get; set; }
     private GasPrices GasPrices { get; set; } = new();
-    private List<SubTransaction> subTransaction { get; set; } = new();
+    private List<SubTransaction> subTransaction { get; set; } = new();   
     private bool isLoadingGasPrice = false;
+    private bool isLoadingGasTransaction = false;
     private List<GasPrice> gasPrices = new();
 
     #region Gas Capacity
@@ -264,21 +269,9 @@
     protected override async Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "Gas Station Management Module";
-        var sampleGasModel = new GasModel
-            {
-                TransactionId = "TXN123456",
-                TransactionType = TransactionType.Card,
-                CardTransactionId = "CARD7890",
-                IsVoid = false,
-                IsCard = true,
-                Points = 100.00M,
-                Discounts = 5.00M,
-                VAT = 10.00M,
-                Total = 115.00M
-            };
-        GasModels.Add(sampleGasModel);
-        await GetGasPrices();
 
+        await GetGasPrices();
+        await GetGasTransactions();
 
         await base.OnInitializedAsync();
     }
@@ -317,6 +310,28 @@
         finally
         {
             isLoadingGasPrice = false;
+        }
+    }
+
+    private async Task GetGasTransactions()
+    {
+        isLoadingGasTransaction = true;
+
+        try
+        {
+            GasModels = await httpClient.GetFromJsonAsync<List<GasModel>>("Gas/GetGasTransactions");
+            if (gasPrices is not null)
+            {
+                
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingGasTransaction = false;
         }
     }
 
@@ -483,7 +498,9 @@
 
             if (response.IsSuccessStatusCode)
             {
-                var invoiceNo = await response.Content.ReadAsStringAsync();               
+
+                var invoiceNo = await response.Content.ReadAsStringAsync();   
+                await GetGasTransactions();
                 Clear();
             }
             else

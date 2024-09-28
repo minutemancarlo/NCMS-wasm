@@ -19,7 +19,7 @@ namespace NCMS_wasm.Server.Repository
 
         public async Task<IEnumerable<GasModel>> GetTransactions()
         {
-            return await _dbConnection.QueryAsync<GasModel>("Select * from Transactions", null, commandType: CommandType.Text);
+            return await _dbConnection.QueryAsync<GasModel>("Select * from Transactions Order By TransactionId Desc", null, commandType: CommandType.Text);
         }
 
 
@@ -39,6 +39,7 @@ namespace NCMS_wasm.Server.Repository
             parameters.Add("@CashReceived", transaction.CashReceived);
             parameters.Add("@Change", transaction.Change);
             parameters.Add("@LoyaltyCardId", transaction.LoyaltyCardId);
+            parameters.Add("@Points", transaction.Points);
 
             var invoiceNo = await _dbConnection.QuerySingleAsync<string>(
                 "InsertTransaction",
