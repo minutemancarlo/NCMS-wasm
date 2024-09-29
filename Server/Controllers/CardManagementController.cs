@@ -18,7 +18,7 @@ namespace NCMS_wasm.Server.Controllers
         }
 
         [HttpGet("GetLoyaltyCards")]
-        public async Task<ActionResult<List<LoyaltyCardInfo>>> GetLoyaltyCards(int cardType)
+        public async Task<ActionResult<List<LoyaltyCardInfo>>> GetLoyaltyCards(RFIDType cardType)
         {
             try
             {

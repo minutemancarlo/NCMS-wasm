@@ -179,6 +179,8 @@ namespace NCMS_wasm.Shared
     }
 
 
+
+
     /// <summary>
     /// Cash = 1, Card = 2, Points = 3
     /// </summary>
@@ -198,5 +200,12 @@ namespace NCMS_wasm.Shared
         Diesel = 2,
         Premium =3,
         Unleaded = 4
+    }
+
+    public enum ViewType
+    {
+        ReadOnly,
+        Add,
+        Update
     }
 }

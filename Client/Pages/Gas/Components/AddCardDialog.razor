@@ -9,34 +9,46 @@
     </TitleContent>
     <DialogContent>
         @* <MudForm @ref="form" Model="@rfidInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0"> *@
-        <MudForm @ref="form" Model="@rfidInfo">
+        <MudForm @ref="form" Model="@rfidInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0">
+           
             <MudFocusTrap Disabled="false" DefaultFocus="DefaultFocus.FirstChild">
                 <MudTextField @bind-Value="rfidInfo.CardReference"
-                              Label="Scan RFID Here" Clearable
+                              @ref="rfidReader" ReadOnly
+                              TextChanged="OnTextChangedAsync"
+                              Label="RFID No." Clearable
+                              HelperId="Tap RFID Card in the scanner"
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.DocumentScanner"
                               AdornmentColor="Color.Info"
                               ShrinkLabel
                               AutoFocus
+                              For="@(() => rfidInfo.CardReference)"
                               Variant="Variant.Outlined"></MudTextField>
             </MudFocusTrap>
-            <MudItem Class="py-2">
-                <MudText Typo="Typo.body1"> <strong>RFID No: </strong> @rfidInfo.CardReference </MudText>
-            </MudItem>
 
             <MudStack Row>
-                <MudTextField @bind-Value="rfidInfo.FirstName" Label="First Name" Variant="Variant.Outlined"></MudTextField>
-                <MudTextField @bind-Value="rfidInfo.MiddleName" Label="Middle Name" Variant="Variant.Outlined"></MudTextField>
-                <MudTextField @bind-Value="rfidInfo.LastName" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="rfidInfo.FirstName" ReadOnly="@(viewType == ViewType.ReadOnly? true: false)" For="@(() => rfidInfo.FirstName)" Label="First Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="rfidInfo.MiddleName" ReadOnly="@(viewType == ViewType.ReadOnly? true: false)" For="@(() => rfidInfo.MiddleName)" Label="Middle Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="rfidInfo.LastName" ReadOnly="@(viewType == ViewType.ReadOnly? true: false)" For="@(() => rfidInfo.LastName)" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
             </MudStack>
-            <MudTextField @bind-Value="rfidInfo.PhoneNumber" Label="Phone Number" Variant="Variant.Outlined"></MudTextField>
-            <MudTextField @bind-Value="rfidInfo.Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
+            <MudTextField @bind-Value="rfidInfo.PhoneNumber" ReadOnly="@(viewType == ViewType.ReadOnly? true: false)" For="@(() => rfidInfo.PhoneNumber)" Label="Phone Number" Variant="Variant.Outlined"></MudTextField>
+            <MudTextField @bind-Value="rfidInfo.Email" ReadOnly="@(viewType == ViewType.ReadOnly? true: false)" For="@(() => rfidInfo.Email)" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
+            @if (viewType == ViewType.ReadOnly)
+            {
+                <MudText Typo="Typo.body1"><strong>Points Earned: </strong> @rfidInfo.Points </MudText>
+            }
+            @if (isVisibleWarning)
+            {
+                <MudText Typo="Typo.body1" Class="text-danger">No results found.</MudText>
+            }
         </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudLoadingButton Variant="Variant.Filled"
-                          Color="Color.Success"
+        @if (viewType != ViewType.ReadOnly)
+        {
+            <MudLoadingButton Variant="Variant.Filled"
+            Color="Color.Success"
                           Size="Size.Large"
                           Loading="@(_loading)"
                           OnClick="OnSubmit"
@@ -44,6 +56,7 @@
             <LoadingContent>Submitting...</LoadingContent>
             <ChildContent>Submit</ChildContent>
         </MudLoadingButton>
+        }
     </DialogActions>
 </MudDialog>
 
@@ -52,22 +65,67 @@
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] IJSRuntime JSRuntime { get; set; }
+    [Parameter] public string userId { get; set; }
+    [Parameter] public ViewType viewType { get; set; }
     MudForm form;
     private LoyaltyCardInfo? rfidInfo { get; set; }
     private bool _loading = false;
-
+    MudTextField<string>? rfidReader;
     private List<UserDto> usersList = new List<UserDto>();
-
+    LoyaltyCardValidator modelValidator = new LoyaltyCardValidator();
+    private bool isVisibleWarning = false;
     public string rfidValue;
+
+
+    [JSInvokable]
+    public void ReceiveRfidData(string data)
+    {
+        rfidInfo.CardReference = String.Empty;
+        rfidInfo.CardReference = data;
+        StateHasChanged(); 
+    }
 
     private async Task OnSubmit()
     {
-        Snackbar.Add($"Card Value: {rfidInfo.CardReference}", Severity.Normal);
+
+        try
+        {
+            await form.Validate();
+
+            if (form.IsValid)
+            {
+
+                rfidInfo.CreatedBy = userId;
+                var response = await httpClient.PostAsJsonAsync("Gas/AddLoyaltyCardInfo", rfidInfo);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add($"Loyalty Card Added!", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to insert transaction: {response.StatusCode} - {errorMessage}", Severity.Error);
+                    Console.WriteLine($"Failed to insert transaction: {response.StatusCode} - {errorMessage}");
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            var a = 1;
+        }
     }
 
     protected override async Task OnInitializedAsync()
     {
         rfidInfo = new LoyaltyCardInfo();
+        await JSRuntime.InvokeVoidAsync("startKeyboardListener", DotNetObjectReference.Create(this));
         await base.OnInitializedAsync();
     }
 
@@ -83,15 +141,30 @@
         }
     }
 
-    private void HandleRfidInput(string text)
+
+
+    private async Task OnTextChangedAsync()
     {
-        Snackbar.Add($"Card Value: {text}", Severity.Normal);
-        if (text.EndsWith("\n") || text.EndsWith("\r") || text.EndsWith("\r\n"))
+        if (!String.IsNullOrEmpty(rfidInfo.CardReference))
         {
-            Snackbar.Add($"Card Value: {rfidInfo.CardReference}", Severity.Normal);
+            if(viewType == ViewType.ReadOnly)
+            {
+                rfidInfo = await httpClient.GetFromJsonAsync<LoyaltyCardInfo>($"Gas/GetCardInfo?cardReference={rfidInfo.CardReference}");
+                if(rfidInfo.FirstName is null)
+                {
+                    isVisibleWarning = true;
+                }
+                else
+                {
+                    isVisibleWarning = false;
+                }
+            }
+            await rfidReader.SelectRangeAsync(0, rfidReader.Value.ToString().Length);
         }
     }
 
 
+
     void Cancel() => MudDialog.Cancel();
+    
 }

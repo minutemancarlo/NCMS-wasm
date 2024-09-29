@@ -49,6 +49,23 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpGet("GetCardInfo")]
+        public async Task<ActionResult<LoyaltyCardInfo>> GetCardInfo(string cardReference)
+        {
+            try
+            {
+                var cardinfo = await _gasRepository.GetCardInfoAsync(cardReference);
+                cardinfo = cardinfo == null? new LoyaltyCardInfo() : cardinfo;
+                _logger.LogInformation("Gas Transactions retrieved successfully.");
+                return Ok(cardinfo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving gas transactions: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving gas transactions: {ex.Message}");
+            }
+        }
+
         [HttpPost("InsertTransaction")]
         public async Task<ActionResult<string>> InsertTransaction(TransactionRequest request)
         {
@@ -86,6 +103,22 @@ namespace NCMS_wasm.Server.Controllers
             {
                 _logger.LogError($"Exception occurred while updating gas price: {ex.Message}");
                 return BadRequest($"Exception occurred while updating gas price: {ex.Message}");
+            }
+        }
+
+        [HttpPost("AddLoyaltyCardInfo")]
+        public async Task<ActionResult<int>> AddLoyaltyCardInfo(LoyaltyCardInfo request)
+        {
+            try
+            {
+                var id = await _gasRepository.InsertLoyaltyCardInfoAsync(request);
+                _logger.LogInformation("Loyalty card added", id);
+                return Ok(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while adding loyalty card: {ex.Message}");
+                return BadRequest($"Exception occurred while adding loyalty card: {ex.Message}");
             }
         }
 

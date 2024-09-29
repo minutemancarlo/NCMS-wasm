@@ -13,10 +13,11 @@ namespace NCMS_wasm.Server.Repository
             _dbConnection = dbConnection;
         }
 
-        public async Task<IEnumerable<LoyaltyCardInfo>> GetAllCardsAsync(int cardType)
+        public async Task<IEnumerable<LoyaltyCardInfo>> GetAllCardsAsync(RFIDType cardType)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@CardType", cardType);
+            parameters.Add("@SelectType", 0 );
 
             string sp = "SelectAllCards";
             return await _dbConnection.QueryAsync<LoyaltyCardInfo>(sp, parameters, commandType: CommandType.StoredProcedure);

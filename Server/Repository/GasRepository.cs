@@ -23,6 +23,18 @@ namespace NCMS_wasm.Server.Repository
         }
 
 
+        public async Task<LoyaltyCardInfo> GetCardInfoAsync(string cardReference)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@CardType", RFIDType.Loyalty);
+            parameters.Add("@CardReference", cardReference);
+            parameters.Add("@SelectType", 1);
+
+            string sp = "SelectAllCards";
+            return await _dbConnection.QuerySingleOrDefaultAsync<LoyaltyCardInfo>(sp, parameters, commandType: CommandType.StoredProcedure);
+        }
+
+
 
         public async Task<string> InsertTransactionAsync(GasModel transaction)
         {
@@ -71,6 +83,31 @@ namespace NCMS_wasm.Server.Repository
             return id;
             
         }
+
+        public async Task<int> InsertLoyaltyCardInfoAsync(LoyaltyCardInfo request)
+        {
+            var parameters = new DynamicParameters();
+            
+            parameters.Add("@FirstName", request.FirstName);
+            parameters.Add("@MiddleName", request.MiddleName);
+            parameters.Add("@LastName", request.LastName);
+            parameters.Add("@Email", request.Email);
+            parameters.Add("@PhoneNumber", request.PhoneNumber);
+            parameters.Add("@CardReference", request.CardReference);
+            parameters.Add("@Type", request.Type);
+            parameters.Add("@IsActive", request.IsActive);
+            parameters.Add("@Points", request.Points);
+            parameters.Add("@CreatedBy", request.CreatedBy);
+            
+            var id = await _dbConnection.ExecuteScalarAsync<int>(
+                "AddLoyaltyCardInfo",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return id;
+        }
+
 
         public async Task<int> UpdateGasPriceAsync(GasPrice gasPrice)
         {

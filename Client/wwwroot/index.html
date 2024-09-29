@@ -47,20 +47,22 @@
             document.body.removeChild(link);
         }
 
-        window.rfidReader = {
-            initialize: function () {
-                // Initialize the RFID reader
-                console.log("RFID reader initialized.");
-            },
-            scanCard: function () {
-                // Simulate scanning an RFID card
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        const cardId = "1234-5678-ABCD-EFGH"; // Simulated card ID
-                        resolve(cardId);
-                    }, 10);
-                });
-            }
+        window.startKeyboardListener = (dotNetHelper) => {
+            let rfidBuffer = '';
+            const RFID_END_KEY = 'Enter'; // Change this if your RFID reader uses a different key to finish input
+
+            document.addEventListener('keydown', function (event) {
+                // Check if the key is not a control key and is a character
+                if (event.key !== RFID_END_KEY) {
+                    rfidBuffer += event.key; // Append the key to the buffer
+                } else {
+                    // When the RFID reader sends the end key (like Enter)
+                    if (rfidBuffer) {
+                        dotNetHelper.invokeMethodAsync('ReceiveRfidData', rfidBuffer);
+                        rfidBuffer = ''; // Clear buffer for next scan
+                    }
+                }
+            });
         };
 
 
