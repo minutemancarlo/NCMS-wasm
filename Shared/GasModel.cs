@@ -178,7 +178,13 @@ namespace NCMS_wasm.Shared
         public List<SubTransaction> SubTransactions { get; set; }
     }
 
-
+    public class DashboardValuePerSales
+    {
+        public GasType? GasType { get; set; }
+        public int Year { get; set; }
+        public int Month { get; set; }
+        public decimal TotalSubTotal { get; set; }
+    }
 
 
     /// <summary>

@@ -66,6 +66,22 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpGet("GetDashboardValuePerSales")]
+        public async Task<ActionResult<List<DashboardValuePerSales>>> GetDashboardValuePerSales(int year)
+        {
+            try
+            {
+                var sales = await _gasRepository.GetDashboardValuePerSalesAsync(year);
+                _logger.LogInformation("Dashboard Value Per Sales retrieved successfully.");
+                return Ok(sales);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving Dashboard Value Per Sales: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving Dashboard Value Per Sales: {ex.Message}");
+            }
+        }
+
         [HttpPost("InsertTransaction")]
         public async Task<ActionResult<string>> InsertTransaction(TransactionRequest request)
         {

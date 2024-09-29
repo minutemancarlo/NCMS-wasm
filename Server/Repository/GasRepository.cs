@@ -34,6 +34,16 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.QuerySingleOrDefaultAsync<LoyaltyCardInfo>(sp, parameters, commandType: CommandType.StoredProcedure);
         }
 
+        public async Task<IEnumerable<DashboardValuePerSales>> GetDashboardValuePerSalesAsync(int year)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Year", year);
+            
+
+            string sp = "GetValueSalesPerYear";
+            return await _dbConnection.QueryAsync<DashboardValuePerSales>(sp, parameters, commandType: CommandType.StoredProcedure);
+        }
+
 
 
         public async Task<string> InsertTransactionAsync(GasModel transaction)
