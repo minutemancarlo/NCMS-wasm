@@ -62,7 +62,7 @@
                                 decimal discounted = (Transaction?.Total ?? 0.00m) - (Transaction?.Discounts ?? 0.00m);
                                 formattedTotal = discounted.ToString("C", new System.Globalization.CultureInfo("en-PH"));
                             }
-                            
+
                             string formattedChange = (Transaction?.Change ?? 0m).ToString("C", new System.Globalization.CultureInfo("en-PH"));
                             string formattedDiscount = (Transaction?.Discounts ?? 0m).ToString("C", new System.Globalization.CultureInfo("en-PH"));
                         }
@@ -158,69 +158,79 @@
                 </MudPaper>
             </MudLink>
         </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudLink Underline="Underline.None" OnClick="@(async () => ShowAddDiscount())">
-                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #e74c3c">
-                    <MudStack AlignItems="AlignItems.Center">
-                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                            <MudIcon Icon="fas fa-tag" Size="Size.Large" Class="mr-2" />
-                            <MudStack Spacing="1">
-                                <MudText Typo="Typo.h6">DISCOUNT</MudText>
+        
+            <MudItem xs="6" sm="3">
+                <MudLink Underline="Underline.None" OnClick="@(async () => ShowAddDiscount())">
+                    <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #e74c3c">
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                                <MudIcon Icon="fas fa-tag" Size="Size.Large" Class="mr-2" />
+                                <MudStack Spacing="1">
+                                    <MudText Typo="Typo.h6">DISCOUNT</MudText>
+                                </MudStack>
                             </MudStack>
                         </MudStack>
-                    </MudStack>
-                </MudPaper>
-            </MudLink>
-        </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudLink OnClick="@(async () => ShowAddPayment(TransactionType.Points))" Underline="Underline.None">
-                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #f1c40f">
-                    <MudStack AlignItems="AlignItems.Center">
-                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                            <MudIcon Icon="fas fa-gifts" Size="Size.Large" Class="mr-2" />
-                            <MudStack Spacing="1">
-                                <MudText Typo="Typo.h6">LOYALTY CARD</MudText>
+                    </MudPaper>
+                </MudLink>
+            </MudItem>
+            <MudItem xs="6" sm="3">
+                <MudLink OnClick="@(async () => ShowAddPayment(TransactionType.Points))" Underline="Underline.None">
+                    <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #f1c40f">
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                                <MudIcon Icon="fas fa-gifts" Size="Size.Large" Class="mr-2" />
+                                <MudStack Spacing="1">
+                                    <MudText Typo="Typo.h6">LOYALTY CARD</MudText>                            
+                                </MudStack>
                             </MudStack>
                         </MudStack>
-                    </MudStack>
-                </MudPaper>
-            </MudLink>
-        </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudLink OnClick="@(async () => ShowAddPayment(TransactionType.Cash))" Underline="Underline.None">
-                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #1abc9c">
-                    <MudStack AlignItems="AlignItems.Center">
-                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                            <MudIcon Icon="fas fa-money-bill" Size="Size.Large" Class="mr-2" />
-                            <MudStack Spacing="1">
-                                <MudText Typo="Typo.h6">CASH</MudText>
+                    </MudPaper>
+                <MudPopover Open="@(String.IsNullOrEmpty(cardOwner)?false:true)" Fixed="true" Class="px-4 pt-4" RelativeWidth="true" Style="background-color: #34495e; color: white;" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.subtitle1"><strong>Loyalty Card No: </strong> @Transaction?.LoyaltyCardId</MudText>
+                        <MudText Typo="Typo.subtitle1"> <strong>Owner: </strong> @cardOwner</MudText>
+                    </div>
+                </MudPopover>
+                </MudLink>
+            
+            </MudItem>
+            <MudItem xs="6" sm="3">
+                <MudLink OnClick="@(async () => ShowAddPayment(TransactionType.Cash))" Underline="Underline.None">
+                    <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #1abc9c">
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                                <MudIcon Icon="fas fa-money-bill" Size="Size.Large" Class="mr-2" />
+                                <MudStack Spacing="1">
+                                    <MudText Typo="Typo.h6">CASH</MudText>
+                                </MudStack>
                             </MudStack>
                         </MudStack>
-                    </MudStack>
-                </MudPaper>
-            </MudLink>
-        </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudLink OnClick="@(async () => ShowAddPayment(TransactionType.Card))" Underline="Underline.None">
-                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #1abc9c">
-                    <MudStack AlignItems="AlignItems.Center">
-                        <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
-                            <MudIcon Icon="fas fa-credit-card" Size="Size.Large" Class="mr-2" />
-                            <MudStack Spacing="1">
-                                <MudText Typo="Typo.h6">CARD</MudText>
+                    </MudPaper>
+                </MudLink>
+            </MudItem>
+            <MudItem xs="6" sm="3">
+                <MudLink OnClick="@(async () => ShowAddPayment(TransactionType.Card))" Underline="Underline.None">
+                    <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Elevation="4" Style="background-color: #1abc9c">
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudStack Spacing="1" Row AlignItems="AlignItems.Center">
+                                <MudIcon Icon="fas fa-credit-card" Size="Size.Large" Class="mr-2" />
+                                <MudStack Spacing="1">
+                                    <MudText Typo="Typo.h6">CARD</MudText>
+                                </MudStack>
                             </MudStack>
                         </MudStack>
-                    </MudStack>
-                </MudPaper>
-            </MudLink>
-        </MudItem>
+                    </MudPaper>
+                </MudLink>
+            </MudItem>
+        
+
     </MudGrid>
     <MudGrid>
         <MudItem xs="12">
             <MudText Typo="Typo.h6" Class="pt-2">Transaction History</MudText>
             <MudDataGrid Items="@GasModels" Elevation="4" Striped Hover Dense>
                 <Columns>
-                    <PropertyColumn Property="x => x.InvoiceNo" Title="Invoice No" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: #ecf0f1; color: black" />                    
+                    <PropertyColumn Property="x => x.InvoiceNo" Title="Invoice No" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: #ecf0f1; color: black" />
                     <PropertyColumn Property="x => x.TransactionType" Title="Transaction Type" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
                     <PropertyColumn Property="x => x.CardTransactionId" Title="Card Transaction ID" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" />
                     @* <PropertyColumn Property="x => x.IsVoid" Title="Is Void" HeaderClass="text-nowrap" HeaderStyle="background-color: #2980b9; color: white" CellStyle="background-color: ##ecf0f1; color: black" /> *@
@@ -253,10 +263,11 @@
     private List<GasModel> GasModels = new();
     private GasModel? Transaction { get; set; }
     private GasPrices GasPrices { get; set; } = new();
-    private List<SubTransaction> subTransaction { get; set; } = new();   
+    private List<SubTransaction> subTransaction { get; set; } = new();
     private bool isLoadingGasPrice = false;
     private bool isLoadingGasTransaction = false;
     private List<GasPrice> gasPrices = new();
+    private string? cardOwner = String.Empty;
 
     #region Gas Capacity
     private double cap_unleaded = 0.00;
@@ -322,7 +333,7 @@
             GasModels = await httpClient.GetFromJsonAsync<List<GasModel>>("Gas/GetGasTransactions");
             if (gasPrices is not null)
             {
-                
+
             }
         }
         catch (Exception ex)
@@ -339,6 +350,7 @@
     {
         subTransaction = new();
         Transaction = null;
+        cardOwner = String.Empty;
     }
 
     private async Task RemoveItem(SubTransaction item)
@@ -423,7 +435,7 @@
 
         if (transactionType == TransactionType.Points)
         {
-
+            await ShowScanLoyaltyCard();
             return;
         }
 
@@ -497,9 +509,8 @@
             var response = await httpClient.PostAsJsonAsync("Gas/InsertTransaction", payload);
 
             if (response.IsSuccessStatusCode)
-            {
-
-                var invoiceNo = await response.Content.ReadAsStringAsync();   
+            {                
+                var invoiceNo = await response.Content.ReadAsStringAsync();
                 await GetGasTransactions();
                 Clear();
             }
@@ -593,8 +604,8 @@
                         Amount = model.GasAmount,
                         Price = price,
                         Value = model.GasValue,
-                        VAT = Math.Round(VAT,2),
-                        NetAmount = total - Math.Round(VAT,2),
+                        VAT = Math.Round(VAT, 2),
+                        NetAmount = total - Math.Round(VAT, 2),
                         SubTotal = total,
                         CreatedBy = MainLayout.CurrentUserId
                     };
@@ -638,7 +649,7 @@
 
             if (discount != null)
             {
-                Snackbar.Add("Discount Added",Severity.Success);
+                Snackbar.Add("Discount Added", Severity.Success);
                 Transaction.Discounts = discount;
                 Transaction.DiscountedTotal = Transaction.Total - discount;
             }
@@ -646,4 +657,46 @@
             StateHasChanged();
         }
     }
+
+    private async Task ShowScanLoyaltyCard()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = true,
+                CloseButton = true
+            };
+        var parameters = new DialogParameters<AddCardDialog>
+        {
+            {x=>x.userId,MainLayout.CurrentUserId },
+            {x=>x.viewType,ViewType.Earn}
+        };
+
+        if (Transaction is null)
+        {
+            Snackbar.Add("Please add transaction", Severity.Error);
+            return;
+        }
+
+        var dialog = await DialogService.ShowAsync<AddCardDialog>("Simple Dialog", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var cardInfo = result.Data as LoyaltyCardInfo;
+            if (cardInfo is not null)
+            {
+
+                cardOwner = $"{cardInfo.FirstName} {cardInfo.MiddleName} {cardInfo.LastName}";
+                Transaction.LoyaltyCardId = cardInfo.CardReference;
+            }
+            else
+            {
+                Snackbar.Add("Loyalty card not recognized.", Severity.Error);
+            }
+            StateHasChanged();
+        }
+    }
+
 }

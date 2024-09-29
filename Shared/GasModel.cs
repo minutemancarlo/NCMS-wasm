@@ -206,6 +206,7 @@ namespace NCMS_wasm.Shared
     {
         ReadOnly,
         Add,
-        Update
+        Update,
+        Earn
     }
 }

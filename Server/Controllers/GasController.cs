@@ -107,13 +107,15 @@ namespace NCMS_wasm.Server.Controllers
         }
 
         [HttpPost("AddLoyaltyCardInfo")]
-        public async Task<ActionResult<int>> AddLoyaltyCardInfo(LoyaltyCardInfo request)
+        public async Task<ActionResult<string>> AddLoyaltyCardInfo(LoyaltyCardInfo request)
         {
             try
             {
                 var id = await _gasRepository.InsertLoyaltyCardInfoAsync(request);
+                
                 _logger.LogInformation("Loyalty card added", id);
-                return Ok(id);
+                return Ok(id.ToString());
+                
             }
             catch (Exception ex)
             {

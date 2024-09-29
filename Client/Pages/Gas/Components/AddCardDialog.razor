@@ -10,7 +10,7 @@
     <DialogContent>
         @* <MudForm @ref="form" Model="@rfidInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0"> *@
         <MudForm @ref="form" Model="@rfidInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0">
-           
+
             <MudFocusTrap Disabled="false" DefaultFocus="DefaultFocus.FirstChild">
                 <MudTextField @bind-Value="rfidInfo.CardReference"
                               @ref="rfidReader" ReadOnly
@@ -45,18 +45,32 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        @if (viewType != ViewType.ReadOnly)
+        @if (viewType == ViewType.Add || viewType == ViewType.Update)
         {
             <MudLoadingButton Variant="Variant.Filled"
-            Color="Color.Success"
-                          Size="Size.Large"
-                          Loading="@(_loading)"
-                          OnClick="OnSubmit"
-                          ButtonType="ButtonType.Button">
-            <LoadingContent>Submitting...</LoadingContent>
-            <ChildContent>Submit</ChildContent>
-        </MudLoadingButton>
+                              Color="Color.Success"
+                              Size="Size.Large"
+                              Loading="@(_loading)"
+                              OnClick="OnSubmit"
+                              ButtonType="ButtonType.Button">
+                <LoadingContent>Submitting...</LoadingContent>
+                <ChildContent>Submit</ChildContent>
+            </MudLoadingButton>
         }
+
+        @if (viewType == ViewType.Earn)
+        {
+            <MudLoadingButton Variant="Variant.Filled"
+                              Color="Color.Success"
+                              Size="Size.Large"
+                              Loading="@(_loading)"
+                              OnClick="OnSubmitEarn"
+                              ButtonType="ButtonType.Button">
+                <LoadingContent>Submitting...</LoadingContent>
+                <ChildContent>Submit</ChildContent>
+            </MudLoadingButton>
+        }
+
     </DialogActions>
 </MudDialog>
 
@@ -82,7 +96,7 @@
     {
         rfidInfo.CardReference = String.Empty;
         rfidInfo.CardReference = data;
-        StateHasChanged(); 
+        StateHasChanged();
     }
 
     private async Task OnSubmit()
@@ -100,8 +114,16 @@
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add($"Loyalty Card Added!", Severity.Success);
-                    MudDialog.Close(DialogResult.Ok(true));
+                    var responseCode = await response.Content.ReadAsStringAsync();
+                    if (responseCode != "-1")
+                    {
+                        Snackbar.Add($"Loyalty Card Added!", Severity.Success);
+                        MudDialog.Close(DialogResult.Ok(true));
+                    }
+                    else
+                    {
+                        Snackbar.Add($"Loyalty Card already exist.", Severity.Warning);
+                    }
                 }
                 else
                 {
@@ -120,6 +142,22 @@
         {
             var a = 1;
         }
+    }
+
+    private async Task OnSubmitEarn()
+    {
+
+        try
+        {
+            rfidInfo.CreatedBy = userId;
+            MudDialog.Close(DialogResult.Ok(rfidInfo));
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}", Severity.Error);
+        }
+       
     }
 
     protected override async Task OnInitializedAsync()
@@ -147,10 +185,10 @@
     {
         if (!String.IsNullOrEmpty(rfidInfo.CardReference))
         {
-            if(viewType == ViewType.ReadOnly)
+            if (viewType == ViewType.ReadOnly || viewType == ViewType.Earn)
             {
                 rfidInfo = await httpClient.GetFromJsonAsync<LoyaltyCardInfo>($"Gas/GetCardInfo?cardReference={rfidInfo.CardReference}");
-                if(rfidInfo.FirstName is null)
+                if (rfidInfo.FirstName is null)
                 {
                     isVisibleWarning = true;
                 }
@@ -166,5 +204,5 @@
 
 
     void Cancel() => MudDialog.Cancel();
-    
+
 }

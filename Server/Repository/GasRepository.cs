@@ -86,8 +86,11 @@ namespace NCMS_wasm.Server.Repository
 
         public async Task<int> InsertLoyaltyCardInfoAsync(LoyaltyCardInfo request)
         {
-            var parameters = new DynamicParameters();
-            
+            var exist = await this.GetCardInfoAsync(request.CardReference);
+            if(exist is null)
+            {
+
+            var parameters = new DynamicParameters();            
             parameters.Add("@FirstName", request.FirstName);
             parameters.Add("@MiddleName", request.MiddleName);
             parameters.Add("@LastName", request.LastName);
@@ -106,6 +109,12 @@ namespace NCMS_wasm.Server.Repository
             );
 
             return id;
+            }
+            else
+            {
+                return -1;
+            }
+
         }
 
 
