@@ -41,6 +41,7 @@ builder.Services.AddTransient<GasRepository>();
 //Add Services
 builder.Services.AddScoped<LeaveRequestService>();
 builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddScoped<ReceiptService>();
 
 //Add Background Services
 builder.Services.AddHostedService<PayslipProcessor>();
@@ -75,6 +76,16 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
 });
+//var allowedOrigin = builder.Configuration["AllowedOrigin:url"];
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowSpecificOrigin", builder =>
+//    {
+//        builder.WithOrigins(allowedOrigin) 
+//               .AllowAnyMethod()
+//               .AllowAnyHeader();
+//    });
+//});
 
 builder.Services.AddAuth0ManagementClient().AddManagementAccessToken();
 builder.Services.AddControllersWithViews();

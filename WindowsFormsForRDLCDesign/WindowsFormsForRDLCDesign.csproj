@@ -56,6 +56,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>dsLeaveRequest.xsd</DependentUpon>
     </Compile>
+    <Compile Include="dsReceipt.cs">
+      <DependentUpon>dsReceipt.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="dsReceipt.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsReceipt.xsd</DependentUpon>
+    </Compile>
     <Compile Include="EmployeeInfoSingle.cs">
       <DependentUpon>EmployeeInfoSingle.xsd</DependentUpon>
     </Compile>
@@ -92,6 +100,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Receipt.rdlc" />
     <EmbeddedResource Include="Report1.rdlc" />
     <EmbeddedResource Include="SingleEmployee.rdlc" />
     <None Include="dsEmployee.xsc">
@@ -115,6 +124,17 @@
     </None>
     <None Include="dsLeaveRequest.xss">
       <DependentUpon>dsLeaveRequest.xsd</DependentUpon>
+    </None>
+    <None Include="dsReceipt.xsc">
+      <DependentUpon>dsReceipt.xsd</DependentUpon>
+    </None>
+    <None Include="dsReceipt.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsReceipt.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="dsReceipt.xss">
+      <DependentUpon>dsReceipt.xsd</DependentUpon>
     </None>
     <None Include="EmployeeInfoSingle.xsc">
       <DependentUpon>EmployeeInfoSingle.xsd</DependentUpon>

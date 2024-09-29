@@ -78,6 +78,15 @@
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>dsLeaveRequest.Designer.cs</LastGenOutput>
     </Content>
+    <Content Update="wwwroot\Reports\dsReceipt.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>dsReceipt.xsd</DependentUpon>
+    </Content>
+    <Content Update="wwwroot\Reports\dsReceipt.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsReceipt.Designer.cs</LastGenOutput>
+    </Content>
     <Content Update="wwwroot\Reports\EmployeeInfoSingle.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using NCMS_wasm.Shared;
+using System.Collections.Generic;
 using System.Data;
 
 namespace NCMS_wasm.Server.Repository
@@ -20,6 +21,23 @@ namespace NCMS_wasm.Server.Repository
         public async Task<IEnumerable<GasModel>> GetTransactions()
         {
             return await _dbConnection.QueryAsync<GasModel>("Select * from Transactions Order By TransactionId Desc", null, commandType: CommandType.Text);
+        }
+
+        public async Task<TransactionRequest> GetTransactionsForReceipt(string invoiceNo)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@InvoiceNo", invoiceNo);
+
+            GasModel transaction = await _dbConnection.QuerySingleOrDefaultAsync<GasModel>("Select * from Transactions where InvoiceNo = @InvoiceNo", parameters, commandType: CommandType.Text);
+            
+             IEnumerable<SubTransaction> subTransactions = await _dbConnection.QueryAsync<SubTransaction>("Select * from SubTransaction where InvoiceNo = @InvoiceNo", parameters, commandType: CommandType.Text);
+            var request = new TransactionRequest
+            {
+                Transaction = transaction,
+                SubTransactions = subTransactions.ToList()
+
+            };
+            return request;
         }
 
 

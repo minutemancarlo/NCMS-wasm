@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Append.Blazor.Printing" Version="6.3.0" />
     <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="7.0.0" />
     <PackageReference Include="Heron.MudCalendar" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.16" />

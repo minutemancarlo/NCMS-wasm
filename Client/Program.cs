@@ -1,3 +1,4 @@
+using Append.Blazor.Printing;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -31,4 +32,5 @@ builder.Services.AddMudServices();
 builder.Services.AddMudServicesWithExtensions();
 // or this to add only the MudBlazor.Extensions but please ensure that this is added after mud servicdes are added. That means after `AddMudServices`
 builder.Services.AddMudExtensions();
+builder.Services.AddScoped<IPrintingService, PrintingService>();
 await builder.Build().RunAsync();
