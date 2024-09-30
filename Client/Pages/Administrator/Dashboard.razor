@@ -9,24 +9,23 @@
     <MudText Typo="Typo.h5">Admin Dashboard</MudText>
     <MudGrid Class="align-content-stretch">
         <MudItem xs="3" Class="d-flex flex-grow-1">
-            <MudCard>
+            <MudCard Style="background-color: #1abc9c;">
                 <MudCardHeader>
                     <CardHeaderContent>
                         <MudText Typo="Typo.h6">Gas Revenue</MudText>
                     </CardHeaderContent>
                     <CardHeaderActions>
                         <MudMenu Icon="@Icons.Material.Filled.Settings" Size="Size.Small"
-                                 Color="Color.Primary"
+                                 Color="Color.Dark"
                                  AriaLabel="Open user menu">
                             <MudMenuItem><MudIcon Icon="@Icons.Custom.FileFormats.FilePdf" Color="Color.Error" /> Export</MudMenuItem>
-                            <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.CalendarToday" /> Reset Dates</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnResetDate(true))"><MudIcon Icon="@Icons.Material.Filled.CalendarToday" /> Reset Dates</MudMenuItem>
                         </MudMenu>
                     </CardHeaderActions>
                 </MudCardHeader>
                 <MudCardContent>
                     <MudStack Justify="Justify.SpaceBetween">
                         @{
-
                             string formattedGasRevenue = GasRevenue.ToString("C", new System.Globalization.CultureInfo("en-PH"));
                         }
                         <MudText Typo="Typo.h4">@formattedGasRevenue</MudText>
@@ -37,17 +36,17 @@
             </MudCard>
         </MudItem>
         <MudItem xs="3" Class="d-flex flex-grow-1">
-            <MudCard>
+            <MudCard Style="background-color: #3498db">
                 <MudCardHeader>
                     <CardHeaderContent>
                         <MudText Typo="Typo.h6">Hotel Revenue</MudText>
                     </CardHeaderContent>
                     <CardHeaderActions>
                         <MudMenu Icon="@Icons.Material.Filled.Settings" Size="Size.Small"
-                                 Color="Color.Primary"
+                                 Color="Color.Dark"
                                  AriaLabel="Open user menu">
                             <MudMenuItem><MudIcon Icon="@Icons.Custom.FileFormats.FilePdf" Color="Color.Error" /> Export</MudMenuItem>
-                            <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.CalendarToday" /> Reset Dates</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnResetDate(false))"><MudIcon Icon="@Icons.Material.Filled.CalendarToday" /> Reset Dates</MudMenuItem>
                         </MudMenu>
                     </CardHeaderActions>
                 </MudCardHeader>
@@ -62,14 +61,14 @@
         </MudItem>
 
         <MudItem xs="3" Class="d-flex flex-grow-1">
-            <MudCard Class="w-100">
+            <MudCard Class="w-100" Style="background-color: #ecf0f1">
                 <MudCardHeader>
                     <CardHeaderContent>
                         <MudText Typo="Typo.h6">Tank Status</MudText>
                     </CardHeaderContent>
                     <CardHeaderActions>
                         <MudMenu Icon="@Icons.Material.Filled.Settings" Size="Size.Small"
-                                 Color="Color.Primary"
+                                 Color="Color.Dark"
                                  AriaLabel="Open user menu">
                             <MudMenuItem><MudIcon Icon="@Icons.Custom.FileFormats.FilePdf" Color="Color.Error" /> Export</MudMenuItem>
                             <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.Refresh" /> Refresh</MudMenuItem>
@@ -111,14 +110,14 @@
             </MudCard>
         </MudItem>
         <MudItem xs="3" Class="d-flex flex-grow-1 w-100">
-            <MudCard Class="w-100">
+            <MudCard Class="w-100" Style="background-color: #f39c12">
                 <MudCardHeader>
                     <CardHeaderContent>
                         <MudText Typo="Typo.h6">Occupied Rooms</MudText>
                     </CardHeaderContent>
                     <CardHeaderActions>
                         <MudMenu Icon="@Icons.Material.Filled.Settings" Size="Size.Small"
-                                 Color="Color.Primary"
+                                 Color="Color.Dark"
                                  AriaLabel="Open user menu">
                             <MudMenuItem><MudIcon Icon="@Icons.Custom.FileFormats.FilePdf" Color="Color.Error" /> Export</MudMenuItem>
                             <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.Refresh" /> Refresh</MudMenuItem>
@@ -156,7 +155,7 @@
     private List<SubTransaction> subTransaction = new();
     private bool isLoadingGasTransaction = false;
     private decimal GasRevenue = 0.00M;
-   
+
     private List<GasPrice> gasPrices = new();
     private bool isLoadingGasPrice = false;
     #region Gas Capacity
@@ -213,7 +212,7 @@
         {
             gasPrices = await httpClient.GetFromJsonAsync<List<GasPrice>>("Gas/GetGasPrices");
             if (gasPrices is not null)
-            {            
+            {
                 cap_diesel = gasPrices.FirstOrDefault(x => x.GasType == GasType.Diesel).CapacityRemaining;
                 cap_regular = gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular).CapacityRemaining;
                 cap_premium = gasPrices.FirstOrDefault(x => x.GasType == GasType.Premium).CapacityRemaining;
@@ -227,6 +226,24 @@
         finally
         {
             isLoadingGasPrice = false;
+        }
+    }
+
+
+    private void OnResetDate(bool isGas)
+    {
+        if (isGas)
+        {
+            startMonth_Gas = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            endMonth_Gas = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
+            _dateRange_Gas = new DateRange(startMonth_Gas, endMonth_Gas);
+
+        }
+        else
+        {
+            startMonth_Hotel = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            endMonth_Hotel = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
+            _dateRange_Hotel = new DateRange(startMonth_Hotel, endMonth_Hotel);
         }
     }
 }

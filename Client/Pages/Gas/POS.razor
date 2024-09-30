@@ -716,7 +716,7 @@
             {
                 var pdfContent = await response.Content.ReadAsByteArrayAsync();
                 // var blobUrl = $"data:application/pdf;base64,{Convert.ToBase64String(pdfContent)}";
-                PrintingService.Print(new PrintOptions(Convert.ToBase64String(pdfContent)) { Base64 = true });                
+                PrintingService.Print(new PrintOptions(Convert.ToBase64String(pdfContent)) { Base64 = true });                   
             }
             else
             {

@@ -14,7 +14,7 @@
         <Columns>
             <PropertyColumn Property="x => x.Email" Filterable="true" />
             <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="true" />
-            <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="true" />
+            <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="true" />            
             <TemplateColumn Title="Email Verified" Filterable="true" Hidden Hideable="true">
                 <CellTemplate>
                     @if (context.Item.Verified==true)
@@ -42,12 +42,12 @@
             <PropertyColumn Property="x => x.Last_Login" Title="Last Login" Filterable="true" />
             <TemplateColumn Title="Actions" HeaderStyle="text-align: center;" Sortable="false" Hideable="false" Filterable="false">
                 <CellTemplate>
-                    <MudStack Row>
+                    <MudStack Row AlignItems="AlignItems.Baseline">
                         <MudTooltip Text="Roles" Arrow="true" Color="Color.Primary" Placement="Placement.Top">
-                            <MudIconButton Icon="@Icons.Material.Filled.Security" Color="Color.Error" OnClick="@(() => OpenRoleAccessDialog(context.Item))"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Filled.Security" Color="Color.Success" OnClick="@(() => OpenRoleAccessDialog(context.Item))"></MudIconButton>
                         </MudTooltip>
-                        <MudTooltip Text="Bind Account" Arrow="true" Color="Color.Primary" Placement="Placement.Top">
-                            <MudIconButton Icon="@Icons.Material.Filled.Link" Color="Color.Success" OnClick="@(() => SearchUserByEmail(context.Item.Email))"></MudIconButton>
+                        <MudTooltip Text="@(context.Item.isBinded?"Unbind Account":"Bind Account")" Arrow="true" Color="Color.Primary" Placement="Placement.Top">
+                            <MudIconButton Size="Size.Small" Icon="@(context.Item.isBinded?"fas fa-unlink":"fas fa-link")" Color="@(context.Item.isBinded?Color.Error:Color.Info)" OnClick="@(() => context.Item.isBinded?UnbindUser(context.Item.User_Id):SearchUserByEmail(context.Item.Email))"></MudIconButton>
                         </MudTooltip>
                         @* <MudTooltip Text="Disable/Enable" Arrow="true" Color="Color." Placement="Placement.Top">
                             <MudIconButton Icon="@Icons.Material.Filled.LockPerson"></MudIconButton>
@@ -81,10 +81,12 @@
     private bool isLoading = true;
     private string roleid { get; set; }
     private Employee? employee = new();
+    private List<Employee> employeeList = new List<Employee>();
 
     protected override async Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "Admin Management Module";
+        await LoadEmployeeList();
         await LoadUsers();
         await base.OnInitializedAsync();
     }
@@ -95,6 +97,21 @@
         try
         {
             usersList = await httpClient.GetFromJsonAsync<List<UserDto>>("UserManagement/UsersList");
+
+            if (employeeList is not null && usersList is not null)
+            {
+                foreach (var employee in employeeList)
+                {
+                    usersList
+                        .Where(user => user.User_Id == employee.Auth0_Id)
+                        .ToList()
+                        .ForEach(matchingUser =>
+                        {
+                            matchingUser.isBinded = true;
+                        });
+                }
+            }
+
         }
         catch (Exception ex)
         {
@@ -105,6 +122,25 @@
             isLoading = false;
         }
 
+    }
+
+    private async Task LoadEmployeeList()
+    {
+
+        try
+        {
+            employeeList = await httpClient.GetFromJsonAsync<List<Employee>>($"Employee/GetEmployees");
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Exception Occured: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+
+        }
     }
 
     private async Task OpenRoleAccessDialog(UserDto userDto)
@@ -138,6 +174,7 @@
         var result = await dialog.Result;
         if (!result.Canceled)
         {
+            await LoadEmployeeList();
             await LoadUsers();
             StateHasChanged();
         }
@@ -176,6 +213,8 @@
             {                
                 var employee = await response.Content.ReadFromJsonAsync<Employee>();
                 Snackbar.Add($"User account successfully linked to Employee: {employee.Name}",Severity.Success);
+                await LoadEmployeeList();
+                await LoadUsers();
             }
             else
             {
@@ -189,6 +228,34 @@
         {
             Snackbar.Add($"Exception Occured: {ex.Message}", Severity.Error);
             Console.WriteLine($"Exception occurred: {ex.Message}");            
+        }
+    }
+
+    private async Task UnbindUser(string id)
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync("Employee/UnbindUser", id);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadEmployeeList();
+                await LoadUsers();
+                Snackbar.Add($"User account successfully unlinked", Severity.Success);
+            }
+            else
+            {
+
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"{errorMessage}", Severity.Error);
+                Console.WriteLine($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Exception Occured: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Exception occurred: {ex.Message}");
         }
     }
 

@@ -139,6 +139,26 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("UnbindUser")]
+        public async Task<ActionResult<int>> UnbindUser([FromBody] string auth_id)
+        {
+            try
+            {
+                var employee = await _employeeRepository.UnBindUserAccountAsync(auth_id);
+
+
+                _logger.LogInformation($"Employee information updated successfully");
+                return Ok(employee);
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving employee info: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
+            }
+        }
+
 
         private string SaveImageToDisk(string base64String)
         {

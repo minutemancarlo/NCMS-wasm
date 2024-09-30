@@ -83,6 +83,17 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteAsync(query, parameters);
         }
 
+        public async Task<int> UnBindUserAccountAsync(string employee)
+        {
+            var parameters = new DynamicParameters();
+            
+            parameters.Add("@AuthId", employee);
+
+            string query = "UPDATE Employee SET Auth0_Id = NULL WHERE Auth0_Id = @AuthId";
+
+            return await _dbConnection.ExecuteAsync(query, parameters);
+        }
+
         public async Task<Employee> GetMyInfoAsync(string auth_id)
         {
             var parameters = new DynamicParameters();
