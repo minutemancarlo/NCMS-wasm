@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MudBlazor;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
 
@@ -32,6 +33,23 @@ namespace NCMS_wasm.Server.Controllers
                 return BadRequest($"Exception occurred while retrieving gas prices: {ex.Message}");
             }
         }
+
+        [HttpGet("GetSubTransactionsByDate")]
+        public async Task<ActionResult<List<SubTransaction>>> GetSubTransactionsByDate([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            try
+            {
+                var prices = await _gasRepository.GetSubTransactions(startDate, endDate);
+                _logger.LogInformation("Gas Sub Transactions retrieved successfully.");
+                return Ok(prices);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving gas sub transactions: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving gas sub transactions: {ex.Message}");
+            }
+        }
+
 
         [HttpGet("GetGasTransactions")]
         public async Task<ActionResult<List<GasModel>>> GetGasTransactions()

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using MudBlazor;
 using NCMS_wasm.Shared;
 using System.Collections.Generic;
 using System.Data;
@@ -22,6 +23,20 @@ namespace NCMS_wasm.Server.Repository
         {
             return await _dbConnection.QueryAsync<GasModel>("Select * from Transactions Order By TransactionId Desc", null, commandType: CommandType.Text);
         }
+
+        public async Task<IEnumerable<SubTransaction>> GetSubTransactions(DateTime startDate, DateTime endDate)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@startDate", startDate);
+            parameters.Add("@endDate", endDate);
+
+            return await _dbConnection.QueryAsync<SubTransaction>(
+                "SELECT * FROM SubTransaction WHERE CreatedOn BETWEEN @startDate AND @endDate;",
+                parameters,
+                commandType: CommandType.Text
+            );
+        }
+
 
         public async Task<TransactionRequest> GetTransactionsForReceipt(string invoiceNo)
         {

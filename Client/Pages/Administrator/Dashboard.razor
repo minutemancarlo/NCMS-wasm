@@ -1,86 +1,232 @@
 ﻿@page "/admin-dashboard"
 @attribute [Authorize(Roles = "Administrator")]
+@using NCMS_wasm.Shared
+@using Append.Blazor.Printing
+@inject IPrintingService PrintingService
+
 <PageTitle>Admin Dashboard | NCMS</PageTitle>
 <MudStack>
     <MudText Typo="Typo.h5">Admin Dashboard</MudText>
-    <MudStack Row Wrap="Wrap.Wrap">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Gas Revenue</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText Typo="Typo.h4">₱ 0.00</MudText>
-                <MudText Typo="Typo.body2">From 05/01/2024 - 05/30/2024</MudText>
-            </MudCardContent>
-            <MudCardActions Class="justify-content-center">
-                <MudButton Variant="Variant.Text" Color="Color.Primary"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye"></MudIcon> View Info</MudButton>
-            </MudCardActions>
-        </MudCard>
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Hotel Revenue</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText Typo="Typo.h4">₱ 0.00</MudText>
-                <MudText Typo="Typo.body2">From 05/01/2024 - 05/30/2024</MudText>
-            </MudCardContent>
-            <MudCardActions Class="justify-content-center">
-                <MudButton Variant="Variant.Text" Color="Color.Primary"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye"></MudIcon> View Info</MudButton>
-            </MudCardActions>
-        </MudCard>
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Tank Status</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText Typo="Typo.h4">₱ 0.00</MudText>
-                <MudText Typo="Typo.body2">From 05/01/2024 - 05/30/2024</MudText>
-            </MudCardContent>
-            <MudCardActions Class="justify-content-center">
-                <MudButton Variant="Variant.Text" Color="Color.Primary"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye"></MudIcon> View Info</MudButton>
-            </MudCardActions>
-        </MudCard>
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Occupied Rooms</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText Typo="Typo.h4">₱ 0.00</MudText>
-                <MudText Typo="Typo.body2">From 05/01/2024 - 05/30/2024</MudText>
-            </MudCardContent>
-            <MudCardActions Class="justify-content-center">
-                <MudButton Variant="Variant.Text" Color="Color.Primary"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye"></MudIcon> View Info</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudStack>
+    <MudGrid Class="align-content-stretch">
+        <MudItem xs="3" Class="d-flex flex-grow-1">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Gas Revenue</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudMenu Icon="@Icons.Material.Filled.Settings" Size="Size.Small"
+                                 Color="Color.Primary"
+                                 AriaLabel="Open user menu">
+                            <MudMenuItem><MudIcon Icon="@Icons.Custom.FileFormats.FilePdf" Color="Color.Error" /> Export</MudMenuItem>
+                            <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.CalendarToday" /> Reset Dates</MudMenuItem>
+                        </MudMenu>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Justify="Justify.SpaceBetween">
+                        @{
+
+                            string formattedGasRevenue = GasRevenue.ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                        }
+                        <MudText Typo="Typo.h4">@formattedGasRevenue</MudText>
+                        <MudSpacer />
+                        <MudDateRangePicker Variant="Variant.Text" Class="align-self-end" Margin="Margin.Dense" StartMonth="@startMonth_Gas" @bind-DateRange="_dateRange_Gas" />
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="3" Class="d-flex flex-grow-1">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Hotel Revenue</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudMenu Icon="@Icons.Material.Filled.Settings" Size="Size.Small"
+                                 Color="Color.Primary"
+                                 AriaLabel="Open user menu">
+                            <MudMenuItem><MudIcon Icon="@Icons.Custom.FileFormats.FilePdf" Color="Color.Error" /> Export</MudMenuItem>
+                            <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.CalendarToday" /> Reset Dates</MudMenuItem>
+                        </MudMenu>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.h4">₱ 0.00</MudText>
+                        <MudSpacer />
+                        <MudDateRangePicker Variant="Variant.Text" Class="align-self-end" Margin="Margin.Dense" StartMonth="@startMonth_Hotel" @bind-DateRange="_dateRange_Hotel" />
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="3" Class="d-flex flex-grow-1">
+            <MudCard Class="w-100">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Tank Status</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudMenu Icon="@Icons.Material.Filled.Settings" Size="Size.Small"
+                                 Color="Color.Primary"
+                                 AriaLabel="Open user menu">
+                            <MudMenuItem><MudIcon Icon="@Icons.Custom.FileFormats.FilePdf" Color="Color.Error" /> Export</MudMenuItem>
+                            <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.Refresh" /> Refresh</MudMenuItem>
+                        </MudMenu>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+
+                    <MudText Typo="Typo.body1">UNLEADED</MudText>
+                    <MudProgressLinear Style="background-color: #27ae60;" Rounded="true" Size="Size.Large" Value="@cap_unleaded">
+                        <MudText Typo="Typo.subtitle1" Class="text-white">
+                            <b>@($"{cap_unleaded}")%</b>
+                        </MudText>
+                    </MudProgressLinear>
+
+                    <MudText Typo="Typo.body1">PREMIUM</MudText>
+                    <MudProgressLinear Style="background-color: #4A90E2" Rounded="true" Size="Size.Large" Value="cap_premium">
+                        <MudText Typo="Typo.subtitle1" Class="text-white">
+                            <b>@($"{cap_premium}")%</b>
+                        </MudText>
+                    </MudProgressLinear>
+
+                    <MudText Typo="Typo.body1">REGULAR</MudText>
+                    <MudProgressLinear Style="background-color: #FFA726" Rounded="true" Size="Size.Large" Value="cap_regular">
+                        <MudText Typo="Typo.subtitle1" Class="text-white">
+                            <b>@($"{cap_regular}")%</b>
+                        </MudText>
+                    </MudProgressLinear>
+
+                    <MudText Typo="Typo.body1">DIESEL</MudText>
+                    <MudProgressLinear Style="background-color: #B0BEC5" Rounded="true" Size="Size.Large" Value="cap_diesel">
+                        <MudText Typo="Typo.subtitle1" Class="text-white">
+                            <b>@($"{cap_diesel}")%</b>
+                        </MudText>
+                    </MudProgressLinear>
+                    <MudSpacer />
+                    <MudText Typo="Typo.body2">As of @DateTime.Now.ToString()</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="3" Class="d-flex flex-grow-1 w-100">
+            <MudCard Class="w-100">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Occupied Rooms</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudMenu Icon="@Icons.Material.Filled.Settings" Size="Size.Small"
+                                 Color="Color.Primary"
+                                 AriaLabel="Open user menu">
+                            <MudMenuItem><MudIcon Icon="@Icons.Custom.FileFormats.FilePdf" Color="Color.Error" /> Export</MudMenuItem>
+                            <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.Refresh" /> Refresh</MudMenuItem>
+                        </MudMenu>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.h4">10 out of 10</MudText>
+                    <MudSpacer />
+                    <MudText Typo="Typo.body2">As of @DateTime.Now.ToString()</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+
+
+
+
 </MudStack>
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+
+
+    private DateTime? startMonth_Gas;
+    private DateTime? endMonth_Gas;
+    private DateRange _dateRange_Gas;
+
+    private DateTime? startMonth_Hotel;
+    private DateTime? endMonth_Hotel;
+    private DateRange _dateRange_Hotel;
+    private List<SubTransaction> subTransaction = new();
+    private bool isLoadingGasTransaction = false;
+    private decimal GasRevenue = 0.00M;
+   
+    private List<GasPrice> gasPrices = new();
+    private bool isLoadingGasPrice = false;
+    #region Gas Capacity
+    private double cap_unleaded = 0.00;
+    private double cap_regular = 0.00;
+    private double cap_premium = 0.00;
+    private double cap_diesel = 0.00;
+    #endregion
 
     protected override async Task OnInitializedAsync()
     {
+        startMonth_Gas = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        endMonth_Gas = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
+        startMonth_Hotel = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        endMonth_Hotel = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
+        _dateRange_Gas = new DateRange(startMonth_Gas, endMonth_Gas);
+        _dateRange_Hotel = new DateRange(startMonth_Hotel, endMonth_Hotel);
         MainLayout.SubTitle = "Admin Management Module";
+        await GetGasTransactions();
+        await GetGasPrices();
         await base.OnInitializedAsync();
+    }
+
+    private async Task GetGasTransactions()
+    {
+        isLoadingGasTransaction = true;
+
+        try
+        {
+            string startDate = $"{_dateRange_Gas.Start:yyyy-MM-dd}";
+            string endDate = $"{_dateRange_Gas.End:yyyy-MM-dd}";
+
+            var url = $"https://localhost:44319/Gas/GetSubTransactionsByDate?startDate={startDate}&endDate={endDate}";
+
+            subTransaction = await httpClient.GetFromJsonAsync<List<SubTransaction>>(url);
+            GasRevenue = subTransaction.Sum(x => x.SubTotal);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An Error Occured: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingGasTransaction = false;
+        }
+    }
+
+    private async Task GetGasPrices()
+    {
+        isLoadingGasPrice = true;
+
+        try
+        {
+            gasPrices = await httpClient.GetFromJsonAsync<List<GasPrice>>("Gas/GetGasPrices");
+            if (gasPrices is not null)
+            {            
+                cap_diesel = gasPrices.FirstOrDefault(x => x.GasType == GasType.Diesel).CapacityRemaining;
+                cap_regular = gasPrices.FirstOrDefault(x => x.GasType == GasType.Regular).CapacityRemaining;
+                cap_premium = gasPrices.FirstOrDefault(x => x.GasType == GasType.Premium).CapacityRemaining;
+                cap_unleaded = gasPrices.FirstOrDefault(x => x.GasType == GasType.Unleaded).CapacityRemaining;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Excetion Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingGasPrice = false;
+        }
     }
 }
