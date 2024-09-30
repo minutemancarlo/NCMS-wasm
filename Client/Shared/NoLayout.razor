@@ -1,10 +1,67 @@
 ﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+<style>
+    .mud-navmenu .mud-link:hover {
+        color: yellow !important;
+        background-color: #D67F46;
+    }
+</style>
 <MudLayout>
-   
-   
-    <MudMainContent Class="pt-16 px-16">
+    <MudAppBar Elevation="1" Color="Color.Info" Fixed>
+        <MudStack Row Spacing="0">
+            <MudImage Src="images/logo.png" Width="50" Height="50" />
+            <MudText Typo="Typo.h6" Class="pt-2">NORLU CEDEC MidPoint Hotel</MudText>
+        </MudStack>
+        <MudSpacer />
+        <MudBreakpointProvider>
+            <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                <MudStack Row Spacing="2" Class="px-2">
+                    <MudButton StartIcon="fas fa-home" Variant="Variant.Filled" Color="Color.Secondary">Home</MudButton>
+                    <MudButton StartIcon="fas fa-bed" Variant="Variant.Filled" Color="Color.Secondary">Rooms</MudButton>
+                    <MudButton StartIcon="fas fa-phone-square-alt" Variant="Variant.Filled" Color="Color.Secondary">Contact</MudButton>
+                    <MudButton StartIcon="fas fa-question-circle" Variant="Variant.Filled" Color="Color.Secondary">About Us</MudButton>                                      
+                </MudStack>
+                <MudMenu Class="my-3" Dense AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
+                    <ActivatorContent>
+                        <MudAvatar>
+                            <ChildContent>
+                                <MudAvatar Color="Color.Tertiary">CB</MudAvatar>
+                            </ChildContent>
+                        </MudAvatar>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem Icon="fas fa-users-cog">Account</MudMenuItem>
+                        <MudMenuItem Icon="fas fa-sign-out-alt">Sign Out</MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.MdAndDown" Invert="true">
+                <MudIconButton Icon="@Icons.Material.Filled.MoreVert" OnClick="ToggleDrawer" Color="Color.Inherit" Edge="Edge.End" />
+            </MudHidden>
+        </MudBreakpointProvider>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_open" Breakpoint="Breakpoint.MdAndDown" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.subtitle1"><MudAvatar Color="Color.Tertiary">CB</MudAvatar> Carlo Boado</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Icon="fas fa-home" IconColor="Color.Inherit" Match="NavLinkMatch.All">Home</MudNavLink>
+            <MudNavLink Icon="fas fa-bed" IconColor="Color.Inherit" Match="NavLinkMatch.All">Rooms</MudNavLink>
+            <MudNavLink Icon="fas fa-phone-square-alt" IconColor="Color.Inherit" Match="NavLinkMatch.All">Contact</MudNavLink>
+
+            <MudNavLink Icon="fas fa-question-circle" IconColor="Color.Inherit" Match="NavLinkMatch.All">About Us</MudNavLink>
+            <MudNavLink Icon="fas fa-users-cog" IconColor="Color.Inherit" Match="NavLinkMatch.All">Account</MudNavLink>
+
+            <MudNavLink Icon="fas fa-sign-out-alt" IconColor="Color.Inherit" Match="NavLinkMatch.All">Logout</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.ExtraLarge">
-            <MudGrid Class="pt-6 align-items-center justify-content-center">
+            <MudGrid Class="pt-6 pl-3 align-items-center justify-content-center">
                 @Body
             </MudGrid>
         </MudContainer>
@@ -12,5 +69,12 @@
 </MudLayout>
 
 @code {
+    private bool _open = false;
+
+
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
 
 }

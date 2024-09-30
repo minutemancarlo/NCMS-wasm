@@ -1,32 +1,37 @@
 ﻿@page "/Home"
+@layout NoLayout
+<MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Baseline" Class="mud-width-full pt-2 py-2">
+    <MudGrid>
+        <MudItem xs="9">
+            <MudCarousel Class="pl-2" Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+                @for (int i = 1; i <= 8; i++)
+                {
+                    string image = $"images/{i}.jpg";
+                    <MudCarouselItem Transition="transition">
+                        <div class="d-flex" style="height:100%; width: 100%">
+                            <MudImage ObjectFit="ObjectFit.Cover" Src="@image" Style="height:100%; width: 100%" />
+                        </div>
+                    </MudCarouselItem>
+                }
+            </MudCarousel>
+        </MudItem>
+        <MudItem xs="3">           
+            <MudPaper Elevation="4" Outlined="true">
+                <MudStack Row Class="pa-2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+                    <MudDatePicker Label="Check In" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                    <MudDatePicker Label="Check Out" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                    <MudNumericField @bind-Value="IntValue" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                    <MudSelect T="string" Label="Guests" Variant="Variant.Outlined" Margin="Margin.Dense">
+                        <MudSelectItem Value="@("Children")" />
+                        <MudSelectItem Value="@("Adults")" />
+                    </MudSelect>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" Href="/rooms" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" FullWidth IconSize="Size.Large">Check Availability</MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 
-<MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-width-full">
-    <MudPaper Elevation="4">
-        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
-            <MudDatePicker Label="Check In" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
-            <MudDatePicker Label="Check Out" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
-            <MudNumericField @bind-Value="IntValue" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
-            <MudSelect T="string" Label="Guests" Variant="Variant.Outlined" Margin="Margin.Dense">
-                <MudSelectItem Value="@("Children")" />
-                <MudSelectItem Value="@("Adults")" />
-            </MudSelect>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/rooms" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" IconSize="Size.Large">Search</MudButton>
-        </MudStack>
-    </MudPaper>
-    <MudCarousel Class="mud-width-full py-3" Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
-        @for (int i = 1; i <= 8; i++)
-        {
-            string image = $"images/{i}.jpg";
-            <MudCarouselItem Transition="transition">
-                <div class="d-flex" style="height:100%; width: 100%">
-                    <MudImage ObjectFit="ObjectFit.Cover" Src="@image" Style="height:100%; width: 100%" />
-                </div>
-            </MudCarouselItem>
-        }
 
-
-
-    </MudCarousel>
 
     @* <MudItem Class="text-center text-lg-start bg-body-tertiary text-muted wh-100" xs="8">
     <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0">
@@ -74,11 +79,15 @@
     </MudStack>
 
     </MudItem> *@
-   
-    <Footer/>
+
+
 
 
 </MudStack>
+<MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-width-full py-2">
+    <Footer />
+</MudStack>
+
 
 
 
