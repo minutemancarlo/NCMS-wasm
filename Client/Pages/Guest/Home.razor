@@ -5,7 +5,7 @@
 @implements IBrowserViewportObserver
 @implements IAsyncDisposable
 
-<MudStack AlignItems="AlignItems.Center" Class="mud-width-full vh-100 pt-3">
+<MudStack AlignItems="AlignItems.Center" Class="w-100 vh-100 pt-3">
 <MudBreakpointProvider>
     @* DEKSTOP VIEW *@
     <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">        
@@ -107,67 +107,12 @@
             </MudGrid>        
     </MudHidden>
 </MudBreakpointProvider>
+    <MudScrollToTop>
+        <MudFab Color="Color.Info" StartIcon="@Icons.Material.Filled.ArrowCircleUp" />
+    </MudScrollToTop>
 </MudStack>
 
 
-<MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-width-full pb-1">
-    <Footer />
-    @*   <MudItem xs="12">
-    <MudPaper Elevation="0" Class="w-100" Style="background-color: #ecf0f1" Height="40px">
-    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="0">
-    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small">NORLU CEDEC MidPoint Hotel.</MudTextM3>
-    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small" Class="fw-bold">All Rights Reserved. &copy; @DateTime.Now.Year</MudTextM3>
-    </MudStack>
-    </MudPaper>
-    </MudItem> *@
-    @* <MudItem Class="text-center text-lg-start bg-body-tertiary text-muted wh-100" xs="8">
-    <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0">
-    <MudText Typo="Typo.caption">Get connected with us on social networks:</MudText>
-    <MudSpacer />
-    <MudIconButton Icon="fab fa-facebook-f" Class="me-4 text-reset" />
-    <MudIconButton Icon="fab fa-twitter" Class="me-4 text-reset" />
-    <MudIconButton Icon="fab fa-google" Class="me-4 text-reset" />
-    <MudIconButton Icon="fab fa-instagram" Class="me-4 text-reset" />
-    </MudStack>
-    <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-    <MudStack Spacing="0">
-    <MudText Typo="Typo.h6"><MudIcon Icon="fas fa-gem me-3"></MudIcon>Company Name</MudText>
-    <MudText Typo="Typo.body1">
-    Here you can use rows and columns to organize your footer content. Lorem ipsum
-    dolor sit amet, consectetur adipisicing elit.
-    </MudText>
-    </MudStack>
-    <MudStack>
-    <MudText Typo="Typo.h6">Services</MudText>
-    <MudText Typo="Typo.body1">Rooms</MudText>
-    <MudText Typo="Typo.body1">Baths</MudText>
-    <MudText Typo="Typo.body1">Sample</MudText>
-    <MudText Typo="Typo.body1">Sample</MudText>
-    </MudStack>
-    <MudStack>
-    <MudText Typo="Typo.h6">Links</MudText>
-    <MudText Typo="Typo.body1">Prices</MudText>
-    <MudText Typo="Typo.body1">Sample</MudText>
-    <MudText Typo="Typo.body1">Faqs</MudText>
-    <MudText Typo="Typo.body1">Help</MudText>
-    </MudStack>
-    <MudStack Wrap="Wrap.NoWrap">
-    <MudText Typo="Typo.h6">Contact</MudText>
-    <MudText Typo="Typo.body1">
-    <MudIcon Icon="fas fa-home me-3"></MudIcon> Brgy. Camp One, Udiao, Rosario, La Union
-    </MudText>
-    <MudText Typo="Typo.body1">
-    <MudIcon Icon="fas fa-envelope me-3"></MudIcon> support@ncmslu.com
-    </MudText>
-    <MudText Typo="Typo.body1">
-    <MudIcon Icon="fas fa-phone me-3"></MudIcon> +63912345678
-    </MudText>
-    </MudStack>
-    </MudStack>
-
-    </MudItem> *@
-
-</MudStack>
 
 
 <MudInputStyler Selector=".availability-card" LabelBackgroundColor="#f1c40f" TextColor="#f3ec4eff" />

@@ -20,7 +20,7 @@
                     <MudButton StartIcon="fas fa-home" Variant="Variant.Filled" Color="Color.Secondary">Home</MudButton>
                     <MudButton StartIcon="fas fa-bed" Variant="Variant.Filled" Color="Color.Secondary">Rooms</MudButton>
                     <MudButton StartIcon="fas fa-phone-square-alt" Variant="Variant.Filled" Color="Color.Secondary">Contact</MudButton>
-                    <MudButton StartIcon="fas fa-question-circle" Variant="Variant.Filled" Color="Color.Secondary">About Us</MudButton>                                      
+                    <MudButton StartIcon="fas fa-question-circle" Variant="Variant.Filled" Color="Color.Secondary">About Us</MudButton>
                 </MudStack>
                 <MudMenu Class="my-3" Dense AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
                     <ActivatorContent>
@@ -58,15 +58,102 @@
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
-            
-            <MudGrid Class="pt-6 py-2">
-                
-                @Body
-                
-            </MudGrid>
-        </MudContainer>
+        <MudPaper Width="100%">
+            <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+
+                <MudGrid Class="pt-6 py-2">
+
+                    @Body
+
+                </MudGrid>
+            </MudContainer>
+        </MudPaper>
     </MudMainContent>
+        <MudBreakpointProvider>
+    <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+    <MudAppBar Bottom="true" Fixed="false" Style="background-color: #34495e; color: white;height:150px;" Elevation="0">
+
+                <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Baseline" Class="mt-auto">
+                    <MudStack Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
+                        <MudText Typo="Typo.h6">NORLU CEDEC MidPoint Hotel</MudText>
+                        <MudText Typo="Typo.body1">Experience Luxury in the Biggest Hotel in town</MudText>
+                        <MudTextM3 Typo="TypoM3.Body" Size="Size.Large">
+                            Discover Norlu Cedec Midpoint Hotel, the biggest hotel in Rosario, La Union. Book your stay today!
+                        </MudTextM3>
+                    </MudStack>
+                    <MudStack Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
+                        <MudText Typo="Typo.h6">Contact</MudText>
+                        <MudText Typo="Typo.body1">
+                            <MudIcon Icon="fas fa-home me-3" Size="Size.Small" /> Brgy. Camp One, Udiao, Rosario, La Union
+                        </MudText>
+                        <MudText Typo="Typo.body1">
+                            <MudIcon Icon="fas fa-envelope me-3" Size="Size.Small" /> support@ncmslu.com
+                        </MudText>
+                        <MudText Typo="Typo.body1">
+                            <MudIcon Icon="fas fa-phone me-3" Size="Size.Small" /> +63912345678
+                        </MudText>
+                    </MudStack>
+                    <MudStack Class="pa-3" AlignItems="AlignItems.Start">
+                        <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0">
+                            <MudText Typo="Typo.h6">Get connected with us on social networks</MudText>
+                            <MudSpacer />
+                            <MudIconButton Icon="fab fa-facebook-f" Class="me-4 text-white" Size="Size.Small" />
+                            <MudIconButton Icon="fab fa-twitter" Class="me-4 text-white" Size="Size.Small" />
+                            <MudIconButton Icon="fab fa-google" Class="me-4 text-white" Size="Size.Small" />
+                            <MudIconButton Icon="fab fa-instagram" Class="me-4 text-white" Size="Size.Small" />
+                        </MudStack>
+                    </MudStack>
+                </MudStack>
+            </MudAppBar>
+
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+    <MudAppBar Bottom="true" Fixed="false" Style="background-color: #34495e; color: white;height:400px;" Elevation="0">
+
+                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Baseline" Class="mt-auto">
+                    <MudStack  Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
+                        <MudText Typo="Typo.h6">NORLU CEDEC MidPoint Hotel</MudText>
+                        <MudText Typo="Typo.body1">Experience Luxury in the Biggest Hotel in town</MudText>
+                        <MudTextM3 Typo="TypoM3.Body" Size="Size.Large">
+                            Discover Norlu Cedec Midpoint Hotel, the biggest hotel in Rosario, La Union. Book your stay today!
+                        </MudTextM3>
+                    </MudStack>
+                    <MudStack Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
+                        <MudText Typo="Typo.h6">Contact</MudText>
+                        <MudText Typo="Typo.body1">
+                            <MudIcon Icon="fas fa-home me-3" Size="Size.Small" /> Brgy. Camp One, Udiao, Rosario, La Union
+                        </MudText>
+                        <MudText Typo="Typo.body1">
+                            <MudIcon Icon="fas fa-envelope me-3" Size="Size.Small" /> support@ncmslu.com
+                        </MudText>
+                        <MudText Typo="Typo.body1">
+                            <MudIcon Icon="fas fa-phone me-3" Size="Size.Small" /> +63912345678
+                        </MudText>
+                    </MudStack>
+                    <MudStack Class="pa-3" AlignItems="AlignItems.Start">
+                        <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0">
+                            <MudText Typo="Typo.h6">Get connected with us on social networks</MudText>
+                            <MudSpacer />
+                            <MudIconButton Icon="fab fa-facebook-f" Class="me-4 text-white" Size="Size.Small" />
+                            <MudIconButton Icon="fab fa-twitter" Class="me-4 text-white" Size="Size.Small" />
+                            <MudIconButton Icon="fab fa-google" Class="me-4 text-white" Size="Size.Small" />
+                            <MudIconButton Icon="fab fa-instagram" Class="me-4 text-white" Size="Size.Small" />
+                        </MudStack>
+                    </MudStack>
+                </MudStack>
+            </MudAppBar>
+
+            </MudHidden>
+</MudBreakpointProvider>
+            
+
+    <MudAppBar Bottom="true" Fixed="false" Style="background-color: #2c3e50; color: white;" Elevation="0">        
+        <MudStack Row Justify="Justify.SpaceEvenly" AlignItems="AlignItems.Baseline" >
+            <MudTextM3 Typo="TypoM3.Label" Size="Size.Small" Class="fw-bold pt-3 pb-3">NORLU CEDEC Mid Point Hotel</MudTextM3>
+            <MudSpacer/>
+            <MudTextM3 Typo="TypoM3.Label" Size="Size.Small" Class="fw-bold pt-3 pb-3">All Rights Reserved. &copy; @DateTime.Now.Year</MudTextM3>
+        </MudStack>
+    </MudAppBar>
 </MudLayout>
 
 @code {
