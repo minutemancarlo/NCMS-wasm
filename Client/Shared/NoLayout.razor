@@ -4,12 +4,8 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
-<style>
-    .mud-navmenu .mud-link:hover {
-        color: yellow !important;
-        background-color: #D67F46;
-    }
-</style>
+<MudTypographyProvider />
+
 <MudLayout>
     <MudAppBar Elevation="1" Color="Color.Info" Fixed>
         <MudStack Row Spacing="0">
@@ -18,7 +14,8 @@
         </MudStack>
         <MudSpacer />
         <MudBreakpointProvider>
-            <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+            @* DEKSTOP VIEW *@
+            <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
                 <MudStack Row Spacing="2" Class="px-2">
                     <MudButton StartIcon="fas fa-home" Variant="Variant.Filled" Color="Color.Secondary">Home</MudButton>
                     <MudButton StartIcon="fas fa-bed" Variant="Variant.Filled" Color="Color.Secondary">Rooms</MudButton>
@@ -39,12 +36,13 @@
                     </ChildContent>
                 </MudMenu>
             </MudHidden>
-            <MudHidden Breakpoint="Breakpoint.MdAndDown" Invert="true">
-                <MudIconButton Icon="@Icons.Material.Filled.MoreVert" OnClick="ToggleDrawer" Color="Color.Inherit" Edge="Edge.End" />
+            @* MOBILE VIEW *@
+            <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                <MudIconButton Icon="fas fa-bars" OnClick="ToggleDrawer" Color="Color.Inherit" Edge="Edge.End" />
             </MudHidden>
         </MudBreakpointProvider>
     </MudAppBar>
-    <MudDrawer @bind-Open="@_open" Breakpoint="Breakpoint.MdAndDown" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudDrawer @bind-Open="@_open" Breakpoint="Breakpoint.SmAndDown" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
         <MudDrawerHeader>
             <MudText Typo="Typo.subtitle1"><MudAvatar Color="Color.Tertiary">CB</MudAvatar> Carlo Boado</MudText>
         </MudDrawerHeader>
@@ -61,8 +59,11 @@
     </MudDrawer>
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.ExtraLarge">
-            <MudGrid Class="pt-6 pl-3 align-items-center justify-content-center">
+            
+            <MudGrid Class="pt-6 py-2">
+                
                 @Body
+                
             </MudGrid>
         </MudContainer>
     </MudMainContent>

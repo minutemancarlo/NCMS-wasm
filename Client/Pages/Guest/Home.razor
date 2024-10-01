@@ -1,38 +1,125 @@
 ﻿@page "/Home"
 @layout NoLayout
-<MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Baseline" Class="mud-width-full pt-2 py-2">
-    <MudGrid>
-        <MudItem xs="9">
-            <MudCarousel Class="pl-2" Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
-                @for (int i = 1; i <= 8; i++)
-                {
-                    string image = $"images/{i}.jpg";
-                    <MudCarouselItem Transition="transition">
-                        <div class="d-flex" style="height:100%; width: 100%">
-                            <MudImage ObjectFit="ObjectFit.Cover" Src="@image" Style="height:100%; width: 100%" />
-                        </div>
-                    </MudCarouselItem>
-                }
-            </MudCarousel>
-        </MudItem>
-        <MudItem xs="3">           
-            <MudPaper Elevation="4" Outlined="true">
-                <MudStack Row Class="pa-2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
-                    <MudDatePicker Label="Check In" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <MudDatePicker Label="Check Out" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <MudNumericField @bind-Value="IntValue" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
-                    <MudSelect T="string" Label="Guests" Variant="Variant.Outlined" Margin="Margin.Dense">
-                        <MudSelectItem Value="@("Children")" />
-                        <MudSelectItem Value="@("Adults")" />
-                    </MudSelect>
-                    <MudButton Variant="Variant.Filled" Color="Color.Success" Href="/rooms" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" FullWidth IconSize="Size.Large">Check Availability</MudButton>
-                </MudStack>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
+@using MudExtensions
+@using MudBlazor.Services
+@implements IBrowserViewportObserver
+@implements IAsyncDisposable
+
+<MudStack AlignItems="AlignItems.Center" Class="mud-width-full vh-100 pt-3">
+<MudBreakpointProvider>
+    @* DEKSTOP VIEW *@
+    <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">        
+            <MudGrid Class="pl-3" Spacing="3" Justify="Justify.Center">
+                <MudItem xs="8">
+                    <MudCarousel Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+                        @for (int i = 1; i <= 8; i++)
+                        {
+                            string image = $"images/{i}.jpg";
+                            <MudCarouselItem Transition="transition">
+                                <div class="d-flex" style="height:100%; width: 100%">
+                                    <MudImage ObjectFit="ObjectFit.Cover" Src="@image" Style="height:100%; width: 100%" />
+                                </div>
+                            </MudCarouselItem>
+                        }
+                    </MudCarousel>
+                </MudItem>
+                <MudItem xs="4">
+                    <br />
+                    <MudPaper Elevation="4" Class="w-100" Outlined="true">
+                        <MudStack Row>
+                            <MudImage Src="images/illustrations/travelers_re_y25a.svg" Height="150" />
+                            <MudStack>
+                                <MudText Typo="Typo.h6" Class="fw-bold text-center">Book your room now</MudText>
+                                <MudText Typo="Typo.body1" Class="text-center">
+                                    Don't worry, our hotel offers the best
+                                    affordable rates you can ever find.
+                                </MudText>
+                            </MudStack>
+                        </MudStack>
+                        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
+                            <MudDatePicker Label="Check In" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudDatePicker Label="Check Out" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </MudStack>
+                        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
+                            <MudNumericField @bind-Value="IntValue" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                        </MudStack>
+                        <MudText Typo="Typo.subtitle2" Class="pl-2">Guests</MudText>
+                        <MudStack Class="pa-2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+                            <MudStack Row>
+                                <MudNumericField @bind-Value="IntValue" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                                <MudNumericField @bind-Value="IntValue" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                            </MudStack>
+                            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/rooms" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" FullWidth IconSize="Size.Large">Check Availability</MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+
+            </MudGrid>        
+    </MudHidden>
+
+    @* MOBILE VIEW *@
+
+    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">        
+            <MudGrid Class="pl-3" Spacing="1" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudCarousel Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+                        @for (int i = 1; i <= 8; i++)
+                        {
+                            string image = $"images/{i}.jpg";
+                            <MudCarouselItem Transition="transition">
+                                <div class="d-flex" style="height:100%; width: 100%">
+                                    <MudImage ObjectFit="ObjectFit.Cover" Src="@image" Style="height:100%; width: 100%" />
+                                </div>
+                            </MudCarouselItem>
+                        }
+                    </MudCarousel>
+                </MudItem>
+                <MudItem xs="12">
+
+                    <MudPaper Elevation="4" Outlined="true">
+                        <MudStack Row>
+                            <MudImage Src="images/illustrations/travelers_re_y25a.svg" Height="150" />
+                            <MudStack>
+                                <MudText Typo="Typo.h6" Class="fw-bold text-center">Book your room now</MudText>
+                                <MudText Typo="Typo.body1" Class="text-center">
+                                    Don't worry, our hotel offers the best
+                                    affordable rates you can ever find.
+                                </MudText>
+                            </MudStack>
+                        </MudStack>
+                        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
+                            <MudDatePicker Label="Check In" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudDatePicker Label="Check Out" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </MudStack>
+                        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
+                            <MudNumericField @bind-Value="IntValue" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                        </MudStack>
+                        <MudText Typo="Typo.subtitle2" Class="pl-2">Guests</MudText>
+                        <MudStack Class="pa-2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+                            <MudStack Row>
+                                <MudNumericField @bind-Value="IntValue" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                                <MudNumericField @bind-Value="IntValue" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                            </MudStack>
+                            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/rooms" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" FullWidth IconSize="Size.Large">Check Availability</MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>        
+    </MudHidden>
+</MudBreakpointProvider>
+</MudStack>
 
 
-
+<MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-width-full pb-1">
+    <Footer />
+    @*   <MudItem xs="12">
+    <MudPaper Elevation="0" Class="w-100" Style="background-color: #ecf0f1" Height="40px">
+    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="0">
+    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small">NORLU CEDEC MidPoint Hotel.</MudTextM3>
+    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small" Class="fw-bold">All Rights Reserved. &copy; @DateTime.Now.Year</MudTextM3>
+    </MudStack>
+    </MudPaper>
+    </MudItem> *@
     @* <MudItem Class="text-center text-lg-start bg-body-tertiary text-muted wh-100" xs="8">
     <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0">
     <MudText Typo="Typo.caption">Get connected with us on social networks:</MudText>
@@ -43,7 +130,7 @@
     <MudIconButton Icon="fab fa-instagram" Class="me-4 text-reset" />
     </MudStack>
     <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-    <MudStack Spacing="0" >
+    <MudStack Spacing="0">
     <MudText Typo="Typo.h6"><MudIcon Icon="fas fa-gem me-3"></MudIcon>Company Name</MudText>
     <MudText Typo="Typo.body1">
     Here you can use rows and columns to organize your footer content. Lorem ipsum
@@ -80,16 +167,10 @@
 
     </MudItem> *@
 
-
-
-
-</MudStack>
-<MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-width-full py-2">
-    <Footer />
 </MudStack>
 
 
-
+<MudInputStyler Selector=".availability-card" LabelBackgroundColor="#f1c40f" TextColor="#f3ec4eff" />
 
 
 @code {
@@ -99,6 +180,53 @@
     private bool autocycle = true;
     private Transition transition = Transition.Slide;
     public int IntValue { get; set; } = 1;
-
+    [Inject] ISnackbar Snackbar { get; set; }
     DateTime? date = DateTime.Today;
+
+    [Inject]
+    private IBrowserViewportService BrowserViewportService { get; set; }
+
+    private List<Breakpoint> _breakpointHistory = new();
+    private Breakpoint _start;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await BrowserViewportService.SubscribeAsync(this, fireImmediately: true);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async ValueTask DisposeAsync() => await BrowserViewportService.UnsubscribeAsync(this);
+
+    Guid IBrowserViewportObserver.Id { get; } = Guid.NewGuid();
+
+    ResizeOptions IBrowserViewportObserver.ResizeOptions { get; } = new()
+        {
+            ReportRate = 250,
+            NotifyOnBreakpointOnly = true
+        };
+
+    Task IBrowserViewportObserver.NotifyBrowserViewportChangeAsync(BrowserViewportEventArgs browserViewportEventArgs)
+    {
+        if (browserViewportEventArgs.IsImmediate)
+        {
+            _start = browserViewportEventArgs.Breakpoint;
+            Snackbar.Add($"View Started with {_start}", Severity.Info);
+        }
+        else
+        {
+            _breakpointHistory.Add(browserViewportEventArgs.Breakpoint);
+            Breakpoint last = Breakpoint.Sm;
+            foreach (var item in _breakpointHistory)
+            {
+                last = item;
+            }
+            Snackbar.Add($"View Changed to {last.ToString()}", Severity.Info);
+        }
+
+        return InvokeAsync(StateHasChanged);
+    }
 }
