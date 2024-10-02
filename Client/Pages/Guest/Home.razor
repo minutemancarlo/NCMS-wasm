@@ -4,6 +4,7 @@
 @using MudBlazor.Services
 @implements IBrowserViewportObserver
 @implements IAsyncDisposable
+
 <MudTypographyProvider />
 
 <MudStack AlignItems="AlignItems.Center" Class="w-100 pt-3">
@@ -81,7 +82,7 @@
                         <MudStack Row>
                             <MudImage Src="images/illustrations/travelers_re_y25a.svg" Height="150" />
                             <MudStack>
-                                <MudText Typo="Typo.h6" Class="fw-bold text-center">Book your room now</MudText>
+                                <MudText Typo="Typo.h6" Class="fw-bold text-center mx-0 px-0">Book your room now</MudText>
                                 <MudText Typo="Typo.body1" Class="text-center">
                                     Don't worry, our hotel offers the best
                                     affordable rates you can ever find.
@@ -200,7 +201,7 @@
         </MudHidden>
         @* MOBILE VIEW *@
         <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-            <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="pl-1"  Spacing="0">
+            <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="pl-1" Spacing="0">
                 <MudStack>
                     <MudImage Src="images/illustrations/staying_in_i-80-u.svg" Height="200" ObjectFit="ObjectFit.Contain" Class="float-start" />
                     <MudStack Class="pr-3 pl-3" AlignItems="AlignItems.Start">
@@ -285,9 +286,13 @@
             </MudStack>
         </MudHidden>
     </MudBreakpointProvider>
-
-
-
+    <hr class="horizontal">
+    <MudText Typo="Typo.h3" id="rooms">Our Rooms</MudText>
+    <MudItem xs="8" Class="w-100">        
+        <RoomsCard />
+    </MudItem>
+    <MudText Typo="Typo.h3">About Us</MudText>
+    <About IdLink="about" />
 
 </MudStack>
 
@@ -323,6 +328,9 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
+
+
+    // BELOW CODE WAS USED FOR DETECTING SCREEN SIZE
     public async ValueTask DisposeAsync() => await BrowserViewportService.UnsubscribeAsync(this);
 
     Guid IBrowserViewportObserver.Id { get; } = Guid.NewGuid();
@@ -338,7 +346,7 @@
         if (browserViewportEventArgs.IsImmediate)
         {
             _start = browserViewportEventArgs.Breakpoint;
-            Snackbar.Add($"View Started with {_start}", Severity.Info);
+            // Snackbar.Add($"View Started with {_start}", Severity.Info);
         }
         else
         {
@@ -348,7 +356,7 @@
             {
                 last = item;
             }
-            Snackbar.Add($"View Changed to {last.ToString()}", Severity.Info);
+            // Snackbar.Add($"View Changed to {last.ToString()}", Severity.Info);
         }
 
         return InvokeAsync(StateHasChanged);

@@ -1,4 +1,9 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Security.Claims
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+@inject IJSRuntime JS
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -10,7 +15,11 @@
     <MudAppBar Elevation="1" Color="Color.Info" Fixed>
         <MudStack Row Spacing="0">
             <MudImage Src="images/logo.png" Width="50" Height="50" />
-            <MudText Typo="Typo.h6" Class="pt-2">NORLU CEDEC Mid Point Hotel</MudText>
+            <MudBreakpointProvider>
+                <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                    <MudText Typo="Typo.h6" Class="pt-2">NORLU CEDEC Mid Point Hotel</MudText>
+                </MudHidden>
+            </MudBreakpointProvider>
         </MudStack>
         <MudSpacer />
         <MudBreakpointProvider>
@@ -18,21 +27,36 @@
             <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
                 <MudStack Row Spacing="2" Class="px-2">
                     <MudButton StartIcon="fas fa-home" Variant="Variant.Filled" Color="Color.Secondary">Home</MudButton>
-                    <MudButton StartIcon="fas fa-bed" Variant="Variant.Filled" Color="Color.Secondary">Rooms</MudButton>
+                    <MudButton StartIcon="fas fa-bed" Variant="Variant.Filled" Color="Color.Secondary" OnClick="ScrollToRooms">Rooms</MudButton>
                     <MudButton StartIcon="fas fa-phone-square-alt" Variant="Variant.Filled" Color="Color.Secondary">Contact</MudButton>
-                    <MudButton StartIcon="fas fa-question-circle" Variant="Variant.Filled" Color="Color.Secondary">About Us</MudButton>
+                    <MudButton StartIcon="fas fa-question-circle" Variant="Variant.Filled" Color="Color.Secondary" OnClick="ScrollToAbout">About Us</MudButton>
                 </MudStack>
                 <MudMenu Class="my-3" Dense AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
                     <ActivatorContent>
                         <MudAvatar>
                             <ChildContent>
-                                <MudAvatar Color="Color.Tertiary">CB</MudAvatar>
+                                <AuthorizeView>
+                                    <Authorized>
+                                        <MudAvatar Color="Color.Tertiary">CB</MudAvatar>
+                                    </Authorized>
+                                    <NotAuthorized>
+                                        <MudIcon Icon="fas fa-user-circle" Color="Color.Secondary" />
+                                    </NotAuthorized>
+                                </AuthorizeView>
                             </ChildContent>
                         </MudAvatar>
                     </ActivatorContent>
                     <ChildContent>
-                        <MudMenuItem Icon="fas fa-users-cog">Account</MudMenuItem>
-                        <MudMenuItem Icon="fas fa-sign-out-alt">Sign Out</MudMenuItem>
+                        <AuthorizeView>
+                            <Authorized>
+                                <MudMenuItem Icon="fas fa-users-cog">Account</MudMenuItem>
+                                <MudMenuItem Icon="fas fa-sign-out-alt">Log Out</MudMenuItem>
+                            </Authorized>
+                            <NotAuthorized>
+                                <MudMenuItem Href="authentication/register" Icon="fas fa-users-cog">Sign Up</MudMenuItem>
+                                <MudMenuItem Href="authentication/login" Icon="fas fa-sign-in-alt">Log In</MudMenuItem>
+                            </NotAuthorized>
+                        </AuthorizeView>
                     </ChildContent>
                 </MudMenu>
             </MudHidden>
@@ -44,15 +68,30 @@
     </MudAppBar>
     <MudDrawer @bind-Open="@_open" Breakpoint="Breakpoint.SmAndDown" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
         <MudDrawerHeader>
-            <MudText Typo="Typo.subtitle1"><MudAvatar Color="Color.Tertiary">CB</MudAvatar> Carlo Boado</MudText>
+            <AuthorizeView>
+                <Authorized>
+                    <MudText Typo="Typo.subtitle1"><MudAvatar Color="Color.Tertiary">CB</MudAvatar> Carlo Boado</MudText>
+                </Authorized>
+                <NotAuthorized>
+                    <MudText Typo="Typo.subtitle1">Book a room Now!!</MudText>
+                </NotAuthorized>
+            </AuthorizeView>
         </MudDrawerHeader>
         <MudNavMenu>
             <MudNavLink Icon="fas fa-home" IconColor="Color.Inherit" Match="NavLinkMatch.All">Home</MudNavLink>
-            <MudNavLink Icon="fas fa-bed" IconColor="Color.Inherit" Match="NavLinkMatch.All">Rooms</MudNavLink>
+            <MudNavLink Icon="fas fa-bed" IconColor="Color.Inherit" OnClick="ScrollToRooms">Rooms</MudNavLink>
             <MudNavLink Icon="fas fa-phone-square-alt" IconColor="Color.Inherit" Match="NavLinkMatch.All">Contact</MudNavLink>
-            <MudNavLink Icon="fas fa-question-circle" IconColor="Color.Inherit" Match="NavLinkMatch.All">About Us</MudNavLink>
-            <MudNavLink Icon="fas fa-users-cog" IconColor="Color.Inherit" Match="NavLinkMatch.All">Account</MudNavLink>
-            <MudNavLink Icon="fas fa-sign-out-alt" IconColor="Color.Inherit" Match="NavLinkMatch.All">Logout</MudNavLink>
+            <MudNavLink Icon="fas fa-question-circle" IconColor="Color.Inherit" OnClick="ScrollToAbout">About Us</MudNavLink>
+            <AuthorizeView>
+                <Authorized>
+                    <MudNavLink Icon="fas fa-users-cog" IconColor="Color.Inherit" Match="NavLinkMatch.All">Account</MudNavLink>
+                    <MudNavLink Icon="fas fa-sign-out-alt" IconColor="Color.Inherit" Match="NavLinkMatch.All">Logout</MudNavLink>
+                </Authorized>
+                <NotAuthorized>
+                    <MudNavLink Href="authentication/register" Icon="fas fa-users-cog" IconColor="Color.Inherit">Sign Up</MudNavLink>
+                    <MudNavLink Href="authentication/login" Icon="fas fa-sign-in-alt" IconColor="Color.Inherit">Login</MudNavLink>
+                </NotAuthorized>
+            </AuthorizeView>
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
@@ -133,7 +172,7 @@
                     </MudStack>
                     <MudStack Row Class="pa-3" AlignItems="AlignItems.Baseline">
                         <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0" Wrap="Wrap.Wrap">
-                            <MudText GutterBottom Typo="Typo.h6">Get connected with us</MudText>                            
+                            <MudText GutterBottom Typo="Typo.h6" class="mx-0 px-0">Get connected with us</MudText>
                         </MudStack>
                         <MudIconButton Icon="fab fa-facebook-f" Class="me-4 text-white" Size="Size.Small" />
                         <MudIconButton Icon="fab fa-twitter" Class="me-4 text-white" Size="Size.Small" />
@@ -144,14 +183,14 @@
             </MudAppBar>
             <MudAppBar Bottom="true" Fixed="false" Style="background-color: #2c3e50; color: white;" Elevation="0">
                 <MudStack AlignItems="AlignItems.Baseline" Class="w-100" Justify="Justify.Center" Spacing="0">
-                    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small">NORLU CEDEC Mid Point Hotel. All Rights Reserved. &copy; @DateTime.Now.Year</MudTextM3>                    
+                    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small">NORLU CEDEC Mid Point Hotel. All Rights Reserved. &copy; @DateTime.Now.Year</MudTextM3>
                 </MudStack>
             </MudAppBar>
         </MudHidden>
     </MudBreakpointProvider>
 
 
-   
+
     <MudScrollToTop>
         <MudFab Color="Color.Info" StartIcon="@Icons.Material.Filled.ArrowCircleUp" />
     </MudScrollToTop>
@@ -166,4 +205,19 @@
         _open = !_open;
     }
 
+    private async Task ScrollToAbout()
+    {
+        await JS.InvokeVoidAsync("scrollToElement", "about");
+    }
+
+    private async Task ScrollToRooms()
+    {
+        await JS.InvokeVoidAsync("scrollToElement", "rooms");
+    }
+
+    private async Task BeginSignOut()
+    {
+        await SignOutManager.SetSignOutState();
+        Navigation.NavigateTo("authentication/logout");
+    }
 }
