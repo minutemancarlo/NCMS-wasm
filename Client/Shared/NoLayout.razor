@@ -10,11 +10,11 @@
     <MudAppBar Elevation="1" Color="Color.Info" Fixed>
         <MudStack Row Spacing="0">
             <MudImage Src="images/logo.png" Width="50" Height="50" />
-            <MudText Typo="Typo.h6" Class="pt-2">NORLU CEDEC MidPoint Hotel</MudText>
+            <MudText Typo="Typo.h6" Class="pt-2">NORLU CEDEC Mid Point Hotel</MudText>
         </MudStack>
         <MudSpacer />
         <MudBreakpointProvider>
-            @* DEKSTOP VIEW *@
+            @* DESKTOP VIEW *@
             <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
                 <MudStack Row Spacing="2" Class="px-2">
                     <MudButton StartIcon="fas fa-home" Variant="Variant.Filled" Color="Color.Secondary">Home</MudButton>
@@ -50,32 +50,27 @@
             <MudNavLink Icon="fas fa-home" IconColor="Color.Inherit" Match="NavLinkMatch.All">Home</MudNavLink>
             <MudNavLink Icon="fas fa-bed" IconColor="Color.Inherit" Match="NavLinkMatch.All">Rooms</MudNavLink>
             <MudNavLink Icon="fas fa-phone-square-alt" IconColor="Color.Inherit" Match="NavLinkMatch.All">Contact</MudNavLink>
-
             <MudNavLink Icon="fas fa-question-circle" IconColor="Color.Inherit" Match="NavLinkMatch.All">About Us</MudNavLink>
             <MudNavLink Icon="fas fa-users-cog" IconColor="Color.Inherit" Match="NavLinkMatch.All">Account</MudNavLink>
-
             <MudNavLink Icon="fas fa-sign-out-alt" IconColor="Color.Inherit" Match="NavLinkMatch.All">Logout</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
         <MudPaper Width="100%">
             <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
-
                 <MudGrid Class="pt-6 py-2">
-
                     @Body
-
                 </MudGrid>
             </MudContainer>
         </MudPaper>
     </MudMainContent>
-        <MudBreakpointProvider>
-    <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
-    <MudAppBar Bottom="true" Fixed="false" Style="background-color: #34495e; color: white;height:150px;" Elevation="0">
-
+    <MudBreakpointProvider>
+        @* DESKTOP VIEW *@
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+            <MudAppBar Bottom="true" Fixed="false" Style="background-color: #34495e; color: white;height:150px;" Elevation="0">
                 <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Baseline" Class="mt-auto">
                     <MudStack Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
-                        <MudText Typo="Typo.h6">NORLU CEDEC MidPoint Hotel</MudText>
+                        <MudText Typo="Typo.h6">NORLU CEDEC Mid Point Hotel</MudText>
                         <MudText Typo="Typo.body1">Experience Luxury in the Biggest Hotel in town</MudText>
                         <MudTextM3 Typo="TypoM3.Body" Size="Size.Large">
                             Discover Norlu Cedec Midpoint Hotel, the biggest hotel in Rosario, La Union. Book your stay today!
@@ -95,7 +90,7 @@
                     </MudStack>
                     <MudStack Class="pa-3" AlignItems="AlignItems.Start">
                         <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0">
-                            <MudText Typo="Typo.h6">Get connected with us on social networks</MudText>
+                            <MudText Typo="Typo.h6">Get connected with us</MudText>
                             <MudSpacer />
                             <MudIconButton Icon="fab fa-facebook-f" Class="me-4 text-white" Size="Size.Small" />
                             <MudIconButton Icon="fab fa-twitter" Class="me-4 text-white" Size="Size.Small" />
@@ -105,14 +100,20 @@
                     </MudStack>
                 </MudStack>
             </MudAppBar>
+            <MudAppBar Bottom="true" Fixed="false" Style="background-color: #2c3e50; color: white;" Elevation="0">
+                <MudStack Row AlignItems="AlignItems.Baseline" Class="w-100" Justify="Justify.Center" StretchItems="StretchItems.Middle">
+                    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small" Class="fw-bold pt-3 pb-3">NORLU CEDEC Mid Point Hotel</MudTextM3>
 
-            </MudHidden>
-            <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-    <MudAppBar Bottom="true" Fixed="false" Style="background-color: #34495e; color: white;height:400px;" Elevation="0">
-
+                    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small" Class="fw-bold pt-3 pb-3 float-end">All Rights Reserved. &copy; @DateTime.Now.Year</MudTextM3>
+                </MudStack>
+            </MudAppBar>
+        </MudHidden>
+        @* MOBILE VIEW *@
+        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+            <MudAppBar Bottom="true" Fixed="false" Style="background-color: #34495e; color: white;height:400px;" Elevation="0">
                 <MudStack Justify="Justify.Center" AlignItems="AlignItems.Baseline" Class="mt-auto">
-                    <MudStack  Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
-                        <MudText Typo="Typo.h6">NORLU CEDEC MidPoint Hotel</MudText>
+                    <MudStack Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
+                        <MudText Typo="Typo.h6">NORLU CEDEC Mid Point Hotel</MudText>
                         <MudText Typo="Typo.body1">Experience Luxury in the Biggest Hotel in town</MudText>
                         <MudTextM3 Typo="TypoM3.Body" Size="Size.Large">
                             Discover Norlu Cedec Midpoint Hotel, the biggest hotel in Rosario, La Union. Book your stay today!
@@ -130,30 +131,30 @@
                             <MudIcon Icon="fas fa-phone me-3" Size="Size.Small" /> +63912345678
                         </MudText>
                     </MudStack>
-                    <MudStack Class="pa-3" AlignItems="AlignItems.Start">
-                        <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0">
-                            <MudText Typo="Typo.h6">Get connected with us on social networks</MudText>
-                            <MudSpacer />
-                            <MudIconButton Icon="fab fa-facebook-f" Class="me-4 text-white" Size="Size.Small" />
-                            <MudIconButton Icon="fab fa-twitter" Class="me-4 text-white" Size="Size.Small" />
-                            <MudIconButton Icon="fab fa-google" Class="me-4 text-white" Size="Size.Small" />
-                            <MudIconButton Icon="fab fa-instagram" Class="me-4 text-white" Size="Size.Small" />
+                    <MudStack Row Class="pa-3" AlignItems="AlignItems.Baseline">
+                        <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0" Wrap="Wrap.Wrap">
+                            <MudText GutterBottom Typo="Typo.h6">Get connected with us</MudText>                            
                         </MudStack>
+                        <MudIconButton Icon="fab fa-facebook-f" Class="me-4 text-white" Size="Size.Small" />
+                        <MudIconButton Icon="fab fa-twitter" Class="me-4 text-white" Size="Size.Small" />
+                        <MudIconButton Icon="fab fa-google" Class="me-4 text-white" Size="Size.Small" />
+                        <MudIconButton Icon="fab fa-instagram" Class="me-4 text-white" Size="Size.Small" />
                     </MudStack>
                 </MudStack>
             </MudAppBar>
+            <MudAppBar Bottom="true" Fixed="false" Style="background-color: #2c3e50; color: white;" Elevation="0">
+                <MudStack AlignItems="AlignItems.Baseline" Class="w-100" Justify="Justify.Center" Spacing="0">
+                    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small">NORLU CEDEC Mid Point Hotel. All Rights Reserved. &copy; @DateTime.Now.Year</MudTextM3>                    
+                </MudStack>
+            </MudAppBar>
+        </MudHidden>
+    </MudBreakpointProvider>
 
-            </MudHidden>
-</MudBreakpointProvider>
-            
 
-    <MudAppBar Bottom="true" Fixed="false" Style="background-color: #2c3e50; color: white;" Elevation="0">        
-        <MudStack Row Justify="Justify.SpaceEvenly" AlignItems="AlignItems.Baseline" >
-            <MudTextM3 Typo="TypoM3.Label" Size="Size.Small" Class="fw-bold pt-3 pb-3">NORLU CEDEC Mid Point Hotel</MudTextM3>
-            <MudSpacer/>
-            <MudTextM3 Typo="TypoM3.Label" Size="Size.Small" Class="fw-bold pt-3 pb-3">All Rights Reserved. &copy; @DateTime.Now.Year</MudTextM3>
-        </MudStack>
-    </MudAppBar>
+   
+    <MudScrollToTop>
+        <MudFab Color="Color.Info" StartIcon="@Icons.Material.Filled.ArrowCircleUp" />
+    </MudScrollToTop>
 </MudLayout>
 
 @code {

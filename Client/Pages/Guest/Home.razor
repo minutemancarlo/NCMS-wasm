@@ -4,11 +4,12 @@
 @using MudBlazor.Services
 @implements IBrowserViewportObserver
 @implements IAsyncDisposable
+<MudTypographyProvider />
 
-<MudStack AlignItems="AlignItems.Center" Class="w-100 vh-100 pt-3">
-<MudBreakpointProvider>
-    @* DEKSTOP VIEW *@
-    <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">        
+<MudStack AlignItems="AlignItems.Center" Class="w-100 pt-3">
+    <MudBreakpointProvider>
+        @* DEKSTOP VIEW *@
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
             <MudGrid Class="pl-3" Spacing="3" Justify="Justify.Center">
                 <MudItem xs="8">
                     <MudCarousel Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
@@ -54,12 +55,12 @@
                     </MudPaper>
                 </MudItem>
 
-            </MudGrid>        
-    </MudHidden>
+            </MudGrid>
+        </MudHidden>
 
-    @* MOBILE VIEW *@
+        @* MOBILE VIEW *@
 
-    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">        
+        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
             <MudGrid Class="pl-3" Spacing="1" Justify="Justify.Center">
                 <MudItem xs="12">
                     <MudCarousel Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
@@ -104,12 +105,190 @@
                         </MudStack>
                     </MudPaper>
                 </MudItem>
-            </MudGrid>        
-    </MudHidden>
-</MudBreakpointProvider>
-    <MudScrollToTop>
-        <MudFab Color="Color.Info" StartIcon="@Icons.Material.Filled.ArrowCircleUp" />
-    </MudScrollToTop>
+            </MudGrid>
+        </MudHidden>
+    </MudBreakpointProvider>
+    <hr class="horizontal">
+    <MudBreakpointProvider>
+        @* DESKTOP VIEW *@
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+            <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="0">
+                <MudItem xs="8">
+                    <MudItem xs="8" Class="float-end">
+                        <MudItem xs="8">
+                            <MudText Typo="Typo.h6">
+                                Enjoy your stay
+                                at our hotel
+                            </MudText>
+                            <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                We are more than being a hotel because we are able
+                                to combine the quality standard of a hotel with the
+                                advantages of an apartment.
+                            </MudTextM3>
+                        </MudItem>
+                        <MudStack Row>
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudIcon Icon="fas fa-clock" Size="Size.Medium" Color="Color.Warning" />
+                                    </CardHeaderAvatar>
+                                    <CardHeaderContent>
+                                        <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                            24 hours Room Service
+                                        </MudTextM3>
+                                        <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                            You have access to 24-hours a day room service at our hotel.
+                                        </MudTextM3>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                            </MudCard>
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudIcon Icon="fas fa-wifi" Size="Size.Medium" Color="Color.Warning" />
+                                    </CardHeaderAvatar>
+                                    <CardHeaderContent>
+                                        <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                            Free Wi-Fi Access
+                                        </MudTextM3>
+                                        <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                            You have access to 24-hours free Wi-Fi services irrespective of any room.
+                                        </MudTextM3>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                            </MudCard>
+                        </MudStack>
+                        <MudStack Row Justify="Justify.SpaceEvenly">
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudIcon Icon="fas fa-bed" Size="Size.Medium" Color="Color.Warning" />
+                                    </CardHeaderAvatar>
+                                    <CardHeaderContent>
+                                        <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                            Room Amenities
+                                        </MudTextM3>
+                                        <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                            All rooms include premium toiletries, bathrobes, and slippers for comfort.
+                                        </MudTextM3>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                            </MudCard>
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudIcon Icon="fas fa-hamburger" Size="Size.Medium" Color="Color.Warning" />
+                                    </CardHeaderAvatar>
+                                    <CardHeaderContent>
+                                        <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                            Near Fast Food Chains
+                                        </MudTextM3>
+                                        <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                            Our hotel is conveniently located near popular fast food chains, perfect for a quick bite.
+                                        </MudTextM3>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                            </MudCard>
+
+                        </MudStack>
+                    </MudItem>
+                </MudItem>
+                <MudItem xs="4" Class="w-100">
+                    <MudImage Src="images/illustrations/staying_in_i-80-u.svg" Height="300" ObjectFit="ObjectFit.Cover" Class="float-start" />
+                </MudItem>
+            </MudStack>
+        </MudHidden>
+        @* MOBILE VIEW *@
+        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+            <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="pl-1"  Spacing="0">
+                <MudStack>
+                    <MudImage Src="images/illustrations/staying_in_i-80-u.svg" Height="200" ObjectFit="ObjectFit.Contain" Class="float-start" />
+                    <MudStack Class="pr-3 pl-3" AlignItems="AlignItems.Start">
+                        <MudText Typo="Typo.h6">
+                            Enjoy your stay
+                            at our hotel
+                        </MudText>
+                        <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                            We are more than being a hotel because we are able
+                            to combine the quality standard of a hotel with the
+                            advantages of an apartment.
+                        </MudTextM3>
+                    </MudStack>
+                    <MudStack Row>
+                        <MudCard Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudIcon Icon="fas fa-clock" Size="Size.Medium" Color="Color.Warning" />
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                        24 hours Room Service
+                                    </MudTextM3>
+                                    <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                        You have access to 24-hours a day room service at our hotel.
+                                    </MudTextM3>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                        </MudCard>
+                        <MudCard Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudIcon Icon="fas fa-wifi" Size="Size.Medium" Color="Color.Warning" />
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                        Free Wi-Fi Access
+                                    </MudTextM3>
+                                    <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                        You have access to 24-hours free Wi-Fi services irrespective of any room.
+                                    </MudTextM3>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                        </MudCard>
+                    </MudStack>
+                    <MudStack Row>
+                        <MudCard Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudIcon Icon="fas fa-bed" Size="Size.Medium" Color="Color.Warning" />
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                        Room Amenities
+                                    </MudTextM3>
+                                    <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                        All rooms include premium toiletries, bathrobes, and slippers for comfort.
+                                    </MudTextM3>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                        </MudCard>
+                        <MudCard Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudIcon Icon="fas fa-hamburger" Size="Size.Medium" Color="Color.Warning" />
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                        Near Fast Food Chains
+                                    </MudTextM3>
+                                    <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                        Our hotel is conveniently located near popular fast food chains, perfect for a quick bite.
+                                    </MudTextM3>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                        </MudCard>
+                    </MudStack>
+
+                </MudStack>
+
+
+            </MudStack>
+        </MudHidden>
+    </MudBreakpointProvider>
+
+
+
+
 </MudStack>
 
 
