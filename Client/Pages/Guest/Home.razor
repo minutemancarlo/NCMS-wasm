@@ -371,7 +371,7 @@
         if (browserViewportEventArgs.IsImmediate)
         {
             _start = browserViewportEventArgs.Breakpoint;
-            Snackbar.Add($"View Started with {_start}", Severity.Info);
+           // Snackbar.Add($"View Started with {_start}", Severity.Info);
         }
         else
         {
@@ -381,7 +381,7 @@
             {
                 last = item;
             }
-            Snackbar.Add($"View Changed to {last.ToString()}", Severity.Info);
+           // Snackbar.Add($"View Changed to {last.ToString()}", Severity.Info);
         }
 
         return InvokeAsync(StateHasChanged);

@@ -7,7 +7,7 @@
 
 
 
-@code{
+@code {
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
 
@@ -33,8 +33,7 @@
                 {
                     Navigation.NavigateTo("/admin-dashboard");
                 }
-
-                if (user.IsInRole("Front Desk"))
+                else if (user.IsInRole("Front Desk"))
                 {
                     if (returnUrl == "portal")
                     {
@@ -45,19 +44,18 @@
                         Navigation.NavigateTo("/hotel-dashboard");
                     }
                 }
-
-                if (user.IsInRole("Human Resource"))
+                else if (user.IsInRole("Human Resource"))
                 {
-                    if(returnUrl == "portal")
+                    if (returnUrl == "portal")
                     {
                         Navigation.NavigateTo("/portal");
                     }
                     else
-                    {                        
+                    {
                         Navigation.NavigateTo("/hr-dashboard");
                     }
                 }
-                if (user.IsInRole("Gas Employee"))
+                else if (user.IsInRole("Gas Employee"))
                 {
                     if (returnUrl == "portal")
                     {
@@ -68,9 +66,10 @@
                         Navigation.NavigateTo("/gas-dashboard");
                     }
                 }
-                
+                else
+                {
                     Navigation.NavigateTo("/Home");
-              
+                }
             }
             else
             {
