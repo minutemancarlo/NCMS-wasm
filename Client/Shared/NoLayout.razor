@@ -198,7 +198,49 @@
 
 @code {
     private bool _open = false;
+    [Inject] ISnackbar Snackbar { get; set; }
+    private string baseUrl;
+    private string relativePath;
+    private string scrollTo;
+    protected override async Task OnInitializedAsync()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+        await UpdatePath();
+        await base.OnInitializedAsync();
+    }
 
+    private async Task UpdatePath()
+    {
+        relativePath = Navigation.ToBaseRelativePath(Navigation.Uri);
+        baseUrl = Navigation.BaseUri;        
+        if (!string.IsNullOrEmpty(scrollTo))
+        {
+            switch (scrollTo)
+            {
+                case "about":
+                    scrollTo = string.Empty;
+                    await ScrollToAbout();
+                    break;
+
+                case "rooms":
+                    scrollTo = string.Empty;
+                        await ScrollToRooms();
+                    break;
+            }
+        }
+        // Snackbar.Add($"Relative Path: {relativePath}", Severity.Normal);
+        // Snackbar.Add($"Base URL: {baseUrl}", Severity.Normal);
+    }
+
+    private void OnLocationChanged(object sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        UpdatePath();
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
 
     private void ToggleDrawer()
     {
@@ -206,13 +248,24 @@
     }
 
 
+
     private async Task ScrollToAbout()
     {
+            if (relativePath != "Home")
+        {
+            Navigation.NavigateTo($"{baseUrl}Home");
+            scrollTo = "about";
+        }
         await JS.InvokeVoidAsync("scrollToElement", "about");
     }
 
     private async Task ScrollToRooms()
     {
+        if (relativePath != "Home")
+        {
+            Navigation.NavigateTo($"{baseUrl}Home");
+            scrollTo = "rooms";
+        }
         await JS.InvokeVoidAsync("scrollToElement", "rooms");
     }
 
