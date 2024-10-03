@@ -19,7 +19,16 @@ namespace NCMS_wasm.Shared
         public DateTime? ArrivalDate { get; set; }
         public int Rooms { get; set; }
         public int Children { get; set; }
-        public int Adults { get; set; }
-        public string GuestType { get; set; }
+        public int Adults { get; set; } 
+    }
+
+
+    public class Availability
+    {
+        public DateTime? dateFrom { get; set; } = DateTime.Now;
+        public DateTime? dateTo { get; set; }
+        public int Rooms { get; set; } = 1;
+        public int Children { get; set; } = 0;
+        public int Adults { get; set; } = 1;
     }
 }

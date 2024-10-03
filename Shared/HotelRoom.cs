@@ -18,6 +18,18 @@ namespace NCMS_wasm.Shared
         public bool IsAvailable { get; set; }
     }
 
+    public class RoomInfo
+    {
+        public int RoomId { get; set; } = 0;
+        public RoomType Type { get; set; } = RoomType.Twin;
+        public decimal PricePerNight { get; set; } = 0.00M;
+        public int MaxGuest { get; set; } = 0;
+        public string? Image { get; set; }
+        public string? Thumbnail { get; set; }
+        public string? Features { get; set; }
+        public int Rating { get; set; } = 0;
+    }
+
     public enum RoomType
     {
         Twin,

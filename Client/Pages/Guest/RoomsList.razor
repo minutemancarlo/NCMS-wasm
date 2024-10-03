@@ -1,0 +1,180 @@
+﻿@page "/RoomsList/{dateFrom:datetime?}/{dateTo:datetime?}/{rooms:int?}/{children:int?}/{adults:int?}"
+@layout NoLayout
+@using MudExtensions
+@using MudBlazor.Services
+@using NCMS_wasm.Shared
+
+<PageTitle>Rooms - Mid Point Hotel</PageTitle>
+<MudTypographyProvider />
+<MudGrid Justify="Justify.Center" Class="pt-10">
+    <MudItem lg="12" md="12" sm="12" Class="w-100">
+        <MudCard Class="w-100" Elevation="0">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudStack Row>
+                        <MudIcon Icon="fas fa-hotel" Size="Size.Large" />
+                        <MudText Typo="Typo.h6"> Check Room Availability</MudText>
+                        <MudSpacer />
+                    </MudStack>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudPaper Class="w-100" Style="height: auto;" Elevation="4">
+                    <MudGrid Justify="Justify.Center" Class="pa-3" Spacing="1">
+                        <MudItem lg="2" sm="12" Class="w-100">
+                            <MudDatePicker Label="Check In" @bind-Date="availability.dateFrom" Class="w-100"
+                                           AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
+                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem lg="2" md="12" sm="12" Class="w-100">
+                            <MudDatePicker Label="Check Out" @bind-Date="availability.dateTo" Class="w-100"
+                                           AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
+                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date <= availability.dateFrom)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem lg="2" md="12" sm="12" Class="w-100">
+                            <MudNumericField @bind-Value="availability.Rooms" Label="Rooms" Class="w-100" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem lg="2" md="12" sm="12" Class="w-100">
+                            <MudNumericField @bind-Value="availability.Adults" Label="Adults" Class="w-100" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem lg="2" md="12" sm="12" Class="w-100">
+                            <MudNumericField @bind-Value="availability.Children" Label="Children" Class="w-100" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem lg="2" md="12" sm="12" Class="w-100 justify-content-center">
+                            <MudButton Variant="Variant.Filled" Color="Color.Info" Size="Size.Medium" Class="mx-2 py-2" StartIcon="@Icons.Material.Filled.Search" IconSize="Size.Large">Search</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                    <section style="background-color: #eee;">
+                        <div class="container py-5">
+                            @foreach (var item in roomInfo)
+                            {
+                                <div class="row justify-content-center mb-3">
+                                    <div class="col-md-12 col-xl-10">
+                                        <div class="card shadow-0 border rounded-3">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                                                        <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                                                            <img src="images/Thumbnail/@item.Thumbnail"
+                                                                 class="w-100" />
+                                                            <a href="#!">
+                                                                <div class="hover-overlay">
+                                                                    <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                                                                </div>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-lg-6 col-xl-6">
+                                                        <h5>@item.Type.ToString().Replace("_", " ")</h5>
+                                                        <div class="d-flex flex-row">
+                                                            <MudRating SelectedValue="@item.Rating" Size="Size.Small" ReadOnly />
+                                                        </div>
+                                                        <div class="d-flex flex-row">
+                                                            Capacity: <strong>@item.MaxGuest person/s</strong>
+                                                        </div>
+                                                       
+                                                        <div class="mt-1 mb-0 text-muted small">
+                                                            @{
+                                                                string[] featuresArray = item.Features.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                                                                foreach (var feature in featuresArray)
+                                                                {
+                                                                    <span>@feature.Trim()</span>
+                                                                    <span class="text-primary"> • </span>                                                   
+                                                                }
+                                                            }                                                                                                                        
+                                                        </div>
+                                                        
+                                                      
+                                                    </div>
+                                                    <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                                                        <div class="d-flex flex-row align-items-center mb-1">
+                                                            @{
+                                                                var price = item.PricePerNight.ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                                                                <h4 class="mb-1 me-1">@price</h4>
+                                                            }
+                                                            @* <span class="text-danger"><s>$20.99</s></span> *@
+                                                        </div>                                                      
+                                                        <div class="d-flex flex-column mt-4">
+                                                            <button data-mdb-button-init data-mdb-ripple-init onclick="@(() => ShowView(item.Image))" class="btn btn-primary btn-sm" type="button">AR 360 view</button>
+                                                            <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary btn-sm mt-2" type="button">
+                                                                Book Now
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                            }
+                                                      
+                        </div>
+                    </section>
+                </MudPaper>
+            </MudCardContent>
+
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+
+
+
+
+
+@* <h3>Date From: @(availability?.dateFrom?.ToString("MM/dd/yyyy"))</h3>
+<h3>Date To: @(availability?.dateTo?.ToString("MM/dd/yyyy"))</h3>
+<h3>Rooms: @availability?.Rooms</h3>
+<h3>Children: @availability?.Children</h3>
+<h3>Adults: @availability?.Adults</h3> *@
+
+@code {
+    [Parameter] public DateTime? dateFrom { get; set; }
+    [Parameter] public DateTime? dateTo { get; set; }
+    [Parameter] public int? rooms { get; set; }
+    [Parameter] public int? children { get; set; }
+    [Parameter] public int? adults { get; set; }
+    private Availability? availability { get; set; } = new();
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IHttpClientFactory httpClientFactory { get; set; }
+    [Inject] NavigationManager Navigation { get; set; }
+    private List<RoomInfo> roomInfo = new();
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        availability.dateFrom = dateFrom ?? DateTime.Today;
+        availability.dateTo = dateTo ?? DateTime.Today.AddDays(1);
+        availability.Rooms = rooms ?? 1;
+        availability.Children = children ?? 0;
+        availability.Adults = adults ?? 1;
+        await LoadRoomsList();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadRoomsList()
+    {
+        isLoading = true;
+        try
+        {
+            var httpClient = httpClientFactory.CreateClient("Anonymous");
+            roomInfo = await httpClient.GetFromJsonAsync<List<RoomInfo>>($"HotelManagement/GetRoomInfo");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}");
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ShowView(string image)
+    {
+
+        Navigation.NavigateTo($"/360View/{image}");
+    }
+}

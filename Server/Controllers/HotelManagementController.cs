@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
 
@@ -55,6 +56,22 @@ namespace NCMS_wasm.Server.Controllers
             try
             {
                 var devices = await _hotelRepository.GetAllRoomsAsync();
+                _logger.LogInformation("Rooms retrieved successfully.");
+                return Ok(devices);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred while retrieving rooms: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
+            }
+        }
+        [AllowAnonymous]
+        [HttpGet("GetRoomInfo")]
+        public async Task<ActionResult<List<RoomInfo>>> GetRoomInfo()
+        {
+            try
+            {
+                var devices = await _hotelRepository.GetAllRoomsInfoAsync();
                 _logger.LogInformation("Rooms retrieved successfully.");
                 return Ok(devices);
             }

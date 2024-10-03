@@ -1,4 +1,5 @@
-﻿@*Keyframes by https://animate.style/*@
+﻿@using NCMS_wasm.Shared
+@*Keyframes by https://animate.style/*@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 <style type="text/css">
 
@@ -24,126 +25,86 @@
         <MudCarousel Class="w-100 px-3 py-5" Style="height:450px;" EnableSwipeGesture="true" TData="object" AutoCycle="false">
             <MudCarouselItem Transition="Transition.Custom" CustomTransitionEnter="bounceIn" CustomTransitionExit="bounceOut">
                 <MudStack Row Class="w-100" AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="2">
-                    <MudCard Style="width: 25%;">
-                        <MudCardMedia Image="images/2.jpg" Height="200" />
-                        <MudCardContent>
-                            <MudText Typo="Typo.h5">Twin Double Room</MudText>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" /><MudText Typo="Typo.subtitle1"> 2,200 per night</MudText>
-                            </MudStack>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> 2 Persons</MudText>
-                            </MudStack>
-                        </MudCardContent>
-                        <MudCardActions Class="text-center">
-                            <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth>Book Now</MudButton>
+                    @foreach( var item in roomInfo.Take(3)){
+                        <MudCard Style="width: 25%;">
+                            <MudCardMedia Image="@($"images/{item.Thumbnail}")" Height="200" />
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5">@item.Type.ToString().Replace("_", " ")</MudText>
+                                <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
+                                    @{
+                                        var price = item.PricePerNight.ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                                        <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" />
 
-                        </MudCardActions>
-                    </MudCard>
-                    <MudCard Style="width: 25%;">
-                        <MudCardMedia Image="images/2.jpg" Height="200" />
-                        <MudCardContent>
-                            <MudText Typo="Typo.h5">Double Room</MudText>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" /><MudText Typo="Typo.subtitle1"> 2,200 per night</MudText>
-                            </MudStack>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> 2 Persons</MudText>
-                            </MudStack>
-                        </MudCardContent>
-                        <MudCardActions Class="text-center">
-                            <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth>Book Now</MudButton>
-
-                        </MudCardActions>
-                    </MudCard>
-                    <MudCard Style="width: 25%;">
-                        <MudCardMedia Image="images/2.jpg" Height="200" />
-                        <MudCardContent>
-                            <MudText Typo="Typo.h5">Double Twin Room</MudText>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" /><MudText Typo="Typo.subtitle1"> 2,200 per night</MudText>
-                            </MudStack>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> 2 Persons</MudText>
-                            </MudStack>
-                        </MudCardContent>
-                        <MudCardActions Class="text-center">
-                            <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth>Book Now</MudButton>
-
-                        </MudCardActions>
-                    </MudCard>
+                                        <MudText Typo="Typo.subtitle1"> @price per night</MudText>
+                                    }
+                                </MudStack>
+                                <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> @item.MaxGuest Person/s</MudText>
+                                </MudStack>
+                            </MudCardContent>
+                            <MudCardActions Class="text-center">
+                                <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth>Book Now</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                        
+                    }
+                    
+                    
                 </MudStack>
             </MudCarouselItem>
             <MudCarouselItem Transition="Transition.Custom" CustomTransitionEnter="bounceIn" CustomTransitionExit="bounceOut">
                 <MudStack Row Class="w-100" AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="2">
-                    <MudCard Style="width: 25%;">
-                        <MudCardMedia Image="images/2.jpg" Height="200" />
-                        <MudCardContent>
-                            <MudText Typo="Typo.h5">Triple Room</MudText>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" /><MudText Typo="Typo.subtitle1"> 2,200 per night</MudText>
-                            </MudStack>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> 2 Persons</MudText>
-                            </MudStack>
-                        </MudCardContent>
-                        <MudCardActions Class="text-center">
-                            <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth>Book Now</MudButton>
+                    @foreach (var item in roomInfo.Skip(3).Take(2))
+                    {
+                        <MudCard Style="width: 25%;">
+                            <MudCardMedia Image="@($"images/{item.Thumbnail}")" Height="200" />
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5">@item.Type.ToString().Replace("_", " ")</MudText>
+                                <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
+                                    @{
+                                        var price = item.PricePerNight.ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                                        <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" />
 
-                        </MudCardActions>
-                    </MudCard>
-                    <MudCard Style="width: 25%;">
-                        <MudCardMedia Image="images/2.jpg" Height="200" />
-                        <MudCardContent>
-                            <MudText Typo="Typo.h5">Suite</MudText>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" /><MudText Typo="Typo.subtitle1"> 2,200 per night</MudText>
-                            </MudStack>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> 2 Persons</MudText>
-                            </MudStack>
-                        </MudCardContent>
-                        <MudCardActions Class="text-center">
-                            <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth>Book Now</MudButton>
+                                        <MudText Typo="Typo.subtitle1"> @price per night</MudText>
+                                    }
+                                </MudStack>
+                                <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> @item.MaxGuest Person/s</MudText>
+                                </MudStack>
+                            </MudCardContent>
+                            <MudCardActions Class="text-center">
+                                <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth>Book Now</MudButton>
+                            </MudCardActions>
+                        </MudCard>
 
-                        </MudCardActions>
-                    </MudCard>
+                    }
                 </MudStack>
             </MudCarouselItem>
             <MudCarouselItem Transition="Transition.Custom" CustomTransitionEnter="bounceIn" CustomTransitionExit="bounceOut">
                 <MudStack Row Class="w-100" AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="2">
-                    <MudCard Style="width: 25%;">
-                        <MudCardMedia Image="images/2.jpg" Height="200" />
-                        <MudCardContent>
-                            <MudText Typo="Typo.h5">King Suite</MudText>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" /><MudText Typo="Typo.subtitle1"> 2,200 per night</MudText>
-                            </MudStack>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> 2 Persons</MudText>
-                            </MudStack>
-                        </MudCardContent>
-                        <MudCardActions Class="text-center">
-                            <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth>Book Now</MudButton>
+                    @foreach (var item in roomInfo.Skip(5).Take(2))
+                    {
+                        <MudCard Style="width: 25%;">
+                            <MudCardMedia Image="@($"images/{item.Thumbnail}")" Height="200" />
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5">@item.Type.ToString().Replace("_", " ")</MudText>
+                                <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
+                                    @{
+                                        var price = item.PricePerNight.ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                                        <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" />
 
-                        </MudCardActions>
-                    </MudCard>
-                    <MudCard Style="width: 25%;">
-                        <MudCardMedia Image="images/2.jpg" Height="200" />
-                        <MudCardContent>
-                            <MudText Typo="Typo.h5">Superior Queen</MudText>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" /><MudText Typo="Typo.subtitle1"> 2,200 per night</MudText>
-                            </MudStack>
-                            <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> 2 Persons</MudText>
-                            </MudStack>
-                        </MudCardContent>
-                        <MudCardActions Class="text-center">
-                            <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth>Book Now</MudButton>
-
-                        </MudCardActions>
-                    </MudCard>
+                                        <MudText Typo="Typo.subtitle1"> @price per night</MudText>
+                                    }
+                                </MudStack>
+                                <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> @item.MaxGuest Person/s</MudText>
+                                </MudStack>
+                            </MudCardContent>
+                            <MudCardActions Class="text-center">
+                                <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth>Book Now</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    }
                 </MudStack>
             </MudCarouselItem>
         </MudCarousel>
@@ -151,18 +112,22 @@
     @* MOBILE VIEW *@
     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
         <MudCarousel Style="height:430px;" Class="justify-content-center" ArrowsPosition="Position.Center" EnableSwipeGesture="true" TData="object" AutoCycle="true">           
-            @foreach(var item in RoomNames)
+            @foreach(var item in roomInfo)
             {
                 <MudCarouselItem Transition="Transition.Custom" CustomTransitionEnter="bounceIn" CustomTransitionExit="bounceOut">
                     <MudCard Style="">
-                        <MudCardMedia Image="images/2.jpg" Height="200" />
+                        <MudCardMedia Image="@($"images/{item.Thumbnail}")" Height="200" />
                         <MudCardContent>
-                            <MudText Typo="Typo.h5">@item</MudText>
+                            <MudText Typo="Typo.h5">@item.Type.ToString().Replace("_", " ")</MudText>
                             <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" /><MudText Typo="Typo.subtitle1"> 2,200 per night</MudText>
+                                @{
+                                    var price = item.PricePerNight.ToString("C", new System.Globalization.CultureInfo("en-PH"));
+                                    <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Small" Color="Color.Error" />
+                                    <MudText Typo="Typo.subtitle1"> @price per night</MudText>
+                                }
                             </MudStack>
                             <MudStack Row AlignItems="AlignItems.Baseline" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> 2 Persons</MudText>
+                                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Color="Color.Info" /> <MudText Typo="Typo.subtitle1"> @item.MaxGuest Person/s</MudText>
                             </MudStack>
                         </MudCardContent>
                         <MudCardActions Class="text-center">
@@ -177,13 +142,34 @@
 
 
 
-@* @page "/360-aframe"
 
-<a-scene>
-    <a-sky src="images/360images/PANO_20241002_151744_0.jpg"></a-sky>
-    <a-entity camera look-controls></a-entity>
-</a-scene> *@
 
 @code{
+    private List<RoomInfo> roomInfo = new();
+    [Inject] IHttpClientFactory httpClientFactory { get; set; }
     private string[] RoomNames = {"Twin Double Room","Double Twin","Deluxe Double","Triple Toom", "Suite", "King Suite", "Superior Queen"};
+
+    protected override async Task OnInitializedAsync()
+    {
+        roomInfo = new();
+        await LoadRoomsList();
+        await base.OnInitializedAsync();
+    }
+
+
+    private async Task LoadRoomsList()
+    {
+
+        try
+        {
+            var httpClient = httpClientFactory.CreateClient("Anonymous");
+            roomInfo = await httpClient.GetFromJsonAsync<List<RoomInfo>>($"HotelManagement/GetRoomInfo");
+        }
+        catch (Exception ex)
+        {
+            // Snackbar.Add($"An error occured: {ex.Message}");
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+
+    }
 }

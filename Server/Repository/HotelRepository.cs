@@ -55,7 +55,11 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.QueryAsync<HotelRoom>(query);
         }
 
-
+        public async Task<IEnumerable<RoomInfo>> GetAllRoomsInfoAsync()
+        {
+            string query = "SELECT * FROM RoomInfo ORDER BY RoomId DESC";
+            return await _dbConnection.QueryAsync<RoomInfo>(query);
+        }
 
     }
 }
