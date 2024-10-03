@@ -50,7 +50,7 @@
                         <AuthorizeView>
                             <Authorized>
                                 <MudMenuItem Icon="fas fa-users-cog">Account</MudMenuItem>
-                                <MudMenuItem Icon="fas fa-sign-out-alt">Log Out</MudMenuItem>
+                                <MudMenuItem Icon="fas fa-sign-out-alt" OnClick="BeginSignOut">Log Out</MudMenuItem>
                             </Authorized>
                             <NotAuthorized>
                                 <MudMenuItem Href="authentication/register" Icon="fas fa-users-cog">Sign Up</MudMenuItem>
@@ -85,7 +85,7 @@
             <AuthorizeView>
                 <Authorized>
                     <MudNavLink Icon="fas fa-users-cog" IconColor="Color.Inherit" Match="NavLinkMatch.All">Account</MudNavLink>
-                    <MudNavLink Icon="fas fa-sign-out-alt" IconColor="Color.Inherit" Match="NavLinkMatch.All">Logout</MudNavLink>
+                    <MudNavLink Icon="fas fa-sign-out-alt" IconColor="Color.Inherit" OnClick="BeginSignOut">Logout</MudNavLink>
                 </Authorized>
                 <NotAuthorized>
                     <MudNavLink Href="authentication/register" Icon="fas fa-users-cog" IconColor="Color.Inherit">Sign Up</MudNavLink>

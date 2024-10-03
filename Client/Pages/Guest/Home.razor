@@ -39,8 +39,10 @@
                             </MudStack>
                         </MudStack>
                         <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
-                            <MudDatePicker Label="Check In" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                            <MudDatePicker Label="Check Out" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudDatePicker Label="Check In" @bind-Date="dateFrom" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudDatePicker Label="Check Out" @bind-Date="dateTo" 
+                            AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" 
+                            IsDateDisabledFunc="@((DateTime dt) => dt.Date <= dateFrom)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         </MudStack>
                         <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
                             <MudNumericField @bind-Value="IntValue" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
@@ -90,8 +92,10 @@
                             </MudStack>
                         </MudStack>
                         <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
-                            <MudDatePicker Label="Check In" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                            <MudDatePicker Label="Check Out" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudDatePicker Label="Check In" @bind-Date="dateFrom" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudDatePicker Label="Check Out" @bind-Date="dateTo" 
+                            AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" 
+                            IsDateDisabledFunc="@((DateTime dt) => dt.Date <= dateFrom)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         </MudStack>
                         <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
                             <MudNumericField @bind-Value="IntValue" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
@@ -310,8 +314,8 @@
     private Transition transition = Transition.Slide;
     public int IntValue { get; set; } = 1;
     [Inject] ISnackbar Snackbar { get; set; }
-    DateTime? date = DateTime.Today;
-
+    DateTime? dateFrom = DateTime.Today;
+    DateTime? dateTo = DateTime.Today;
     [Inject]
     private IBrowserViewportService BrowserViewportService { get; set; }
 

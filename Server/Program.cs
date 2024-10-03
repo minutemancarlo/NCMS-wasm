@@ -5,6 +5,7 @@ using System.Data;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Client.Pages.Hotel;
 using NCMS_wasm.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,7 @@ builder.Services.AddTransient<EventsRepository>();
 builder.Services.AddTransient<EmployeeRepository>();
 builder.Services.AddTransient<PayslipRepository>();
 builder.Services.AddTransient<GasRepository>();
+builder.Services.AddTransient<GuestRepository>();
 
 //Add Services
 builder.Services.AddScoped<LeaveRequestService>();
@@ -86,6 +88,8 @@ builder.Services.AddCors(options =>
 //               .AllowAnyHeader();
 //    });
 //});
+
+
 
 builder.Services.AddAuth0ManagementClient().AddManagementAccessToken();
 builder.Services.AddControllersWithViews();
