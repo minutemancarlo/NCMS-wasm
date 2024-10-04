@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Reports\**" />
+    <Content Remove="Reports\**" />
+    <EmbeddedResource Remove="Reports\**" />
+    <None Remove="Reports\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\Reports\dsEmployee.Designer.cs" />
     <Content Remove="wwwroot\Reports\dsEmployee.xsc" />
     <Content Remove="wwwroot\Reports\dsEmployee.xsd" />
@@ -50,7 +57,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Reports\" />
     <Folder Include="wwwroot\Uploads\Payslip\Failed\" />
     <Folder Include="wwwroot\Uploads\Payslip\Processing\" />
     <Folder Include="wwwroot\Uploads\Payslip\OnQueue\" />
