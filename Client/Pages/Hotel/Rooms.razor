@@ -1,4 +1,4 @@
-﻿@page "/hotel-roomsmanagement"
+﻿@page "/hotel-RoomsManagement"
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Hotel.Components
@@ -16,11 +16,11 @@
                    MultiSelection="true"
                    AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" Adornment="Adornment.Start" 
                    AdornmentIcon="@Icons.Material.Filled.FilterAlt" Clearable>
-            <MudSelectItem Value="@RoomStatus.Available" />
-            <MudSelectItem Value="@RoomStatus.Occupied" />
-            <MudSelectItem Value="@RoomStatus.Reserved" />
-            <MudSelectItem Value="@RoomStatus.Under_Maintenance" />
-            <MudSelectItem Value="@RoomStatus.Not_Available" />
+            <MudSelectItem Value="@RoomStatus.Available">@RoomStatus.Available</MudSelectItem>
+            <MudSelectItem Value="@RoomStatus.Occupied">@RoomStatus.Occupied</MudSelectItem>
+            <MudSelectItem Value="@RoomStatus.Reserved">@RoomStatus.Reserved</MudSelectItem>
+            <MudSelectItem Value="@RoomStatus.Under_Maintenance">@RoomStatus.Under_Maintenance.ToString().Replace("_", " ")</MudSelectItem>
+            <MudSelectItem Value="@RoomStatus.Not_Available">@RoomStatus.Not_Available.ToString().Replace("_", " ")</MudSelectItem>
         </MudSelect>
         <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Medium">Search</MudButton>
     </MudStack>

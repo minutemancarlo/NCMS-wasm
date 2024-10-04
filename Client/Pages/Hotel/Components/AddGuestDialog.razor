@@ -9,7 +9,7 @@
     </TitleContent>
     <DialogContent>
         @* <MudForm @ref="form" Model="@rfidInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0"> *@
-        <MudForm @ref="form" Model="@guestsInfo">                     
+        <MudForm @ref="form" Model="@guestsInfo">
             <MudStack Row>
                 <MudTextField @bind-Value="guestsInfo.FirstName" Label="First Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                 <MudTextField @bind-Value="guestsInfo.MiddleName" Label="Middle Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
@@ -18,13 +18,19 @@
             <MudTextField @bind-Value="guestsInfo.Phone" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
             <MudTextField @bind-Value="guestsInfo.Email" Label="Email Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
             <MudStack Row Class="py-1" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
-                <MudDatePicker Label="Check In" @bind-Date="guestsInfo.CheckInDate" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                <MudDatePicker Label="Check Out" @bind-Date="guestsInfo.CheckOutDate" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                <MudNumericField @bind-Value="guestsInfo.Rooms" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                <MudDatePicker Label="Check In" @bind-Date="guestsInfo.CheckInDate" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                <MudDatePicker Label="Check Out" @bind-Date="guestsInfo.CheckOutDate" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
+                               IsDateDisabledFunc="@((DateTime dt) => dt.Date <= guestsInfo.CheckOutDate)" Variant="Variant.Outlined" Margin="Margin.Dense" />
             </MudStack>
-            <MudText Typo="Typo.caption" Class="pt-5 fw-bold">Occupants:</MudText>            
-            <MudNumericField Class="py-1" @bind-Value="guestsInfo.Children" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
-            <MudNumericField Class="py-1" @bind-Value="guestsInfo.Adults" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+            <MudStack Row>
+                <MudNumericField Class="py-1" @bind-Value="guestsInfo.Rooms" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                <MudNumericField Class="py-1" @bind-Value="guestsInfo.Children" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                <MudNumericField Class="py-1" @bind-Value="guestsInfo.Adults" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+            </MudStack>
+            <MudStack Row>
+                <MudTextField @bind-Value="guestsInfo.IDType" Label="ID Type" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                <MudTextField @bind-Value="guestsInfo.IDNumber" Label="ID Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+            </MudStack>
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -33,7 +39,7 @@
                           Color="Color.Success"
                           Size="Size.Large"
                           OnClick="OnSubmit"
-                          Loading="@(_loading)"                        
+                          Loading="@(_loading)"
                           ButtonType="ButtonType.Button">
             <LoadingContent>Submitting...</LoadingContent>
             <ChildContent>Submit</ChildContent>
@@ -51,7 +57,7 @@
     private bool _loading = false;
 
     private List<GuestsInfo> guestsList = new List<GuestsInfo>();
-    
+
     private async Task OnSubmit()
     {
         // Snackbar.Add($"Card Value: {rfidInfo.CardReference}", Severity.Normal);
@@ -63,8 +69,8 @@
         await base.OnInitializedAsync();
     }
 
-   
-   
+
+
 
 
     void Cancel() => MudDialog.Cancel();

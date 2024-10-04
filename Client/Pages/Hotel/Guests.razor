@@ -1,53 +1,157 @@
-﻿@page "/hotel-guests"
+﻿@page "/hotel-Booking"
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Hotel.Components
 <PageTitle>Guest Management | NCMS</PageTitle>
-<MudStack>
-    <MudText Typo="Typo.h5">Guest Management</MudText>
-    <MudDataGrid Items="@guestsList" T="GuestsInfo" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense HorizontalScrollbar="true"
-                 ColumnResizeMode="ResizeMode.Column">
-        <ToolBarContent>
-            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh">Refresh</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.FamilyRestroom" OnClick="OpenAddGuestDialog">Add Guest</MudButton>
-            <MudSpacer />
-        </ToolBarContent>
-        <Columns>
-            <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="true" />
-            <PropertyColumn Property="x => x.MiddleName" Title="Middle Name" Filterable="true" />
-            <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="true" />
-            <PropertyColumn Property="x => x.Email" Filterable="true" />
-            <PropertyColumn Property="x => x.Phone" Title="Phone Number" Filterable="true" />
-            <TemplateColumn Title="Created By">
-                <CellTemplate>
-                    <MudStack Spacing="0">
-                        <MudText Typo="Typo.subtitle1">@context.Item.CreatedBy</MudText>
-                        <MudText Typo="Typo.subtitle2" Class="text-muted">@context.Item.CreatedOn</MudText>
-                    </MudStack>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-        <NoRecordsContent>
-            <MudText>No Records to show</MudText>
-        </NoRecordsContent>
-        <LoadingContent>
-            <MudText>Loading Content...</MudText>
-        </LoadingContent>
-        <PagerContent>
-            <MudDataGridPager T="GuestsInfo" />
-        </PagerContent>
-    </MudDataGrid>
+<MudStack Spacing="2" Class="w-100 pt-5">    
+    <MudGrid Justify="Justify.Center" Class="w-100">     
+        <MudItem lg="12" xl="12" xs="12" sm="12" Class="w-100">
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Color="Color.Dark">
+                <MudTabPanel Text="Calendar" Icon="@Icons.Material.Filled.CalendarMonth">
+                    <MudCalendar HighlightToday                                
+                                 Elevation="1"
+                                 ShowTodayButton="true"
+                                 Style="width: 100%"
+                                 CellClicked="CellClicked"
+                                 ItemClicked="ItemClicked"
+                                 MonthCellMinHeight="50"
+                                 Items="_events">
+                        <ToolbarContent>
+                            <MudSpacer />
+                            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" /> Booked</MudText>
+                            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Info" Size="Size.Small" /> Reservation</MudText>
+                            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Error" Size="Size.Small" /> Cancelled</MudText>
+                        </ToolbarContent>
+                      <CellTemplate>
+                            <div style="background-color: @GetColor(((CustomItem)context).Color)" class="pa-2 d-flex gap-1">
+                                <MudText Style="color: white" Class="fw-bold" Typo="Typo.body2">@context.Text</MudText>
+                            </div>
+                      </CellTemplate>
+                    </MudCalendar>
+                </MudTabPanel>
+                <MudTabPanel Text="List" Icon="@Icons.Material.Filled.ListAlt">
+                    <MudDataGrid Items="@guestsList" T="GuestsInfo" Loading="@isLoading" Hover Striped Dense Class="w-100"
+                                 HeaderClass="w-100" HorizontalScrollbar="true" Filterable="false"
+                                 ColumnResizeMode="ResizeMode.Container">
+                        <ToolBarContent>
+                            <MudTextField Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Margin="Margin.Dense" />
+                            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh">Refresh</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.FamilyRestroom" OnClick="OpenAddGuestDialog">Add Guest</MudButton>
+                            <MudSpacer />
+                        </ToolBarContent>
+                        <Columns>
+                            <PropertyColumn Property="x => x.Id" Title="Booking Id" HeaderStyle="background-color: #1abc9c; color: white;" />
+                            <PropertyColumn Property="x => x.FirstName" Title="Name" HeaderStyle="background-color: #1abc9c; color: white;">
+                                <CellTemplate>
+                                    <MudText Typo="Typo.body1">@($"{ToSentenceCase(context.Item.FirstName)} {ToSentenceCase(context.Item.MiddleName)} {ToSentenceCase(context.Item.LastName)}")   </MudText>
+                                </CellTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="x => x.BookingType" Title="Booking Type" HeaderStyle="background-color: #1abc9c; color: white;">
+                                <CellTemplate>
+                                    @switch (context.Item.BookingType)
+                                    {
+                                        case BookingType.Walkin_Booking:
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Success">@BookingType.Walkin_Booking</MudChip>
+                                            break;
+
+                                        case BookingType.Booked:
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Success">@BookingType.Booked</MudChip>
+                                            break;
+
+                                        case BookingType.Reservation:
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Info">@BookingType.Reservation</MudChip>
+                                            break;
+
+                                        case BookingType.Cancelled:
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Error">@BookingType.Cancelled</MudChip>
+                                            break;
+                                    }
+                                </CellTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="x => x.ArrivalDate" Title="Arrival Date" HeaderStyle="background-color: #1abc9c; color: white;" />
+                            <PropertyColumn Property="x => x.CheckInDate" Title="Check In Date" HeaderStyle="background-color: #1abc9c; color: white;" />
+                            <PropertyColumn Property="x => x.CheckOutDate" Title="Check Out Date" HeaderStyle="background-color: #1abc9c; color: white;" />
+                            <PropertyColumn Property="x => x.Email" HeaderStyle="background-color: #1abc9c; color: white;" />
+                            <PropertyColumn Property="x => x.Phone" Title="Phone Number" HeaderStyle="background-color: #1abc9c; color: white;" />
+                            <TemplateColumn Title="Created By" HeaderStyle="background-color: #1abc9c; color: white;">
+                                <CellTemplate>
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.subtitle1">@context.Item.CreatedBy</MudText>
+                                        <MudText Typo="Typo.subtitle2" Class="text-muted">@context.Item.CreatedOn</MudText>
+                                    </MudStack>
+                                </CellTemplate>
+                            </TemplateColumn>
+                        </Columns>
+                        <NoRecordsContent>
+                            <MudText>No Records to show</MudText>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudText>Loading Content...</MudText>
+                        </LoadingContent>
+                        <PagerContent>
+                            <MudDataGridPager T="GuestsInfo" />
+                        </PagerContent>
+                    </MudDataGrid>
+                </MudTabPanel>
+               
+            </MudTabs>
+
+
+
+            
+        </MudItem>
+    </MudGrid>
+
 </MudStack>
 @code {
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] IDialogService? DialogService { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
     private List<GuestsInfo> guestsList = new List<GuestsInfo>();
     private bool isLoading = false;
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
 
+    private List<CustomItem> _events = new();
     protected override async Task OnInitializedAsync()
     {
+        var item1 = new CustomItem
+            {
+                Start = DateTime.Today.AddDays(1),
+                End = DateTime.Today.AddDays(3),
+                Text = $"RM 401",
+                Color = Color.Success,
+                Type = BookingType.Booked
+            };
+        var item2 = new CustomItem
+        {
+                Start = DateTime.Today.AddDays(1),
+                End = DateTime.Today.AddDays(5),
+            Text = $"RM 403",
+            Color = Color.Info,
+            Type = BookingType.Reservation
+        };
+        _events.Add(item1);
+        _events.Add(item2);
+        GuestsInfo guest = new GuestsInfo
+            {
+                Id = "BN12345",
+                FirstName = "John",
+                MiddleName = "A.",
+                LastName = "Doe",
+                Email = "john.doe@example.com",
+                Phone = "+1234567890",
+                IDType = "Passport",
+                IDNumber = "X1234567",
+                CheckInDate = DateTime.Now,
+                CheckOutDate = DateTime.Now.AddDays(3),
+                ArrivalDate = DateTime.Now.AddDays(-1),
+                Rooms = 2,
+                Children = 1,
+                Adults = 2,
+                BookingType = BookingType.Reservation
+            };
+        guestsList.Add(guest);
         MainLayout.SubTitle = "Hotel Management Module";
         await base.OnInitializedAsync();
     }
@@ -72,4 +176,36 @@
     }
 
 
+
+
+    private void CellClicked(DateTime dateTime)
+    {
+
+        if(DateTime.Today > dateTime)
+        {
+            Snackbar.Add("Invalid Action, Date is behind.", Severity.Warning);
+        }        
+    }
+
+    private Task ItemClicked(CalendarItem item)
+    {
+        return DialogService.ShowMessageBox("Item Clicked", item.Text);
+    }
+
+    private string ToSentenceCase(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return input;
+
+        return char.ToUpper(input[0]) + input.Substring(1).ToLower();
+    }
+
+    private class CustomItem : CalendarItem
+    {
+        public int Id { get; set; } = 0;
+        public Color Color { get; set; } = Color.Info;
+        public BookingType Type { get; set; } = BookingType.Reservation;
+
+    }
+    private string GetColor(Color color) => $"var(--mud-palette-{color.ToDescriptionString()})";
 }
