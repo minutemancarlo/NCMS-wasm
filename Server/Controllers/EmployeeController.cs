@@ -1,5 +1,6 @@
 ﻿using Auth0.ManagementApi;
 using Microsoft.AspNetCore.Mvc;
+using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
 using Nextended.Core.Extensions;
@@ -15,13 +16,17 @@ namespace NCMS_wasm.Server.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _env;
         private readonly IManagementApiClient _managementApiClient;
-        public EmployeeController(ILogger<EmployeeController> logger, EmployeeRepository employeeRepository, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env, IManagementApiClient managementApiClient)
+        private readonly FileLogger _fileLogger;
+
+        public EmployeeController(ILogger<EmployeeController> logger, EmployeeRepository employeeRepository, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env, IManagementApiClient managementApiClient, IConfiguration configuration)
         {
             _logger = logger;
             _employeeRepository = employeeRepository;
             _httpContextAccessor = httpContextAccessor;
             _env = env;
             _managementApiClient = managementApiClient;
+            _fileLogger = new FileLogger(configuration);
+
         }
 
         [HttpPost("AddUpdateEmployee")]
@@ -62,6 +67,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [AddUpdateEmployee]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
                 _logger.LogError($"Exception occurred while adding/updating employee: {ex.Message}");
                 return BadRequest($"Exception occurred while adding/updating employee: {ex.Message}");
             }
@@ -78,6 +85,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetEmployees]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
                 _logger.LogError($"Exception occurred while retrieving employee list: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving employee list: {ex.Message}");
             }
@@ -109,6 +118,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetEmployeeInfo]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
                 _logger.LogError($"Exception occurred while retrieving employee info for email '{email}': {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
             }
@@ -134,6 +145,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetMyInfo]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
                 _logger.LogError($"Exception occurred while retrieving employee info: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
             }
@@ -154,6 +167,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [UnbindUser]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
                 _logger.LogError($"Exception occurred while retrieving employee info: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
             }

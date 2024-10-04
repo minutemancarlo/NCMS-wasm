@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
 
@@ -11,11 +12,14 @@ namespace NCMS_wasm.Server.Controllers
     {
         private readonly ILogger<HotelManagementController> _logger;
         private readonly HotelRepository _hotelRepository;
-
-        public HotelManagementController(ILogger<HotelManagementController> logger, HotelRepository hotelRepository)
+        private readonly FileLogger _fileLogger;
+        private readonly string ModuleName;
+        public HotelManagementController(ILogger<HotelManagementController> logger, HotelRepository hotelRepository, IConfiguration configuration)
         {
             _logger = logger;
             _hotelRepository = hotelRepository;
+            _fileLogger = new FileLogger(configuration);
+            ModuleName = "HotelManagementController";
         }
 
         [HttpPost("AddAccomodations")]
@@ -29,6 +33,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [AddAccomodations]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while adding accomodation info: {ex.Message}");
                 return BadRequest($"Exception occurred while adding accomodation info: {ex.Message}");
             }
@@ -45,6 +51,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [AddRooms]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while adding room info: {ex.Message}");
                 return BadRequest($"Exception occurred while adding room info: {ex.Message}");
             }
@@ -61,6 +69,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetRooms]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while retrieving rooms: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
             }
@@ -77,6 +87,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetRoomInfo]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while retrieving rooms: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
             }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
 namespace NCMS_wasm.Server.Controllers
@@ -9,11 +10,14 @@ namespace NCMS_wasm.Server.Controllers
     {
         private readonly ILogger<PayslipController> _logger;
         private readonly PayslipRepository _payslipRepository;
-
-        public PayslipController(ILogger<PayslipController> logger, PayslipRepository payslipRepository)
+        private readonly FileLogger _fileLogger;
+        private readonly string ModuleName;
+        public PayslipController(ILogger<PayslipController> logger, PayslipRepository payslipRepository, IConfiguration configuration)
         {
             _logger = logger;
             _payslipRepository = payslipRepository;
+            _fileLogger = new FileLogger(configuration);
+            ModuleName = "PayslipController";
         }
 
         [HttpPost("GetPayslipsUploads")]
@@ -27,6 +31,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetPayslipsUploads]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while retrieving payslip upload files: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving payslip upload files: {ex.Message}");
             }
@@ -44,6 +50,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetMyPayslips]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while retrieving payslip upload files: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving payslip upload files: {ex.Message}");
             }
@@ -80,6 +88,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [UploadPayslipFile]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }

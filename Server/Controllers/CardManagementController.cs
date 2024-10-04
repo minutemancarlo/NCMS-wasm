@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
 
@@ -10,11 +11,13 @@ namespace NCMS_wasm.Server.Controllers
     {
         private readonly ILogger<CardManagementController> _logger;
         private readonly CardRepository _cardRepository;
+        private readonly FileLogger _fileLogger;
 
-        public CardManagementController(ILogger<CardManagementController> logger, CardRepository cardRepository)
+        public CardManagementController(ILogger<CardManagementController> logger, CardRepository cardRepository, IConfiguration configuration)
         {
             _logger = logger;
             _cardRepository = cardRepository;
+            _fileLogger = new FileLogger(configuration);
         }
 
         [HttpGet("GetLoyaltyCards")]
@@ -28,6 +31,7 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetLoyaltyCards]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "CardManagementController");
                 _logger.LogError($"Exception occurred while retrieving cards: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving cards: {ex.Message}");
             }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MudBlazor;
+using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
 
@@ -11,11 +12,14 @@ namespace NCMS_wasm.Server.Controllers
     {
         private readonly ILogger<GasController> _logger;
         private readonly GasRepository _gasRepository;
-
-        public GasController(ILogger<GasController> logger, GasRepository gasRepository)
+        private readonly FileLogger _fileLogger;
+        private readonly string ModuleName; 
+        public GasController(ILogger<GasController> logger, GasRepository gasRepository, IConfiguration configuration)
         {
             _logger = logger;
             _gasRepository = gasRepository;
+            _fileLogger = new FileLogger(configuration); 
+            ModuleName = "GasController";
         }
 
         [HttpGet("GetGasPrices")]
@@ -29,6 +33,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetGasPrices]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while retrieving gas prices: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving gas prices: {ex.Message}");
             }
@@ -45,6 +51,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetSubTransactionsByDate]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while retrieving gas sub transactions: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving gas sub transactions: {ex.Message}");
             }
@@ -62,6 +70,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetGasTransactions]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while retrieving gas transactions: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving gas transactions: {ex.Message}");
             }
@@ -79,6 +89,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetCardInfo]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while retrieving gas transactions: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving gas transactions: {ex.Message}");
             }
@@ -95,6 +107,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetDashboardValuePerSales]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while retrieving Dashboard Value Per Sales: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving Dashboard Value Per Sales: {ex.Message}");
             }
@@ -119,6 +133,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [InsertTransaction]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while inserting transaction: {ex.Message}");
                 return BadRequest($"Exception occurred while inserting transaction: {ex.Message}");
             }
@@ -135,6 +151,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [UpdateGasPrice]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while updating gas price: {ex.Message}");
                 return BadRequest($"Exception occurred while updating gas price: {ex.Message}");
             }
@@ -153,6 +171,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [AddLoyaltyCardInfo]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while adding loyalty card: {ex.Message}");
                 return BadRequest($"Exception occurred while adding loyalty card: {ex.Message}");
             }

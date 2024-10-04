@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using OfficeOpenXml; 
 using NCMS_wasm.Shared;
 using NCMS_wasm.Server.Repository;
+using NCMS_wasm.Server.Logger;
 
 public class PayslipProcessor : BackgroundService
 {
@@ -14,18 +15,23 @@ public class PayslipProcessor : BackgroundService
     private readonly string processingPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "Payslip", "Processing");
     private readonly string successPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "Payslip", "Success");
     private readonly string failedPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "Payslip", "Failed");
-    private readonly PayslipRepository _payslipRepository; 
-
-    public PayslipProcessor(PayslipRepository payslipRepository)
+    private readonly PayslipRepository _payslipRepository;
+    private readonly FileLogger _fileLogger;
+    private string LogFileName = String.Empty;
+    private string ModuleName = "Payslip Processor";
+    public PayslipProcessor(PayslipRepository payslipRepository, IConfiguration configuration)
     {
         _payslipRepository = payslipRepository;
+        _fileLogger = new FileLogger(configuration);
     }
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+       LogFileName = DateTime.Now.ToString("MM-dd-yyyy") + ".txt";
+        _fileLogger.Log("Payslip Processor Started.", LogFileName,ModuleName);
         while (!stoppingToken.IsCancellationRequested)
         {
             CreateDirectories();
-            await ProcessFilesAsync();
+            await ProcessFilesAsync();            
             await Task.Delay(10000, stoppingToken); // Runs every 10 seconds
         }
     }
@@ -67,25 +73,30 @@ public class PayslipProcessor : BackgroundService
 
             // Move the file to Processing
             File.Move(file, destinationPath);
-            
+            _fileLogger.Log($"File {fileName} moved to {destinationPath}", LogFileName,ModuleName);
             await _payslipRepository.UpdatePayslipUploadAsync(uploadId, PayslipFileStatus.Processing);
-            
+            _fileLogger.Log($"Upload ID: {uploadId} status changed to Processing", LogFileName,ModuleName);
             // Read the file and process it
             var payslipData = await ReadExcelFileAsync(destinationPath);
-                        
+            int count = 0;          
             foreach (var payslip in payslipData)
             {
                 payslip.UploadId = uploadId;
                 await _payslipRepository.AddPayslipData(payslip);
+                count++;
             }
-
-             files = Directory.GetFiles(processingPath, "*.xlsx");            
+            _fileLogger.Log($"Inserted {count} rows in file {fileName}", LogFileName,ModuleName);
+            files = Directory.GetFiles(processingPath, "*.xlsx");            
             if (files.Length == 0) return;
 
              file = files[0];
              fileName = Path.GetFileName(file);
              destinationPath = Path.Combine(successPath, fileName);
+            File.Move(file, destinationPath);
+            _fileLogger.Log($"File {fileName} moved to {destinationPath}", LogFileName,ModuleName);
+
             await _payslipRepository.UpdatePayslipUploadAsync(uploadId, PayslipFileStatus.Success);
+            _fileLogger.Log($"Upload ID: {uploadId} status changed to Success", LogFileName,ModuleName);
         }
         catch (Exception ex)
         {
@@ -95,11 +106,12 @@ public class PayslipProcessor : BackgroundService
             var file = files[0]; 
             var fileName = Path.GetFileName(file);
             var destinationPath = Path.Combine(failedPath, fileName);
-            await _payslipRepository.UpdatePayslipUploadAsync(uploadId, PayslipFileStatus.Failed);
-            
             // Move the file to Processing
             File.Move(file, destinationPath);
-            Console.WriteLine(ex.Message);
+            _fileLogger.Log($"File {fileName} moved to {destinationPath}", LogFileName,ModuleName);
+            await _payslipRepository.UpdatePayslipUploadAsync(uploadId, PayslipFileStatus.Failed);
+            _fileLogger.Log($"Upload ID: {uploadId} status changed to Failed", LogFileName,ModuleName);
+            _fileLogger.Log($"An Exception Occured: {ex.Message}", LogFileName,ModuleName);
         }
         
     }
