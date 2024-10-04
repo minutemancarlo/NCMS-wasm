@@ -30,6 +30,7 @@ public class PayslipProcessor : BackgroundService
         _fileLogger.Log("Payslip Processor Started.", LogFileName,ModuleName);
         while (!stoppingToken.IsCancellationRequested)
         {
+            LogFileName = DateTime.Now.ToString("MM-dd-yyyy") + ".txt";
             CreateDirectories();
             await ProcessFilesAsync();            
             await Task.Delay(10000, stoppingToken); // Runs every 10 seconds
