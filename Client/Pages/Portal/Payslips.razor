@@ -3,54 +3,65 @@
 @using NCMS_wasm.Shared
 @attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
 <PageTitle>NCMS | My Payslip</PageTitle>
-<MudStack Justify="Justify.Center"  StretchItems="StretchItems.All" Class="w-100">
-    <MudDataGrid Items="@payslips" T="PayslipModel" Loading="@isLoading" HeaderClass="mud-theme-default text-wrap" ShowMenuIcon="false"
-                 HorizontalScrollbar="true"
-                 ColumnResizeMode="ResizeMode.Column">
-        <ToolBarContent>
-            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(() => LoadPayslips(employeeId))">Refresh</MudButton>
-            <MudSpacer />
-        </ToolBarContent>
-        <Columns>
-            <PropertyColumn Title="ID" Property="x => x.PayslipId" Filterable="true" />       
-            <PropertyColumn Title="Payroll Date" Property="x => x.PayrollDate" Filterable="false">
-                <CellTemplate>
-                    @($"{context.Item.PayrollDate:MM/dd/yyyy}")
-                </CellTemplate>
-            </PropertyColumn>
-            <TemplateColumn Title="Action">
-                <CellTemplate>
-                    <MudLoadingButton Variant="Variant.Filled"
-                                      Color="Color.Primary"
-                                      Size="Size.Small"
-                                      StartIcon="@Icons.Material.Filled.Download"
-                                      Loading="@(downloading)"
-                                      OnClick="@(() => Generatepayslip(new MyPayslipFilter{PayslipId = context.Item.PayslipId, EmployeeId = context.Item.EmployeeId}))"
-                                      ButtonType="ButtonType.Button">
-                        <LoadingContent>Generating...</LoadingContent>
-                        <ChildContent>Download</ChildContent>
-                    </MudLoadingButton>
-                </CellTemplate> 
-            </TemplateColumn>
-            
-        </Columns>
-        <NoRecordsContent>
-            <MudText>No Records to show</MudText>
-        </NoRecordsContent>
-        <LoadingContent>
-            <MudText>Loading Content...</MudText>
-        </LoadingContent>
-    </MudDataGrid>
-</MudStack>
+@if (!string.IsNullOrEmpty(employeeId))
+{
+    <MudStack Justify="Justify.Center"  StretchItems="StretchItems.All" Class="w-100">
+        <MudDataGrid Items="@payslips" T="PayslipModel" Loading="@isLoading" HeaderClass="mud-theme-default text-wrap" ShowMenuIcon="false"
+        HorizontalScrollbar="true"
+        ColumnResizeMode="ResizeMode.Column">
+            <ToolBarContent>
+                <MudBreakpointProvider>
+                    <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(() => LoadPayslips(employeeId))">Refresh</MudButton>
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" Size="Size.Small" OnClick="@(() => LoadPayslips(employeeId))">Refresh</MudButton>
+                    </MudHidden>
+                </MudBreakpointProvider>
+                <MudSpacer />
+            </ToolBarContent>
+            <Columns>
+                <PropertyColumn Title="ID" Property="x => x.PayslipId" Filterable="true" />       
+                <PropertyColumn Title="Payroll Date" Property="x => x.PayrollDate" Filterable="false">
+                    <CellTemplate>
+                        @($"{context.Item.PayrollDate:MM/dd/yyyy}")
+                    </CellTemplate>
+                </PropertyColumn>
+                <TemplateColumn Title="Action">
+                    <CellTemplate>
+                        <MudLoadingButton Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        Size="Size.Small"
+                        StartIcon="@Icons.Material.Filled.Download"
+                        Loading="@(downloading)"
+                        OnClick="@(() => Generatepayslip(new MyPayslipFilter{PayslipId = context.Item.PayslipId, EmployeeId = context.Item.EmployeeId}))"
+                        ButtonType="ButtonType.Button">
+                            <LoadingContent>Generating...</LoadingContent>
+                            <ChildContent>Download</ChildContent>
+                        </MudLoadingButton>
+                    </CellTemplate> 
+                </TemplateColumn>
+            </Columns>
+            <NoRecordsContent>
+                <MudText>No Records to show</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading Content...</MudText>
+            </LoadingContent>
+        </MudDataGrid>
+    </MudStack>
+}
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
     [Inject] HttpClient httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] NavigationManager Navigation { get; set; }
+
     private string employeeId;
     private List<PayslipModel>? payslips = new();
     private bool downloading = false;
-    private string currentUserId;
+    private string? currentUserId;
     private bool isLoading = false;
     [Inject] IJSRuntime jSRuntime { get; set; }
 
@@ -111,7 +122,9 @@
             {
 
                 var errorMessage = await response.Content.ReadAsStringAsync();
-                throw new HttpRequestException($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
+                Navigation.NavigateTo("/Error");
+                return String.Empty;
+                // throw new HttpRequestException($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
             }
         }
         catch (Exception ex)

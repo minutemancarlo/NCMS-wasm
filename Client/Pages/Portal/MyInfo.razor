@@ -3,7 +3,9 @@
 @using System.Globalization
 @layout MainLayout
 @attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
-<MudBreakpointProvider>
+@if (employee is not null)
+{
+    <MudBreakpointProvider>
     @* DESKTOP VIEW *@
     <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
         <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
@@ -194,14 +196,15 @@
         </MudGrid>
     </MudHidden>
 </MudBreakpointProvider>
-
+}
 
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
-    private Employee? employee = new();
+    [Inject] NavigationManager Navigation { get; set; }
+    private Employee? employee;
     private bool _overlayVisible = false;
     private string? currentUserId;
     protected override async Task OnInitializedAsync()
@@ -209,6 +212,7 @@
         currentUserId = MainLayout.CurrentUserId;
         MainLayout.SubTitle = "Employee Portal Module";
         employee = await GetEmployeeInfoAsync(currentUserId);
+
         await base.OnInitializedAsync();
     }
 
@@ -231,7 +235,9 @@
             {
 
                 var errorMessage = await response.Content.ReadAsStringAsync();
-                throw new HttpRequestException($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
+               Navigation.NavigateTo("/Error");
+                return new Employee();
+                // throw new HttpRequestException($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
             }
         }
         catch (Exception ex)
