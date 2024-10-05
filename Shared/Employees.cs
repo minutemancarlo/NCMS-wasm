@@ -39,7 +39,9 @@ namespace NCMS_wasm.Shared
 
         public string BeneficiaryName { get; set; }
         public string BeneficiaryRelationship { get; set; }
-        public string BeneficiaryContactInfo { get; set; }        
+        public string BeneficiaryContactInfo { get; set; }           
+
+        public string? imageUrl { get; set; }
     }
 
     public enum Department
