@@ -32,14 +32,14 @@ namespace NCMS_wasm.Server.Controllers
             try
             {
                 int accId = await _hotelRepository.AddAccomodationAsync(info);
-                _logger.LogInformation("Accomodation added successfully.");
+              
                 return Ok(accId);
             }
             catch (Exception ex)
             {
                 _fileLogger.Log($"Exception Occured in Endpoint [AddAccomodations]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
 
-                _logger.LogError($"Exception occurred while adding accomodation info: {ex.Message}");
+          
                 return BadRequest($"Exception occurred while adding accomodation info: {ex.Message}");
             }
         }
@@ -54,15 +54,27 @@ namespace NCMS_wasm.Server.Controllers
 
 
 
-                int accId = await _hotelRepository.AddRoomsAsync(rooms);
-                _logger.LogInformation("Room added successfully.");
+                int accId = await _hotelRepository.AddRoomsAsync(rooms);             
                 return Ok(accId);
             }
             catch (Exception ex)
             {
-                _fileLogger.Log($"Exception Occured in Endpoint [AddRooms]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+                _fileLogger.Log($"Exception Occured in Endpoint [AddRooms]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);              
+                return BadRequest($"Exception occurred while adding room info: {ex.Message}");
+            }
+        }
 
-                _logger.LogError($"Exception occurred while adding room info: {ex.Message}");
+        [HttpPost("UpdatedPriceAndStatus")]
+        public async Task<ActionResult<int>> UpdatedPriceAndStatus(RoomInfo rooms)
+        {
+            try
+            {          
+                int accId = await _hotelRepository.UpdatePriceAndStatusAsync(rooms);              
+                return Ok(accId);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [UpdatedPriceAndStatus]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);                
                 return BadRequest($"Exception occurred while adding room info: {ex.Message}");
             }
         }
@@ -112,8 +124,7 @@ namespace NCMS_wasm.Server.Controllers
             catch (Exception ex)
             {
                 _fileLogger.Log($"Exception Occured in Endpoint [GetRoomInfo]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
-
-                _logger.LogError($"Exception occurred while retrieving rooms: {ex.Message}");
+               
                 return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
             }
         }

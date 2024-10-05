@@ -36,6 +36,7 @@ namespace NCMS_wasm.Shared
     {
         Available,
         Occupied,       
-        Not_Available
+        Not_Available,
+        Reservation
     }     
 }

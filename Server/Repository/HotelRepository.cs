@@ -52,6 +52,19 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteScalarAsync<int>("AddRooms", parameters, commandType: CommandType.StoredProcedure);
         }
 
+        public async Task<int> UpdatePriceAndStatusAsync(RoomInfo room)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@RoomId", room.RoomId);
+            parameters.Add("@RoomNumber", room.RoomNumber);      
+            parameters.Add("@PricePerNight", room.PricePerNight);
+            parameters.Add("@Status", room.Status);
+            parameters.Add("@UpdatedBy", room.UpdatedBy);
+       
+
+            return await _dbConnection.ExecuteScalarAsync<int>("UpdatePriceAndStatus", parameters, commandType: CommandType.StoredProcedure);
+        }
+
         public async Task<IEnumerable<RoomInfo>> GetAllRoomsAsync()
         {
             string query = @"SELECT a.RoomId,
@@ -60,7 +73,7 @@ a.RoomDescription,
 a.Status,
 ISNULL(c.Name,'N/A') as CreatedBy,
 a.CreatedOn,
-a.UpdatedBy,
+ISNULL(d.NAME,'N/A') as UpdatedBy,
 a.UpdatedOn,
 b.Type,
 b.PricePerNight,
@@ -69,7 +82,7 @@ b.Thumbnail,
 b.Image,
 b.Features,
 b.Rating
-FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c on a.createdBy = c.Auth0_Id ORDER BY a.CreatedOn DESC";
+FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c on a.createdBy = c.Auth0_Id left join employee d on a.updatedby = d.Auth0_Id ORDER BY a.CreatedOn DESC";
             return await _dbConnection.QueryAsync<RoomInfo>(query);
         }
 

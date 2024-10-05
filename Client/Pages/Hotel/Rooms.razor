@@ -49,13 +49,13 @@
             <Columns>
                 <PropertyColumn Property="x => x.RoomNumber" Title="Room Number" HeaderStyle="background-color: #1abc9c; color: white;">
                     <CellTemplate>
-                        <MudChip Size="Size.Small" OnClick="OnClickRoomNumber" Color="Color.Default">@context.Item.RoomNumber</MudChip>
+                        <MudChip Size="Size.Small" Disabled="@(context.Item.Status == RoomStatus.Occupied?true:false)" OnClick="@(() => OnClickRoomNumber(context.Item))" Color="Color.Default">@context.Item.RoomNumber</MudChip>
                     </CellTemplate>
                 </PropertyColumn>
                 <PropertyColumn Property="x => x.Type" Title="Room Type" HeaderStyle="background-color: #1abc9c; color: white;">
                     <CellTemplate>
                         <MudStack Row Spacing="0" AlignItems="AlignItems.Baseline">
-                            <MudText Typo="Typo.body2">@context.Item.Type</MudText>
+                            <MudText Typo="Typo.body2">@context.Item.Type.ToString().Replace("_", " ")</MudText>
                             @if (!string.IsNullOrEmpty(context.Item.RoomDescription))
                             {
                                 <MudTooltip Text="@context.Item.RoomDescription" Arrow ShowOnClick Color="Color.Info" Placement="Placement.Top">
@@ -87,7 +87,10 @@
                                 break;
                             case RoomStatus.Not_Available:
                                 <MudChip Size="Size.Small" Color="Color.Error">@context.Item.Status.ToString().Replace("_", " ")</MudChip>
-                                break;                        
+                                break;
+                           case RoomStatus.Reservation:
+                                <MudChip Size="Size.Small" Color="Color.Warning">@context.Item.Status.ToString().Replace("_", " ")</MudChip>
+                                break; 
                         }
                     </CellTemplate>
                 </PropertyColumn>
@@ -168,9 +171,28 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task OnClickRoomNumber()
+    private async Task OnClickRoomNumber(RoomInfo dto)
     {
-        await Task.CompletedTask;
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = true,
+                CloseButton = true
+            };
+        var parameters = new DialogParameters<UpdateRoomStatusAndPrice>
+        {
+            {x=>x.userId,MainLayout.CurrentUserId},
+            {x=>x.roomInfo,dto}
+        };
+        var dialog = await DialogService.ShowAsync<UpdateRoomStatusAndPrice>("Simple Dialog", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await LoadRoomsList();
+            StateHasChanged();
+        }
     }
 
 
