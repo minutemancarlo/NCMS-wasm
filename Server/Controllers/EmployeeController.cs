@@ -4,6 +4,7 @@ using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
 using Nextended.Core.Extensions;
+using OfficeOpenXml.Style;
 
 namespace NCMS_wasm.Server.Controllers
 {
@@ -34,13 +35,11 @@ namespace NCMS_wasm.Server.Controllers
         {
             try
             {
-                if(employeeInfo.Profile != "images/user-alt-solid.svg")
-                {
-
-                }
+               
+                employeeInfo.Profile = employeeInfo.Profile is not null && !employeeInfo.Profile.StartsWith("http") ? SaveImageToDisk(employeeInfo.Profile) : employeeInfo.Profile;
 
 
-                if(employeeInfo.IDNumber != "0")
+                if (employeeInfo.IDNumber != "0")
                 {
                     
                         int Id = await _employeeRepository.AddUpdateEmployeeAsync(employeeInfo);
@@ -186,7 +185,13 @@ namespace NCMS_wasm.Server.Controllers
 
             // Generate a unique filename
             string fileName = Guid.NewGuid().ToString() + ".jpg"; // You can change the extension based on the image type
+            string folderPath = Path.Combine(_env.WebRootPath, "images", "profiles");
 
+            // Check if the directory exists, if not, create it
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
             // Combine the file path with the file name
             //filePath = Path.Combine("C:\\MenuFlix", fileName); // Modify the path as needed
             filePath = Path.Combine($"{_env.WebRootPath}\\images\\profiles\\", fileName); // Modify the path as needed

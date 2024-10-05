@@ -15,7 +15,7 @@
             <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
                 <MudItem xs="4">
                     <MudPaper Style="width: 192px; height: 192px;" Class="text-center" Elevation="0">
-                        <MudImage Src="@employeeInfo.Profile" Height="192" Width="192" Class="pb-1" />
+                        <MudImage Src="@employeeInfo.imageUrl" Height="192" Width="192" Class="pb-1" />
                         <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg" Class="" MaximumFileCount="1" FilesChanged="UploadFiles">
                             <ActivatorContent>
                                 <MudFab HtmlTag="label"
@@ -124,7 +124,7 @@
     [Inject] ISnackbar Snackbar { get; set; }    
     EmployeeValidator modelValidator = new EmployeeValidator();
     private bool _loading { get; set; }
-    private string imageUrl = String.Empty;
+    
     [Parameter] public string? currentUserId { get; set; }
     protected override async Task OnInitializedAsync()
     {
@@ -164,7 +164,7 @@
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadAsStringAsync();
-                    Snackbar.Add("Employee Added", MudBlazor.Severity.Success);
+                    Snackbar.Add("Employee Information Updated", MudBlazor.Severity.Success);
                     MudDialog.Close(DialogResult.Ok(true));
                 }
                 else
@@ -216,7 +216,7 @@
                 var base64String = Convert.ToBase64String(bytes);
                 employeeInfo.Profile = base64String;
                 // Construct the data URL
-                imageUrl = $"data:{file.ContentType};base64,{base64String}";
+                employeeInfo.imageUrl = $"data:{file.ContentType};base64,{base64String}";
             }
         }
         catch (Exception ex)
