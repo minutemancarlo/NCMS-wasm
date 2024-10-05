@@ -49,7 +49,7 @@
             <Columns>
                 <PropertyColumn Property="x => x.RoomNumber" Title="Room Number" HeaderStyle="background-color: #1abc9c; color: white;">
                     <CellTemplate>
-                        <MudChip Size="Size.Small" OnClick="" Color="Color.Default">@context.Item.RoomNumber</MudChip>
+                        <MudChip Size="Size.Small" OnClick="OnClickRoomNumber" Color="Color.Default">@context.Item.RoomNumber</MudChip>
                     </CellTemplate>
                 </PropertyColumn>
                 <PropertyColumn Property="x => x.Type" Title="Room Type" HeaderStyle="background-color: #1abc9c; color: white;">
@@ -166,6 +166,11 @@
         MainLayout.SubTitle = "Hotel Management Module";
         await LoadRoomsList();
         await base.OnInitializedAsync();
+    }
+
+    private async Task OnClickRoomNumber()
+    {
+        await Task.CompletedTask;
     }
 
 
