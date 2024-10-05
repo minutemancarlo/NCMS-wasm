@@ -6,21 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace NCMS_wasm.Shared
-{
-    public class HotelRoom : BaseModel
+{  
+    public class RoomInfo : BaseModel
     {
-        public int? RoomNumber { get; set; }
-        public string? RoomDescription { get; set; }
-        public RoomType Type { get; set; }
-        public decimal PricePerNight { get; set; }
-        public RoomStatus Status { get; set; }
-        public int MaxGuest { get; set; }
-        public bool IsAvailable { get; set; }
-    }
-
-    public class RoomInfo
-    {
-        public int RoomId { get; set; } = 0;
+        public int? RoomId { get; set; }
+        public int RoomNumber { get; set; }
         public RoomType Type { get; set; } = RoomType.Twin;
         public decimal PricePerNight { get; set; } = 0.00M;
         public int MaxGuest { get; set; } = 0;
@@ -28,10 +18,12 @@ namespace NCMS_wasm.Shared
         public string? Thumbnail { get; set; }
         public string? Features { get; set; }
         public int Rating { get; set; } = 0;
+        public string? RoomDescription { get; set; }
+        public RoomStatus Status { get; set; }
     }
 
     public enum RoomType
-    {
+    {      
         Twin,
         Double_Twin,
         Triple,
@@ -43,9 +35,7 @@ namespace NCMS_wasm.Shared
     public enum RoomStatus
     {
         Available,
-        Occupied,
-        Reserved,
-        Under_Maintenance,
+        Occupied,       
         Not_Available
     }     
 }

@@ -53,10 +53,10 @@
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] IJSRuntime JSRuntime { get; set; }
     MudForm form;
-    private GuestsInfo? guestsInfo { get; set; }
+    private GuestsInfo? guestsInfo { get; set; } = new();
     private bool _loading = false;
-
-    private List<GuestsInfo> guestsList = new List<GuestsInfo>();
+    private List<GuestsInfo> guestsList = new();
+    [Parameter] public DateTime? dateFrom { get; set; }    
 
     private async Task OnSubmit()
     {
@@ -65,7 +65,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        guestsInfo = new GuestsInfo();
+        guestsInfo.CheckInDate = dateFrom;        
         await base.OnInitializedAsync();
     }
 

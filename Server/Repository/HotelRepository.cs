@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using NCMS_wasm.Shared;
 using System.Data;
 using System.Text;
@@ -33,7 +34,7 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteScalarAsync<int>("AddAccomodations", parameters, commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<int> AddRoomsAsync(HotelRoom room)
+        public async Task<int> AddRoomsAsync(RoomInfo room)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@RoomNumber", room.RoomNumber);
@@ -42,17 +43,34 @@ namespace NCMS_wasm.Server.Repository
             parameters.Add("@PricePerNight", room.PricePerNight);
             parameters.Add("@Status", room.Status);
             parameters.Add("@MaxGuest", room.MaxGuest);
-            parameters.Add("@IsAvailable", room.IsAvailable);
+            parameters.Add("@Image", room.Image);
+            parameters.Add("@Thumbnail", room.Thumbnail);
+            parameters.Add("@Features", room.Features);
             parameters.Add("@CreatedBy", room.CreatedBy);
-            parameters.Add("@CreatedOn", room.CreatedOn);
+            parameters.Add("@Rating", room.Rating);
 
             return await _dbConnection.ExecuteScalarAsync<int>("AddRooms", parameters, commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<HotelRoom>> GetAllRoomsAsync()
+        public async Task<IEnumerable<RoomInfo>> GetAllRoomsAsync()
         {
-            string query = "SELECT * FROM Rooms ORDER BY RoomId DESC";
-            return await _dbConnection.QueryAsync<HotelRoom>(query);
+            string query = @"SELECT a.RoomId,
+a.RoomNumber,
+a.RoomDescription,
+a.Status,
+ISNULL(c.Name,'N/A') as CreatedBy,
+a.CreatedOn,
+a.UpdatedBy,
+a.UpdatedOn,
+b.Type,
+b.PricePerNight,
+b.MaxGuest,
+b.Thumbnail,
+b.Image,
+b.Features,
+b.Rating
+FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c on a.createdBy = c.Auth0_Id ORDER BY a.CreatedOn DESC";
+            return await _dbConnection.QueryAsync<RoomInfo>(query);
         }
 
         public async Task<IEnumerable<RoomInfo>> GetAllRoomsInfoAsync()
@@ -60,6 +78,18 @@ namespace NCMS_wasm.Server.Repository
             string query = "SELECT * FROM RoomInfo ORDER BY RoomId DESC";
             return await _dbConnection.QueryAsync<RoomInfo>(query);
         }
+
+        public async Task<bool> GetRoomsNumberExistAsync(int roomNumber)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@RoomNumber", roomNumber);
+
+            string query = "SELECT COUNT(*) FROM Rooms WHERE RoomNumber = @RoomNumber";
+            
+            var result = await _dbConnection.ExecuteScalarAsync<int>(query, parameter);
+            return result > 0;
+        }
+
 
     }
 }

@@ -6,6 +6,7 @@ using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Client.Pages.Hotel;
 using NCMS_wasm.Server.Services;
 using Microsoft.AspNetCore.Authorization;
+using NCMS_wasm.Server.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,7 @@ builder.Services.AddScoped<ReceiptService>();
 
 //Add Background Services
 builder.Services.AddHostedService<PayslipProcessor>();
+//builder.Services.AddHostedService<EmailSenderProcessor>();
 
 
 // Add services to the container.

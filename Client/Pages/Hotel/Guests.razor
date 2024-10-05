@@ -8,7 +8,10 @@
         <MudItem lg="12" xl="12" xs="12" sm="12" Class="w-100">
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Color="Color.Dark">
                 <MudTabPanel Text="Calendar" Icon="@Icons.Material.Filled.CalendarMonth">
-                    <MudCalendar HighlightToday                                
+                    <MudCalendar HighlightToday
+                                 ShowWorkWeek="false"
+                                 ShowWeek="false"
+                                 ShowDay="false"
                                  Elevation="1"
                                  ShowTodayButton="true"
                                  Style="width: 100%"
@@ -178,13 +181,35 @@
 
 
 
-    private void CellClicked(DateTime dateTime)
+    private async Task CellClicked(DateTime dateTime)
     {
 
         if(DateTime.Today > dateTime)
         {
             Snackbar.Add("Invalid Action, Date is behind.", Severity.Warning);
-        }        
+        }
+        else
+        {
+            var options = new DialogOptions
+                {
+                    CloseOnEscapeKey = false,
+                    FullWidth = true,
+                    MaxWidth = MaxWidth.Small,
+                    BackdropClick = true,
+                    CloseButton = true
+                };
+            var parameters = new DialogParameters<AddGuestDialog>
+            {
+                {x=>x.dateFrom,dateTime}
+            };
+            var dialog = await DialogService.ShowAsync<AddGuestDialog>("Simple Dialog",parameters ,options);
+            var result = await dialog.Result;
+            if (!result.Canceled)
+            {
+                // await LoadCardsList();
+                StateHasChanged();
+            }
+        }
     }
 
     private Task ItemClicked(CalendarItem item)

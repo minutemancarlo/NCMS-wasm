@@ -1,0 +1,36 @@
+﻿@using NCMS_wasm.Shared
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="fas fa-hotel"></MudIcon>
+            Update Room Status and Price
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"
+                          OnClick="OnSubmit"
+                          Loading="@(_loading)"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Submitting...</LoadingContent>
+            <ChildContent>Submit</ChildContent>
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code{
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    private bool _loading = false;
+    void Cancel() => MudDialog.Cancel();
+
+    private async Task OnSubmit()
+    {
+        MudDialog
+    }
+}
