@@ -37,11 +37,11 @@ namespace NCMS_wasm.Shared
     public class Billing : BaseModel
     {
         public int BillId { get; set; }
-        public string InvoiceNo { get; set; }
-        public decimal Total { get; set; }
-        public decimal VAT { get; set; }
-        public decimal CashReceived { get; set; }
-        public decimal Change { get; set; }
+        public string? InvoiceNo { get; set; }
+        public decimal Total { get; set; } = 0.00M;
+        public decimal VAT { get; set; } = 0.00M;
+        public decimal CashReceived { get; set; } = 0.00M;
+        public decimal Change { get; set; } = 0.00M;
         public bool IsCard { get; set; } = false;
         public string? CardTransactionId { get; set; }
     }

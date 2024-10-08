@@ -142,15 +142,47 @@
                 </MudStepExtended>
                 <MudStepExtended Icon="@Icons.Material.Filled.Money" Title="Payment" Order="2">
                     <ChildContent>
-                        <MudForm>
+                        <MudPaper Class="pa-2" Elevation="4">
                             <MudStack>
-                                <MudTextField T="string" Label="Card Number" Variant="Variant.Filled" Required="true" />
-                                <MudStack Row="true">
-                                    <MudTextField T="string" Label="Expire Date" Required="true" />
-                                    <MudTextField T="string" Label="CVC" Required="true" />
-                                </MudStack>
+                            <MudText>Payment Type: </MudText>                            
+                            <MudToggleGroup T="bool" SelectionMode="SelectionMode.SingleSelection" @bind-Value="bookingInfo.Billing.IsCard" Color="Color.Primary" CheckMark FixedContent>
+                                <MudToggleItem Value="false" Text="Cash" />
+                                <MudToggleItem Value="true" Text="Card" />                                
+                            </MudToggleGroup>
                             </MudStack>
-                        </MudForm>
+
+                            @if (bookingInfo.Billing.IsCard)
+                            {
+                                <MudTextField @bind-Value="bookingInfo.Billing.CardTransactionId" Required RequiredError="Card Payment Invoice No Required" Label="Card Transaction ID" HelperText="Fill this if Debit/Credit Card was used." Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                <MudText Typo="Typo.body1" Class="pt-3">
+                                    <strong>Total:</strong>
+                                    @(_selectedItems.Sum(p => p.PricePerNight).ToString("C", new System.Globalization.CultureInfo("en-PH")))
+                                </MudText>
+                          
+                            }
+                            else
+                            {
+                                <MudNumericField Class="py-1" @bind-Value="bookingInfo.Billing.CashReceived" Required Format="N2" Label="Cash Received" Variant="Variant.Outlined" HideSpinButtons Min="1" Margin="Margin.Dense" />
+                                <MudText Typo="Typo.body1" Class="pt-3">
+                                    <strong>Total:</strong>
+                                    @(_selectedItems.Sum(p => p.PricePerNight).ToString("C", new System.Globalization.CultureInfo("en-PH")))
+                                </MudText>
+                                <MudText Typo="Typo.body1" Class="text-danger">
+                                    <strong>Change:</strong>
+                                    @((bookingInfo.Billing.CashReceived - _selectedItems.Sum(p => p.PricePerNight)).ToString("C", new System.Globalization.CultureInfo("en-PH")))
+                                </MudText>
+                            }
+
+                            <MudText Typo="Typo.body1">
+                                <strong>Vatable:</strong>
+                                @((_selectedItems.Sum(p => p.PricePerNight) / 1.12M).ToString("C", new System.Globalization.CultureInfo("en-PH")))
+                            </MudText>
+
+                            <MudText Typo="Typo.body1">
+                                <strong>VAT (12%):</strong>
+                                @((_selectedItems.Sum(p => p.PricePerNight) - _selectedItems.Sum(p => p.PricePerNight) / 1.12M).ToString("C", new System.Globalization.CultureInfo("en-PH")))
+                            </MudText>
+                        </MudPaper>
                     </ChildContent>
                 </MudStepExtended>
                 <MudStepExtended Icon="@Icons.Material.Filled.DoorSliding" Title="Access" Order="3">
@@ -180,37 +212,7 @@
             </ChildContent>
 
         </MudStepperExtended>
-        @* <MudStack Class="py-3" Spacing="2">
-
-
-
-
-        <MudPaper Class="pa-2" Elevation="4">
-        <MudTextM3 Typo="TypoM3.Title" Size="Size.Medium" Class="py-2 fw-bolder">Billing Information</MudTextM3>
-        <MudNumericField Class="py-1" @bind-Value="bookingInfo.Billing.CashReceived" Format="N2" Label="Cash Received" Variant="Variant.Outlined" HideSpinButtons Min="1" Margin="Margin.Dense" />
-        <MudTextField @bind-Value="bookingInfo.Billing.CardTransactionId" Label="Card Transaction ID" HelperText="Fill this if Debit/Credit Card was used." Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-
-        <MudText Typo="Typo.body1" Class="pt-3">
-        <strong>Total:</strong>
-        @(_selectedItems.Sum(p => p.PricePerNight).ToString("C", new System.Globalization.CultureInfo("en-PH")))
-        </MudText>
-        <MudText Typo="Typo.body1" Class="text-danger">
-        <strong>Change:</strong>
-        @((bookingInfo.Billing.CashReceived - _selectedItems.Sum(p => p.PricePerNight)).ToString("C", new System.Globalization.CultureInfo("en-PH")))
-        </MudText>
-
-        <MudText Typo="Typo.body1">
-        <strong>Vatable:</strong>
-        @((_selectedItems.Sum(p => p.PricePerNight) / 1.12M).ToString("C", new System.Globalization.CultureInfo("en-PH")))
-        </MudText>
-
-        <MudText Typo="Typo.body1">
-        <strong>VAT (12%):</strong>
-        @((_selectedItems.Sum(p => p.PricePerNight) - _selectedItems.Sum(p => p.PricePerNight) / 1.12M).ToString("C", new System.Globalization.CultureInfo("en-PH")))
-        </MudText>
-        </MudPaper>
-
-        </MudStack> *@
+   
 
     </DialogContent>
     @*   <DialogActions>
@@ -306,7 +308,7 @@
             _loading = true;
             await Task.Delay(1000);
             _loading = false;
-          
+
             return _selectedItems.Count == 0;
 
 
@@ -317,8 +319,16 @@
             StateHasChanged();
             await Task.Delay(1000);
             _loading = false;
+            if (bookingInfo.Billing.IsCard)
+            {
+                return string.IsNullOrEmpty(bookingInfo.Billing.CardTransactionId);
+            }
+            else
+            {
+                return (bookingInfo.Billing.CashReceived) == decimal.Zero;
+            }
             StateHasChanged();
-            return false;
+        
         }
         else if (activeIndex == 3)
         {
