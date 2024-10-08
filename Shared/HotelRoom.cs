@@ -20,6 +20,8 @@ namespace NCMS_wasm.Shared
         public int Rating { get; set; } = 0;
         public string? RoomDescription { get; set; }
         public RoomStatus Status { get; set; }
+        public bool Selected { get; set;} = false;
+    
     }
 
     public enum RoomType

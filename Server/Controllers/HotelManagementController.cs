@@ -64,6 +64,22 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+         [HttpPost("AddGuest")]
+        public async Task<ActionResult<int>> AddGuest(GuestsInfo guestsInfo)
+        {
+            try
+            {
+        
+                //int accId = await _hotelRepository.AddRoomsAsync(guestsInfo);             
+                return Ok(0);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [AddGuest]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);              
+                return BadRequest($"Exception occurred while adding room info: {ex.Message}");
+            }
+        }
+
         [HttpPost("UpdatedPriceAndStatus")]
         public async Task<ActionResult<int>> UpdatedPriceAndStatus(RoomInfo rooms)
         {

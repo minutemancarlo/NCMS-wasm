@@ -1,50 +1,230 @@
 ﻿@using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Validations
+@using MudBlazor.Extensions
+@using MudExtensions.Utilities
+
+<MudTypographyProvider />
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
             <MudIcon Icon="fas fa-users"></MudIcon>
-            Add Walk In Guest
+            Add Guest
         </MudText>
     </TitleContent>
     <DialogContent>
         @* <MudForm @ref="form" Model="@rfidInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0"> *@
-        <MudForm @ref="form" Model="@guestsInfo">
-            <MudStack Row>
-                <MudTextField @bind-Value="guestsInfo.FirstName" Label="First Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                <MudTextField @bind-Value="guestsInfo.MiddleName" Label="Middle Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                <MudTextField @bind-Value="guestsInfo.LastName" Label="Last Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-            </MudStack>
-            <MudTextField @bind-Value="guestsInfo.Phone" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-            <MudTextField @bind-Value="guestsInfo.Email" Label="Email Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-            <MudStack Row Class="py-1" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
-                <MudDatePicker Label="Check In" @bind-Date="guestsInfo.CheckInDate" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                <MudDatePicker Label="Check Out" @bind-Date="guestsInfo.CheckOutDate" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
-                               IsDateDisabledFunc="@((DateTime dt) => dt.Date <= guestsInfo.CheckOutDate)" Variant="Variant.Outlined" Margin="Margin.Dense" />
-            </MudStack>
-            <MudStack Row>
-                <MudNumericField Class="py-1" @bind-Value="guestsInfo.Rooms" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
-                <MudNumericField Class="py-1" @bind-Value="guestsInfo.Children" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
-                <MudNumericField Class="py-1" @bind-Value="guestsInfo.Adults" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
-            </MudStack>
-            <MudStack Row>
-                <MudTextField @bind-Value="guestsInfo.IDType" Label="ID Type" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                <MudTextField @bind-Value="guestsInfo.IDNumber" Label="ID Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-            </MudStack>
-        </MudForm>
+
+
+        <MudStepperExtended @ref="_stepper" Class="w-100" ContentStyle="min-height: 300px" ShowSkipButton="false" HeaderBadgeView="HeaderBadgeView.GreyOutIncomplete"
+                            PreventStepChangeAsync="new Func<StepChangeDirection, int, Task<bool>>(CheckChange)" Variant="Variant.Filled" Color="Color.Primary"
+                            MobileView="false" Loading="_loading" HeaderTextView="HeaderTextView.All" HeaderSize="Size.Large">
+            <ChildContent>
+                <MudStepExtended Icon="@Icons.Material.Filled.Approval" Title="Guest Info." Order="0">
+                    <ChildContent>
+                        <MudForm @ref="guestForm" Model="@tempGuestInfo" Validation="@(guestValidator.ValidateValue)" ValidationDelay="0">
+                            <MudPaper Class="pa-2" Elevation="4">
+                                <MudTextM3 Typo="TypoM3.Title" Size="Size.Medium" Class="py-2 fw-bolder">Booking Information</MudTextM3>
+                                <MudStack Row>
+                                    <MudTextField @bind-Value="tempGuestInfo.FirstName" For="@(() => tempGuestInfo.FirstName)" Label="First Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                    <MudTextField @bind-Value="tempGuestInfo.MiddleName" For="@(() => tempGuestInfo.MiddleName)" Label="Middle Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                    <MudTextField @bind-Value="tempGuestInfo.LastName" For="@(() => tempGuestInfo.LastName)" Label="Last Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                </MudStack>
+                                <MudTextField @bind-Value="tempGuestInfo.Phone" For="@(() => tempGuestInfo.Phone)" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                <MudTextField @bind-Value="tempGuestInfo.Email" For="@(() => tempGuestInfo.Email)" Label="Email Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                <MudStack Row Class="py-1" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+                                    <MudDatePicker Label="Check In" @bind-Date="tempGuestInfo.CheckInDate" For="@(() => tempGuestInfo.CheckInDate)" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                    <MudDatePicker Label="Check Out" @bind-Date="tempGuestInfo.CheckOutDate" For="@(() => tempGuestInfo.CheckOutDate)" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
+                                                   IsDateDisabledFunc="@((DateTime dt) => dt.Date <= tempGuestInfo.CheckInDate)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                </MudStack>
+                                <MudStack Row>
+                                    <MudNumericField Class="py-1" @bind-Value="tempGuestInfo.Rooms" For="@(() => tempGuestInfo.Rooms)" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                                    <MudNumericField Class="py-1" @bind-Value="tempGuestInfo.Children" For="@(() => tempGuestInfo.Children)" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                                    <MudNumericField Class="py-1" @bind-Value="tempGuestInfo.Adults" For="@(() => tempGuestInfo.Adults)" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                                </MudStack>
+                                <MudStack Row>
+                                    <MudTextField @bind-Value="tempGuestInfo.IDType" For="@(() => tempGuestInfo.IDType)" Label="ID Type" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                    <MudTextField @bind-Value="tempGuestInfo.IDNumber" For="@(() => tempGuestInfo.IDNumber)" Label="ID Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                </MudStack>
+                                <MudSelect T="BookingType" Label="Booking Type" @bind-Value="bookingInfo.Guests.BookingType" For="@(() => bookingInfo.Guests.BookingType)" Variant="Variant.Outlined" Class="py-1"
+                                           AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense">
+                                    @foreach (var type in Enum.GetValues(typeof(BookingType)).Cast<BookingType>())
+                                    {
+                                        bool isDisabled = true; // Default all items to disabled
+
+                                        if (tempGuestInfo.BookingType == BookingType.Reservation)
+                                        {
+                                            isDisabled = !(type == BookingType.Booked || type == BookingType.Cancelled);
+                                        }
+                                        else if (tempGuestInfo.BookingType == BookingType.Booked || tempGuestInfo.BookingType == BookingType.Walkin_Booking)
+                                        {
+                                            isDisabled = type != BookingType.Checked_Out;
+                                        }
+
+                                        <MudSelectItem Value="type" Disabled="@isDisabled">
+                                            @type.ToString().Replace("_", " ")
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudForm>
+                    </ChildContent>
+                </MudStepExtended>
+                <MudStepExtended Title="Booking Info." Icon="@Icons.Material.Filled.MoreVert" Order="1">
+                    <ChildContent>
+                        <MudPaper Class="pa-2" Elevation="4">
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.body1"><strong>Check In Date: </strong> @bookingInfo.Guests.CheckInDate?.ToString("MM/dd/yyyy hh:mm tt")</MudText>
+                                <MudText Typo="Typo.body1"><strong>Check Out Date: </strong> @bookingInfo.Guests.CheckOutDate?.ToString("MM/dd/yyyy hh:mm tt")</MudText>
+                                <MudText Typo="Typo.body1"><strong>Booking Type: </strong> @bookingInfo.Guests.BookingType.ToString().Replace("_", " ")</MudText>
+                                <MudText Typo="Typo.body1"><strong>Guest Count: </strong> @(bookingInfo.Guests.Adults + bookingInfo.Guests.Children) </MudText>
+                            </MudStack>
+
+                            <MudSelect T="RoomType" Label="Room Type" @bind-Value="bookingInfo.Room.Type" Class="pt-3" Variant="Variant.Outlined"
+                                       AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense">
+                                @foreach (var type in Enum.GetValues(typeof(RoomType)).Cast<RoomType>())
+                                {
+                                    <MudSelectItem Value="type">@type.ToString().Replace("_", " ")</MudSelectItem>
+                                }
+                            </MudSelect>
+                            @if (_selectedItems.Count == 0)
+                            {
+                                <MudText Color="Color.Error" Class="py-2">No room type selected.</MudText>
+                            }
+                            <MudDataGrid Items="@roomsList.Where(x=> (x.Status == RoomStatus.Available || x.Status == RoomStatus.Reservation) && (x.Type == bookingInfo.Room.Type || _selectedItems.Any(s => s.RoomId == x.RoomId)) ).ToList()" T="RoomInfo" Dense HorizontalScrollbar="true" Class="w-100 py-2"
+                                         @bind-SelectedItems="_selectedItems" SelectOnRowClick
+                                         MultiSelection="true" ColumnResizeMode="ResizeMode.Container">
+                                <Columns>
+                                    <TemplateColumn T="RoomInfo" Tag="@("select-column")"
+                                                    HeaderStyle="background-color: #1abc9c; color: white;"
+                                                    Sortable="false"
+                                                    ShowColumnOptions="false"
+                                                    Filterable="false"
+                                                    Hideable="false">
+                                        <CellTemplate>
+                                            @{
+                                                context.Item.Selected = context.Selected;
+                                            }
+                                            <MudSwitch @bind-Value="context.Item.Selected"
+                                                       ThumbIcon="@(context.Selected==true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)"
+                                                       ThumbIconColor="@(context.Selected==true ? Color.Success : Color.Error)"></MudSwitch>
+                                        </CellTemplate>
+                                    </TemplateColumn>
+                                    <PropertyColumn Property="x => x.RoomNumber" Title="No." HeaderStyle="background-color: #1abc9c; color: white;" />
+                                    <PropertyColumn Property="x => x.Type" Title="Room Type" HeaderStyle="background-color: #1abc9c; color: white;">
+                                        <CellTemplate>
+                                            <MudText Typo="Typo.body1">@context.Item.Type.ToString().Replace("_", " ")</MudText>
+                                        </CellTemplate>
+                                    </PropertyColumn>
+
+                                    <PropertyColumn Property="x => x.PricePerNight" Title="Rate" HeaderStyle="background-color: #1abc9c; color: white;">
+                                        <CellTemplate>
+                                            <MudStack Spacing="0">
+                                                <MudTextM3 Typo="TypoM3.Label" Size="Size.Small">Price: @context.Item.PricePerNight.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudTextM3>
+                                                <MudTextM3 Typo="TypoM3.Label" Size="Size.Small">Max Guest: @context.Item.MaxGuest</MudTextM3>
+                                            </MudStack>
+                                        </CellTemplate>
+                                    </PropertyColumn>
+
+                                </Columns>
+                                <NoRecordsContent>
+                                    <MudText>No Records to show</MudText>
+                                </NoRecordsContent>
+                                <LoadingContent>
+                                    <MudText>Loading Content...</MudText>
+                                </LoadingContent>
+                                <PagerContent>
+                                    <MudDataGridPager T="RoomInfo" />
+                                </PagerContent>
+                            </MudDataGrid>
+                           
+                        </MudPaper>
+                    </ChildContent>
+                </MudStepExtended>
+                <MudStepExtended Icon="@Icons.Material.Filled.Money" Title="Payment" Order="2">
+                    <ChildContent>
+                        <MudForm>
+                            <MudStack>
+                                <MudTextField T="string" Label="Card Number" Variant="Variant.Filled" Required="true" />
+                                <MudStack Row="true">
+                                    <MudTextField T="string" Label="Expire Date" Required="true" />
+                                    <MudTextField T="string" Label="CVC" Required="true" />
+                                </MudStack>
+                            </MudStack>
+                        </MudForm>
+                    </ChildContent>
+                </MudStepExtended>
+                <MudStepExtended Icon="@Icons.Material.Filled.DoorSliding" Title="Access" Order="3">
+                    <ChildContent>
+                        <MudForm>
+                            <MudStack>
+                                <MudTextField T="string" Label="Card Number" Variant="Variant.Filled" Required="true" />
+                                <MudStack Row="true">
+                                    <MudTextField T="string" Label="Expire Date" Required="true" />
+                                    <MudTextField T="string" Label="CVC" Required="true" />
+                                </MudStack>
+                            </MudStack>
+                        </MudForm>
+                    </ChildContent>
+                </MudStepExtended>
+                @if (_addResultStep)
+                {
+                    <MudStepExtended Icon="@Icons.Material.Filled.Alarm" Title="Result Step" IsResultStep="true">
+                        <ChildContent>
+                            <div class="d-flex flex-column align-center justify-center" style="height: 200px">
+                                <MudIconButton Icon="@Icons.Material.Filled.DoneAll" Size="Size.Large" Variant="Variant.Filled" Color="Color.Success" />
+                                <MudText>Your reservation successfully completed.</MudText>
+                            </div>
+                        </ChildContent>
+                    </MudStepExtended>
+                }
+            </ChildContent>
+
+        </MudStepperExtended>
+        @* <MudStack Class="py-3" Spacing="2">
+
+
+
+
+        <MudPaper Class="pa-2" Elevation="4">
+        <MudTextM3 Typo="TypoM3.Title" Size="Size.Medium" Class="py-2 fw-bolder">Billing Information</MudTextM3>
+        <MudNumericField Class="py-1" @bind-Value="bookingInfo.Billing.CashReceived" Format="N2" Label="Cash Received" Variant="Variant.Outlined" HideSpinButtons Min="1" Margin="Margin.Dense" />
+        <MudTextField @bind-Value="bookingInfo.Billing.CardTransactionId" Label="Card Transaction ID" HelperText="Fill this if Debit/Credit Card was used." Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+
+        <MudText Typo="Typo.body1" Class="pt-3">
+        <strong>Total:</strong>
+        @(_selectedItems.Sum(p => p.PricePerNight).ToString("C", new System.Globalization.CultureInfo("en-PH")))
+        </MudText>
+        <MudText Typo="Typo.body1" Class="text-danger">
+        <strong>Change:</strong>
+        @((bookingInfo.Billing.CashReceived - _selectedItems.Sum(p => p.PricePerNight)).ToString("C", new System.Globalization.CultureInfo("en-PH")))
+        </MudText>
+
+        <MudText Typo="Typo.body1">
+        <strong>Vatable:</strong>
+        @((_selectedItems.Sum(p => p.PricePerNight) / 1.12M).ToString("C", new System.Globalization.CultureInfo("en-PH")))
+        </MudText>
+
+        <MudText Typo="Typo.body1">
+        <strong>VAT (12%):</strong>
+        @((_selectedItems.Sum(p => p.PricePerNight) - _selectedItems.Sum(p => p.PricePerNight) / 1.12M).ToString("C", new System.Globalization.CultureInfo("en-PH")))
+        </MudText>
+        </MudPaper>
+
+        </MudStack> *@
+
     </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudLoadingButton Variant="Variant.Filled"
-                          Color="Color.Success"
-                          Size="Size.Large"
-                          OnClick="OnSubmit"
-                          Loading="@(_loading)"
-                          ButtonType="ButtonType.Button">
-            <LoadingContent>Submitting...</LoadingContent>
-            <ChildContent>Submit</ChildContent>
-        </MudLoadingButton>
-    </DialogActions>
+    @*   <DialogActions>
+    <MudButton OnClick="Cancel">Cancel</MudButton>
+    <MudLoadingButton Variant="Variant.Filled"
+    Color="Color.Success"
+    Size="Size.Large"
+    OnClick="OnSubmit"
+    Loading="@(_loading)"
+    ButtonType="ButtonType.Button">
+    <LoadingContent>Submitting...</LoadingContent>
+    <ChildContent>Submit</ChildContent>
+    </MudLoadingButton>
+    </DialogActions> *@
 </MudDialog>
 
 @code {
@@ -53,23 +233,123 @@
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] IJSRuntime JSRuntime { get; set; }
     MudForm form;
-    private GuestsInfo? guestsInfo { get; set; } = new();
+    [Parameter] public Booking bookingInfo { get; set; }
     private bool _loading = false;
-    private List<GuestsInfo> guestsList = new();
-    [Parameter] public DateTime? dateFrom { get; set; }    
+
+    [Parameter] public DateTime? dateFrom { get; set; }
+    [Parameter] public string? userId { get; set; }
+    private List<RoomInfo> roomsList = new List<RoomInfo>();
+    private HashSet<RoomInfo> _selectedItems = new();
+    MudStepperExtended? _stepper = new();
+    bool _addResultStep = true;
+    bool _checkValidationBeforeComplete = true;
+
+    MudForm? guestForm;
+    GuestsInfoValidator guestValidator = new GuestsInfoValidator();
+    private GuestsInfo tempGuestInfo = new();
 
     private async Task OnSubmit()
     {
+        try
+        {
+            _loading = true;
+            bookingInfo.Guests.CreatedBy = userId;
+
+
+
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
         // Snackbar.Add($"Card Value: {rfidInfo.CardReference}", Severity.Normal);
     }
 
     protected override async Task OnInitializedAsync()
     {
-        guestsInfo.CheckInDate = dateFrom;        
+        await LoadRoomsList();
+        tempGuestInfo.CheckInDate = dateFrom;
         await base.OnInitializedAsync();
     }
 
 
+    private async Task<bool> CheckChange(StepChangeDirection direction, int targetIndex)
+    {
+        if (direction == StepChangeDirection.Backward)
+        {
+            return false;
+        }
+        var activeIndex = _stepper?.GetActiveIndex();
+        if (activeIndex == 0)
+        {
+            _loading = true;
+            StateHasChanged();
+            await guestForm.Validate();
+            _loading = false;
+            StateHasChanged();
+            if (guestForm.IsValid)
+            {
+                tempGuestInfo.CheckInDate = tempGuestInfo.CheckInDate?.Date.AddHours(14);
+                tempGuestInfo.CheckOutDate = tempGuestInfo.CheckOutDate?.Date.AddHours(11);
+                bookingInfo.Guests = tempGuestInfo;
+            }
+            return !guestForm.IsValid;
+
+        }
+        else if (activeIndex == 1)
+        {
+            _loading = true;
+            await Task.Delay(1000);
+            _loading = false;
+          
+            return _selectedItems.Count == 0;
+
+
+        }
+        else if (activeIndex == 2)
+        {
+            _loading = true;
+            StateHasChanged();
+            await Task.Delay(1000);
+            _loading = false;
+            StateHasChanged();
+            return false;
+        }
+        else if (activeIndex == 3)
+        {
+            _loading = true;
+            StateHasChanged();
+            await Task.Delay(1000);
+            _loading = false;
+            StateHasChanged();
+            return false;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+
+    private async Task LoadRoomsList()
+    {
+
+        try
+        {
+            roomsList = await httpClient.GetFromJsonAsync<List<RoomInfo>>($"HotelManagement/GetRooms");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+
+    }
 
 
 

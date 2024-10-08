@@ -3,8 +3,8 @@
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Hotel.Components
 <PageTitle>Guest Management | NCMS</PageTitle>
-<MudStack Spacing="2" Class="w-100 pt-5">    
-    <MudGrid Justify="Justify.Center" Class="w-100">     
+<MudStack Spacing="2" Class="w-100 pt-5">
+    <MudGrid Justify="Justify.Center" Class="w-100">
         <MudItem lg="12" xl="12" xs="12" sm="12" Class="w-100">
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Color="Color.Dark">
                 <MudTabPanel Text="Calendar" Icon="@Icons.Material.Filled.CalendarMonth">
@@ -25,11 +25,11 @@
                             <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Info" Size="Size.Small" /> Reservation</MudText>
                             <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Error" Size="Size.Small" /> Cancelled</MudText>
                         </ToolbarContent>
-                      <CellTemplate>
+                        <CellTemplate>
                             <div style="background-color: @GetColor(((CustomItem)context).Color)" class="pa-2 d-flex gap-1">
                                 <MudText Style="color: white" Class="fw-bold" Typo="Typo.body2">@context.Text</MudText>
                             </div>
-                      </CellTemplate>
+                        </CellTemplate>
                     </MudCalendar>
                 </MudTabPanel>
                 <MudTabPanel Text="List" Icon="@Icons.Material.Filled.ListAlt">
@@ -96,12 +96,12 @@
                         </PagerContent>
                     </MudDataGrid>
                 </MudTabPanel>
-               
+
             </MudTabs>
 
 
 
-            
+
         </MudItem>
     </MudGrid>
 
@@ -127,13 +127,13 @@
                 Type = BookingType.Booked
             };
         var item2 = new CustomItem
-        {
+            {
                 Start = DateTime.Today.AddDays(1),
                 End = DateTime.Today.AddDays(5),
-            Text = $"RM 403",
-            Color = Color.Info,
-            Type = BookingType.Reservation
-        };
+                Text = $"RM 403",
+                Color = Color.Info,
+                Type = BookingType.Reservation
+            };
         _events.Add(item1);
         _events.Add(item2);
         GuestsInfo guest = new GuestsInfo
@@ -169,7 +169,13 @@
                 BackdropClick = true,
                 CloseButton = true
             };
-        var dialog = await DialogService.ShowAsync<AddGuestDialog>("Simple Dialog", options);
+        var parameters = new DialogParameters<AddGuestDialog>
+        {
+            {x => x.userId, MainLayout.CurrentUserId},
+            {x => x.bookingInfo, new Booking() },
+            {x => x.dateFrom, new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 14, 0, 0)}
+        };
+        var dialog = await DialogService.ShowAsync<AddGuestDialog>("Simple Dialog", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
         {
@@ -184,7 +190,7 @@
     private async Task CellClicked(DateTime dateTime)
     {
 
-        if(DateTime.Today > dateTime)
+        if (DateTime.Today > dateTime)
         {
             Snackbar.Add("Invalid Action, Date is behind.", Severity.Warning);
         }
@@ -199,10 +205,12 @@
                     CloseButton = true
                 };
             var parameters = new DialogParameters<AddGuestDialog>
-            {
-                {x=>x.dateFrom,dateTime}
-            };
-            var dialog = await DialogService.ShowAsync<AddGuestDialog>("Simple Dialog",parameters ,options);
+        {
+            {x => x.userId, MainLayout.CurrentUserId},
+            {x => x.bookingInfo, new Booking()},
+            {x => x.dateFrom, new DateTime(dateTime.Year,dateTime.Month, dateTime.Day, 14, 0, 0)}
+        };
+            var dialog = await DialogService.ShowAsync<AddGuestDialog>("Simple Dialog", parameters, options);
             var result = await dialog.Result;
             if (!result.Canceled)
             {

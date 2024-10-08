@@ -34,6 +34,26 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteScalarAsync<int>("AddAccomodations", parameters, commandType: CommandType.StoredProcedure);
         }
 
+    //    public async Task<int> AddGuestAsync(Accomodations info)
+    //    {
+    //        var parameters = new DynamicParameters();
+    //        parameters.Add("@FirstName", info.GuestsInfo.FirstName);
+
+    //        @FirstName nvarchar(255),
+    //@MiddleName nvarchar(255),
+    //@LastName nvarchar(255),
+    //@Email nvarchar(255),
+    //@Phone nvarchar(255),
+    //@CheckInDate datetime,
+    //@CheckOutDate datetime,
+    //@ArrivalDate datetime,
+    //@BookingType int,
+    //@CreatedBy nvarchar(255),
+    //@UpdatedBy nvarchar(255)
+    //        // Execute the stored procedure
+    //        return await _dbConnection.ExecuteScalarAsync<int>("AddBooking", parameters, commandType: CommandType.StoredProcedure);
+    //    }
+
         public async Task<int> AddRoomsAsync(RoomInfo room)
         {
             var parameters = new DynamicParameters();

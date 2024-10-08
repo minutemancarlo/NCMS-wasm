@@ -42,8 +42,10 @@
         <MudDataGrid Items="@roomsList" T="RoomInfo" Loading="@isLoading" Dense HorizontalScrollbar="true"
                      ColumnResizeMode="ResizeMode.Container">
             <ToolBarContent>
-                <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadRoomsList">Refresh</MudButton>
+                
                 <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddRoomDialog">Add Room</MudButton>
+                @* <MudIconButton Icon="@Icons.Material.Filled.Refresh" OnClick="LoadRoomsList" Size="Size.Small" Class="rounded-pill" Color="Color.Success" Variant="Variant.Filled"/> *@
+                <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadRoomsList">Refresh</MudButton>
                 <MudSpacer />
             </ToolBarContent>
             <Columns>
@@ -88,9 +90,9 @@
                             case RoomStatus.Not_Available:
                                 <MudChip Size="Size.Small" Color="Color.Error">@context.Item.Status.ToString().Replace("_", " ")</MudChip>
                                 break;
-                           case RoomStatus.Reservation:
+                            case RoomStatus.Reservation:
                                 <MudChip Size="Size.Small" Color="Color.Warning">@context.Item.Status.ToString().Replace("_", " ")</MudChip>
-                                break; 
+                                break;
                         }
                     </CellTemplate>
                 </PropertyColumn>
