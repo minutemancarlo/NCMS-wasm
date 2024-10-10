@@ -26,12 +26,12 @@ namespace NCMS_wasm.Shared
 
     }
 
-    public class Booking
+    public class Booking : BaseModel
     {
         public GuestsInfo Guests { get; set; } = new();
-        public RoomInfo Room { get; set; } = new();
+        public List<RoomInfo> Room { get; set; } = new();
         public Billing Billing { get; set; } = new();
-        public RFIDCard AccessCard { get; set; } = new();
+        public List<RFIDCard> AccessCard { get; set; } = new();
     }
 
     public class Billing : BaseModel
@@ -40,6 +40,7 @@ namespace NCMS_wasm.Shared
         public string? InvoiceNo { get; set; }
         public decimal Total { get; set; } = 0.00M;
         public decimal VAT { get; set; } = 0.00M;
+        public decimal Vatable { get; set; } = 0.00M;
         public decimal CashReceived { get; set; } = 0.00M;
         public decimal Change { get; set; } = 0.00M;
         public bool IsCard { get; set; } = false;

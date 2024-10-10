@@ -22,5 +22,20 @@ namespace NCMS_wasm.Server.Repository
             string sp = "SelectAllCards";
             return await _dbConnection.QueryAsync<LoyaltyCardInfo>(sp, parameters, commandType: CommandType.StoredProcedure);
         }
+
+        public async Task<int> InsertAccessCardAsync(RFIDCard accessCard)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@CardReference", accessCard.CardReference);
+            parameters.Add("@Type", accessCard.Type);
+            parameters.Add("@IsActive", accessCard.IsActive);
+            parameters.Add("@Points", accessCard.Points);
+            parameters.Add("@RegisteredTo", accessCard.RegisteredTo);
+            parameters.Add("@CreatedBy", accessCard.CreatedBy);       
+            parameters.Add("@RoomNumber", accessCard.RoomNumber);
+
+            return await _dbConnection.ExecuteScalarAsync<int>("InsertAccessCard", parameters, commandType: CommandType.StoredProcedure);
+
+        }
     }
 }

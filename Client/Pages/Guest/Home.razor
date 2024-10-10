@@ -40,9 +40,9 @@
                             </MudStack>
                         </MudStack>
                         <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
-                            <MudDatePicker Label="Check In" @bind-Date="availability.dateFrom" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                            <MudDatePicker Label="Check Out" @bind-Date="availability.dateTo" 
-                            AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" 
+                            <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Check In" @bind-Date="availability.dateFrom" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Check Out" @bind-Date="availability.dateTo"
+                                           AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" 
                             IsDateDisabledFunc="@((DateTime dt) => dt.Date <= availability.dateFrom)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         </MudStack>
                         <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">

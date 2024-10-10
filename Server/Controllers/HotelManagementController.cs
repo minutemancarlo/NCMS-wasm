@@ -12,11 +12,13 @@ namespace NCMS_wasm.Server.Controllers
     {
         private readonly ILogger<HotelManagementController> _logger;
         private readonly HotelRepository _hotelRepository;
+        private readonly GuestRepository _guestRepository;
+        private readonly CardRepository _cardRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _env;
         private readonly FileLogger _fileLogger;
         private readonly string ModuleName;
-        public HotelManagementController(ILogger<HotelManagementController> logger, HotelRepository hotelRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env)
+        public HotelManagementController(ILogger<HotelManagementController> logger, HotelRepository hotelRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env, GuestRepository guestRepository, CardRepository cardRepository)
         {
             _logger = logger;
             _hotelRepository = hotelRepository;
@@ -24,6 +26,8 @@ namespace NCMS_wasm.Server.Controllers
             _env = env;
             _fileLogger = new FileLogger(configuration);
             ModuleName = "HotelManagementController";
+            _guestRepository = guestRepository;
+            _cardRepository = cardRepository;
         }
 
         [HttpPost("AddAccomodations")]
@@ -64,7 +68,33 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
-         [HttpPost("AddGuest")]
+        [HttpPost("AddBooking")]
+        public async Task<ActionResult<int>> AddBooking(Booking booking)
+        {
+            try
+            {
+                //Insert Guest
+                var guestId = await _guestRepository.InsertGuestAsync(booking.Guests);
+                //Insert AccessCard
+                foreach(var item in booking.AccessCard)
+                {
+                    await _cardRepository.InsertAccessCardAsync(item);
+                }
+
+                //InsertBooking
+
+
+                string accId = await _hotelRepository.InsertBookingAsync(booking,guestId);
+                return Ok(accId);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [AddBooking]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+                return BadRequest($"Exception occurred while adding booking info: {ex.Message}");
+            }
+        }
+
+        [HttpPost("AddGuest")]
         public async Task<ActionResult<int>> AddGuest(GuestsInfo guestsInfo)
         {
             try

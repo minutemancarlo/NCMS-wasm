@@ -5,28 +5,84 @@
 <MudStack Spacing="2" Class="w-100 pt-5">
        <MudGrid Justify="Justify.Center" Class="w-100">   
            <MudItem xl="3" lg="3" md="3" sm="3">
-               <MudPaper Elevation="4" Height="150">
-                   test
+            <MudPaper Elevation="4" Height="150">
+                <MudCard Style="background-color: #3498db">
+                       <MudCardHeader>
+                           <CardHeaderContent>
+                               <MudText Typo="Typo.h6">Reservation</MudText>
+                           </CardHeaderContent>
+                       </MudCardHeader>
+                           <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h1" Class="fw-bold">0</MudText>
+                        </MudStack>
+                           </MudCardContent>
+                   </MudCard>
                </MudPaper>            
            </MudItem>
         <MudItem xl="3" lg="3" md="3" sm="3">
             <MudPaper Elevation="4" Height="150">
-                test
+                <MudCard Style="background-color: #2ecc71">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Checked In</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h1" Class="fw-bold">0</MudText>
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
             </MudPaper>
         </MudItem>
         <MudItem xl="3" lg="3" md="3" sm="3">
-            <MudPaper Elevation="4" Height="150">
-                test
+            <MudPaper Elevation="4" Height="150" >
+                <MudCard Style="background-color: #e74c3c">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Cancelled</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h1" Class="fw-bold">0</MudText>
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
             </MudPaper>
         </MudItem>
         <MudItem xl="3" lg="3" md="3" sm="3">
-            <MudPaper Elevation="4" Height="150">
-                test
+            <MudPaper Elevation="4" Height="150" >
+                <MudCard Style="background-color: #e67e22">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Out of Order</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h1" Class="fw-bold">0</MudText>
+                        </MudStack>                        
+                    </MudCardContent>
+                </MudCard>
             </MudPaper>
         </MudItem>
 
        </MudGrid>    
 </MudStack>
 @code {
+    private string GetColor(Color color) => $"var(--mud-palette-{color.ToDescriptionString()})";
+    [Inject] HttpClient? httpClient { get; set; }    
+    [Inject] ISnackbar Snackbar { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    private async Task OnGetDashboardData()
+    {
+        
+    }
 }

@@ -32,8 +32,8 @@
                                 <MudTextField @bind-Value="tempGuestInfo.Phone" For="@(() => tempGuestInfo.Phone)" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                                 <MudTextField @bind-Value="tempGuestInfo.Email" For="@(() => tempGuestInfo.Email)" Label="Email Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                                 <MudStack Row Class="py-1" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
-                                    <MudDatePicker Label="Check In" @bind-Date="tempGuestInfo.CheckInDate" For="@(() => tempGuestInfo.CheckInDate)" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                                    <MudDatePicker Label="Check Out" @bind-Date="tempGuestInfo.CheckOutDate" For="@(() => tempGuestInfo.CheckOutDate)" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
+                                    <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Check In" @bind-Date="tempGuestInfo.CheckInDate" For="@(() => tempGuestInfo.CheckInDate)" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                    <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Check Out" @bind-Date="tempGuestInfo.CheckOutDate" For="@(() => tempGuestInfo.CheckOutDate)" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
                                                    IsDateDisabledFunc="@((DateTime dt) => dt.Date <= tempGuestInfo.CheckInDate)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                                 </MudStack>
                                 <MudStack Row>
@@ -79,7 +79,7 @@
                                 <MudText Typo="Typo.body1"><strong>Guest Count: </strong> @(bookingInfo.Guests.Adults + bookingInfo.Guests.Children) </MudText>
                             </MudStack>
 
-                            <MudSelect T="RoomType" Label="Room Type" @bind-Value="bookingInfo.Room.Type" Class="pt-3" Variant="Variant.Outlined"
+                            <MudSelect T="RoomType" Label="Room Type" @bind-Value="selectType" Class="pt-3" Variant="Variant.Outlined"
                                        AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense">
                                 @foreach (var type in Enum.GetValues(typeof(RoomType)).Cast<RoomType>())
                                 {
@@ -90,8 +90,8 @@
                             {
                                 <MudText Color="Color.Error" Class="py-2">No room type selected.</MudText>
                             }
-                            <MudDataGrid Items="@roomsList.Where(x=> (x.Status == RoomStatus.Available || x.Status == RoomStatus.Reservation) && (x.Type == bookingInfo.Room.Type || _selectedItems.Any(s => s.RoomId == x.RoomId)) ).ToList()" T="RoomInfo" Dense HorizontalScrollbar="true" Class="w-100 py-2"
-                                         @bind-SelectedItems="_selectedItems" SelectOnRowClick
+                            <MudDataGrid Items="@roomsList.Where(x=> (x.Status == RoomStatus.Available || x.Status == RoomStatus.Reservation) && (x.Type == selectType || _selectedItems.Any(s => s.RoomId == x.RoomId)) ).ToList()" T="RoomInfo" Dense HorizontalScrollbar="true" Class="w-100 py-2"
+                                         @bind-SelectedItems="_selectedItems" SelectOnRowClick RowClass="cursor-pointer"
                                          MultiSelection="true" ColumnResizeMode="ResizeMode.Container">
                                 <Columns>
                                     <TemplateColumn T="RoomInfo" Tag="@("select-column")"
@@ -136,19 +136,19 @@
                                     <MudDataGridPager T="RoomInfo" />
                                 </PagerContent>
                             </MudDataGrid>
-                           
+
                         </MudPaper>
                     </ChildContent>
                 </MudStepExtended>
                 <MudStepExtended Icon="@Icons.Material.Filled.Money" Title="Payment" Order="2">
                     <ChildContent>
                         <MudPaper Class="pa-2" Elevation="4">
-                            <MudStack>
-                            <MudText>Payment Type: </MudText>                            
-                            <MudToggleGroup T="bool" SelectionMode="SelectionMode.SingleSelection" @bind-Value="bookingInfo.Billing.IsCard" Color="Color.Primary" CheckMark FixedContent>
-                                <MudToggleItem Value="false" Text="Cash" />
-                                <MudToggleItem Value="true" Text="Card" />                                
-                            </MudToggleGroup>
+                            <MudStack Row AlignItems="AlignItems.Baseline">
+                                <MudText>Payment Type: </MudText>
+                                <MudToggleGroup T="bool" SelectionMode="SelectionMode.SingleSelection" @bind-Value="bookingInfo.Billing.IsCard" Color="Color.Primary" CheckMark FixedContent>
+                                    <MudToggleItem Value="false" Text="Cash" />
+                                    <MudToggleItem Value="true" Text="Card" />
+                                </MudToggleGroup>
                             </MudStack>
 
                             @if (bookingInfo.Billing.IsCard)
@@ -158,11 +158,11 @@
                                     <strong>Total:</strong>
                                     @(_selectedItems.Sum(p => p.PricePerNight).ToString("C", new System.Globalization.CultureInfo("en-PH")))
                                 </MudText>
-                          
+
                             }
                             else
                             {
-                                <MudNumericField Class="py-1" @bind-Value="bookingInfo.Billing.CashReceived" Required Format="N2" Label="Cash Received" Variant="Variant.Outlined" HideSpinButtons Min="1" Margin="Margin.Dense" />
+                                <MudNumericField Class="py-2" @bind-Value="bookingInfo.Billing.CashReceived" Required Format="N2" Label="Cash Received" Variant="Variant.Outlined" HideSpinButtons Min="1" Margin="Margin.Dense" />
                                 <MudText Typo="Typo.body1" Class="pt-3">
                                     <strong>Total:</strong>
                                     @(_selectedItems.Sum(p => p.PricePerNight).ToString("C", new System.Globalization.CultureInfo("en-PH")))
@@ -189,11 +189,24 @@
                     <ChildContent>
                         <MudForm>
                             <MudStack>
-                                <MudTextField T="string" Label="Card Number" Variant="Variant.Filled" Required="true" />
-                                <MudStack Row="true">
-                                    <MudTextField T="string" Label="Expire Date" Required="true" />
-                                    <MudTextField T="string" Label="CVC" Required="true" />
-                                </MudStack>
+                                @{
+                                    if (_selectedItems.Any())
+                                    {
+
+                                        foreach (var item in _selectedItems)
+                                        {
+                                            <MudPaper Elevation="4" Class="pa-2">
+                                                <MudStack Row AlignItems="AlignItems.Baseline">
+                                                    <MudText Typo="Typo.body1">Room No. @item.RoomNumber</MudText>
+                                                    <MudSpacer />
+                                                    <MudIconButton Icon="@Icons.Material.Filled.DocumentScanner" OnClick="@(() => ScanCard(item.RoomNumber))" />
+                                                </MudStack>
+                                                <MudText Typo="Typo.subtitle1" Class="text-muted">Card Id: @tempCards.FirstOrDefault(x => x.RoomNumber == item.RoomNumber)?.CardReference</MudText>
+                                            </MudPaper>
+                                        }
+                                    }
+                                }
+
                             </MudStack>
                         </MudForm>
                     </ChildContent>
@@ -203,8 +216,8 @@
                     <MudStepExtended Icon="@Icons.Material.Filled.Alarm" Title="Result Step" IsResultStep="true">
                         <ChildContent>
                             <div class="d-flex flex-column align-center justify-center" style="height: 200px">
-                                <MudIconButton Icon="@Icons.Material.Filled.DoneAll" Size="Size.Large" Variant="Variant.Filled" Color="Color.Success" />
-                                <MudText>Your reservation successfully completed.</MudText>
+                                <MudIconButton Icon="@Icons.Material.Filled.DoneAll" Size="Size.Large" Variant="Variant.Filled" Color="Color.Success" OnClick="OnSubmit" />
+                                <MudText>Booking transaction completed.</MudText>
                             </div>
                         </ChildContent>
                     </MudStepExtended>
@@ -212,7 +225,7 @@
             </ChildContent>
 
         </MudStepperExtended>
-   
+
 
     </DialogContent>
     @*   <DialogActions>
@@ -234,6 +247,9 @@
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] IJSRuntime JSRuntime { get; set; }
+
+    [Inject] IDialogService? DialogService { get; set; }
+
     MudForm form;
     [Parameter] public Booking bookingInfo { get; set; }
     private bool _loading = false;
@@ -245,19 +261,57 @@
     MudStepperExtended? _stepper = new();
     bool _addResultStep = true;
     bool _checkValidationBeforeComplete = true;
-
+    private RoomType selectType = RoomType.Twin;
     MudForm? guestForm;
     GuestsInfoValidator guestValidator = new GuestsInfoValidator();
     private GuestsInfo tempGuestInfo = new();
-
+    private List<RFIDCard> tempCards = new();
+    private bool isLoadingSubmit = false;
     private async Task OnSubmit()
     {
         try
         {
-            _loading = true;
-            bookingInfo.Guests.CreatedBy = userId;
+            // bookingInfo.AccessCard.Clear();
+            // tempCards.Clear();
+            // bookingInfo.Room.Clear();
+            // bookingInfo.Room.AddRange(_selectedItems);
+            try
+            {
+                isLoadingSubmit = true;
 
+                bookingInfo.AccessCard.AddRange(tempCards);
+                bookingInfo.CreatedBy = userId;
+                bookingInfo.Guests.CreatedBy = userId;
+                bookingInfo.Billing.CreatedBy = userId;
+                bookingInfo.AccessCard.ForEach(card => card.CreatedBy = !string.IsNullOrEmpty(userId) ? userId : null);
+                bookingInfo.Billing.Total = _selectedItems.Sum(p => p.PricePerNight);                
+                bookingInfo.Billing.Change = bookingInfo.Billing.CashReceived - _selectedItems.Sum(p => p.PricePerNight);
+                bookingInfo.Billing.Vatable = _selectedItems.Sum(p => p.PricePerNight) / 1.12M;
+                bookingInfo.Billing.VAT = _selectedItems.Sum(p => p.PricePerNight) - _selectedItems.Sum(p => p.PricePerNight) / 1.12M;
+                var response = await httpClient.PostAsJsonAsync("HotelManagement/AddBooking", bookingInfo);
+                response.EnsureSuccessStatusCode();
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Booking has been created.{result}", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to save booking info: {response.StatusCode} - {errorMessage}", Severity.Error);
+                    Console.WriteLine($"Failed to save booking info: {response.StatusCode} - {errorMessage}");
+                }
 
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"An error occured: {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                isLoadingSubmit = false;
+            }
 
 
         }
@@ -279,6 +333,76 @@
         await base.OnInitializedAsync();
     }
 
+    private async Task ScanCard(int RoomNumber)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = false,
+                CloseButton = true
+            };
+        var parameters = new DialogParameters<CardScanDialog>
+        {
+            {x => x.roomNumber, RoomNumber}
+
+        };
+        var dialog = await DialogService.ShowAsync<CardScanDialog>("Simple Dialog", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var cardId = result.Data.ToString();
+
+            if (tempCards.Any())
+            {
+                // Find if an RFIDCard with the same RoomNumber already exists
+                // var existingCard = bookingInfo.AccessCard.FirstOrDefault(ac => ac.RoomNumber == RoomNumber);
+                var existingCard = tempCards.FirstOrDefault(ac => ac.RoomNumber == RoomNumber);
+
+                if (existingCard != null)
+                {
+                    // Update the CardReference if the card exists
+                    existingCard.CardReference = cardId;
+                }
+                else
+                {
+                    // Add a new RFIDCard if the RoomNumber doesn't exist
+                    var rfidCard = new RFIDCard
+                        {
+                            CardReference = cardId,
+                            IsActive = true,
+                            RoomNumber = RoomNumber,
+                            Type = RFIDType.Access
+                        };
+                    tempCards.Add(rfidCard);
+                    // bookingInfo.AccessCard.Add(rfidCard);
+
+                }
+            }
+            else
+            {
+                var rfidCard = new RFIDCard
+                    {
+                        CardReference = cardId,
+                        IsActive = true,
+                        RoomNumber = RoomNumber,
+                        Type = RFIDType.Access
+                    };
+                tempCards.Add(rfidCard);
+
+                // bookingInfo.AccessCard.Add(rfidCard);
+
+            }
+
+
+
+
+
+            // await LoadCardsList();
+            // StateHasChanged();
+        }
+    }
 
     private async Task<bool> CheckChange(StepChangeDirection direction, int targetIndex)
     {
@@ -328,16 +452,29 @@
                 return (bookingInfo.Billing.CashReceived) == decimal.Zero;
             }
             StateHasChanged();
-        
+
         }
         else if (activeIndex == 3)
         {
+            bookingInfo.Room.Clear();
+            bookingInfo.Room.AddRange(_selectedItems);
+            var roomCount = bookingInfo.Room.Count();
+            var rfidCount = tempCards.Where(x => !string.IsNullOrEmpty(x.CardReference) && x.RoomNumber != null).Count();
+            Snackbar.Add($"room: {roomCount}, card: {rfidCount}", Severity.Warning);
+
             _loading = true;
             StateHasChanged();
             await Task.Delay(1000);
             _loading = false;
             StateHasChanged();
-            return false;
+            var retVal = false;
+            if (roomCount != rfidCount)
+            {
+                retVal = true;
+                Snackbar.Add("Please assign key card to each room", Severity.Warning);
+            }
+
+            return retVal;
         }
         else
         {

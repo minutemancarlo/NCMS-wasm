@@ -13,6 +13,7 @@ namespace NCMS_wasm.Shared
         public bool IsActive { get; set; } = true;
         public decimal Points { get; set; } = 0.00M;
         public string? RegisteredTo { get; set; }
+        public int? RoomNumber { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? UpdatedBy { get; set; }
