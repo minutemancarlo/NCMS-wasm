@@ -24,6 +24,11 @@ namespace NCMS_wasm.Shared
     
     }
 
+    public class DashboardValueSales
+    {
+        public int Month { get; set; }
+        public decimal Sales { get; set; }
+    }
     public enum RoomType
     {      
         Twin,

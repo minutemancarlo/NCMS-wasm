@@ -147,6 +147,23 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpGet("GetDashboardSales")]
+        public async Task<ActionResult<DashboardValueSales>> GetDashboardSales(int year)
+        {
+            try
+            {
+                var result = await _hotelRepository.GetDashboardSalesByMonthAsync(year);
+                
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetDashboardSales]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
+                return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
+            }
+        }
+
         [HttpGet("GetCalendarDisplay")]
         public async Task<ActionResult<List<GuestsInfo>>> GetCalendarDisplay()
         {

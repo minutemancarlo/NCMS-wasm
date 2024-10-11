@@ -148,6 +148,55 @@ FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c o
             return result > 0;
         }
 
+        public async Task<List<DashboardValueSales>> GetDashboardSalesByMonthAsync(int year)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@Year", year);
+
+            string query = @"
+        WITH Months AS (
+            SELECT 1 AS Month
+            UNION ALL
+            SELECT 2
+            UNION ALL
+            SELECT 3
+            UNION ALL
+            SELECT 4
+            UNION ALL
+            SELECT 5
+            UNION ALL
+            SELECT 6
+            UNION ALL
+            SELECT 7
+            UNION ALL
+            SELECT 8
+            UNION ALL
+            SELECT 9
+            UNION ALL
+            SELECT 10
+            UNION ALL
+            SELECT 11
+            UNION ALL
+            SELECT 12
+        )
+        SELECT 
+            m.Month,
+            ISNULL(SUM(b.Total), 0) AS Sales
+        FROM 
+            Months m
+        LEFT JOIN 
+            Booking b ON m.Month = MONTH(b.CreatedOn) AND YEAR(b.CreatedOn) = @Year
+        GROUP BY 
+            m.Month
+        ORDER BY 
+            m.Month;";
+
+            var result = await _dbConnection.QueryAsync<DashboardValueSales>(query, parameter, commandType: CommandType.Text);
+            return result.ToList();
+        }
+
+
+
         public async Task<IEnumerable<GuestsInfo>> GetCalendarDisplayAsync()
         {
           
