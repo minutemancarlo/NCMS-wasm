@@ -35,9 +35,15 @@
         </Found>
         <NotFound>
             <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(MainLayout)">
-                <p role="alert">Sorry, there's nothing at this address.</p>
-            </LayoutView>
+            @code {
+      
+
+        protected override void OnInitialized()
+        {
+        
+            Navigation.NavigateTo("/404");
+        }
+            }
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
