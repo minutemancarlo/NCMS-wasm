@@ -35,15 +35,8 @@
         </Found>
         <NotFound>
             <PageTitle>Not found</PageTitle>
-            @code {
-      
-
-        protected override void OnInitialized()
-        {
-        
-            Navigation.NavigateTo("/404");
-        }
-            }
+            <LayoutView Layout="@typeof(AuthLayout)">
+                </LayoutView>
         </NotFound>
     </Router>
 </CascadingAuthenticationState>

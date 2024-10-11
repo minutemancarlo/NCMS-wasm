@@ -10,3 +10,13 @@
     </MudItem>
 </MudGrid>
 
+@code{
+    [Inject] NavigationManager navigation { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        navigation.NavigateTo("/404",true);
+        return base.OnInitializedAsync();
+    }
+
+}
