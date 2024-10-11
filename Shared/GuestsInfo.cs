@@ -24,6 +24,11 @@ namespace NCMS_wasm.Shared
         public int Adults { get; set; } = 1;
         public BookingType BookingType { get; set; } = BookingType.Walkin_Booking;
 
+        //For Calendar Display
+        public string? InvoiceNo { get; set; }
+        public string? BookingNo { get; set; }
+        public string? RoomNumber { get; set; }
+
     }
 
     public class Booking : BaseModel

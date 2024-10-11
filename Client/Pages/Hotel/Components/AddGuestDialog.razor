@@ -271,10 +271,7 @@
     {
         try
         {
-            // bookingInfo.AccessCard.Clear();
-            // tempCards.Clear();
-            // bookingInfo.Room.Clear();
-            // bookingInfo.Room.AddRange(_selectedItems);
+
             try
             {
                 isLoadingSubmit = true;
@@ -395,12 +392,6 @@
 
             }
 
-
-
-
-
-            // await LoadCardsList();
-            // StateHasChanged();
         }
     }
 
@@ -459,8 +450,7 @@
             bookingInfo.Room.Clear();
             bookingInfo.Room.AddRange(_selectedItems);
             var roomCount = bookingInfo.Room.Count();
-            var rfidCount = tempCards.Where(x => !string.IsNullOrEmpty(x.CardReference) && x.RoomNumber != null).Count();
-            Snackbar.Add($"room: {roomCount}, card: {rfidCount}", Severity.Warning);
+            var rfidCount = tempCards.Where(x => !string.IsNullOrEmpty(x.CardReference) && x.RoomNumber != null).Count();            
 
             _loading = true;
             StateHasChanged();
@@ -493,10 +483,13 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Exception Occured: {ex.Message}");
+            Snackbar.Add($"An error occured: {ex.Message}");            
         }
 
     }
+
+    
+
 
 
 

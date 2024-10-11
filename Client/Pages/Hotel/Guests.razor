@@ -118,44 +118,45 @@
     private List<CustomItem> _events = new();
     protected override async Task OnInitializedAsync()
     {
-        var item1 = new CustomItem
-            {
-                Start = DateTime.Today.AddDays(1),
-                End = DateTime.Today.AddDays(3),
-                Text = $"RM 401",
-                Color = Color.Success,
-                Type = BookingType.Booked
-            };
-        var item2 = new CustomItem
-            {
-                Start = DateTime.Today.AddDays(1),
-                End = DateTime.Today.AddDays(5),
-                Text = $"RM 403",
-                Color = Color.Info,
-                Type = BookingType.Reservation
-            };
-        _events.Add(item1);
-        _events.Add(item2);
-        GuestsInfo guest = new GuestsInfo
-            {
-                Id = "BN12345",
-                FirstName = "John",
-                MiddleName = "A.",
-                LastName = "Doe",
-                Email = "john.doe@example.com",
-                Phone = "+1234567890",
-                IDType = "Passport",
-                IDNumber = "X1234567",
-                CheckInDate = DateTime.Now,
-                CheckOutDate = DateTime.Now.AddDays(3),
-                ArrivalDate = DateTime.Now.AddDays(-1),
-                Rooms = 2,
-                Children = 1,
-                Adults = 2,
-                BookingType = BookingType.Reservation
-            };
-        guestsList.Add(guest);
+        // var item1 = new CustomItem
+        //     {
+        //         Start = DateTime.Today.AddDays(1),
+        //         End = DateTime.Today.AddDays(3),
+        //         Text = $"RM 401",
+        //         Color = Color.Success,
+        //         Type = BookingType.Booked
+        //     };
+        // var item2 = new CustomItem
+        //     {
+        //         Start = DateTime.Today.AddDays(1),
+        //         End = DateTime.Today.AddDays(5),
+        //         Text = $"RM 403",
+        //         Color = Color.Info,
+        //         Type = BookingType.Reservation
+        //     };
+        // _events.Add(item1);
+        // _events.Add(item2);
+        // GuestsInfo guest = new GuestsInfo
+        //     {
+        //         Id = "BN12345",
+        //         FirstName = "John",
+        //         MiddleName = "A.",
+        //         LastName = "Doe",
+        //         Email = "john.doe@example.com",
+        //         Phone = "+1234567890",
+        //         IDType = "Passport",
+        //         IDNumber = "X1234567",
+        //         CheckInDate = DateTime.Now,
+        //         CheckOutDate = DateTime.Now.AddDays(3),
+        //         ArrivalDate = DateTime.Now.AddDays(-1),
+        //         Rooms = 2,
+        //         Children = 1,
+        //         Adults = 2,
+        //         BookingType = BookingType.Reservation
+        //     };
+        // guestsList.Add(guest);
         MainLayout.SubTitle = "Hotel Management Module";
+        await LoadGuestsList();
         await base.OnInitializedAsync();
     }
 
@@ -223,6 +224,49 @@
     private Task ItemClicked(CalendarItem item)
     {
         return DialogService.ShowMessageBox("Item Clicked", item.Text);
+    }
+
+    private async Task LoadGuestsList()
+    {
+
+        try
+        {
+           
+            guestsList = await httpClient.GetFromJsonAsync<List<GuestsInfo>>($"HotelManagement/GetCalendarDisplay");
+            _events.Clear();
+            foreach (var item in guestsList)
+            {
+                Color color = Color.Default;
+                switch (item.BookingType)
+                {
+                    case BookingType.Cancelled:
+                        color = Color.Error;
+                        break;
+                    case BookingType.Booked:
+                    case BookingType.Walkin_Booking:
+                        color = Color.Success;
+                        break;
+                    case BookingType.Reservation:
+                        color = Color.Info;
+                        break;
+                }
+
+                var customItem = new CustomItem
+                    {
+                        Start = item.CheckInDate??DateTime.Now,
+                        End = item.CheckOutDate??DateTime.Now,
+                        Text = item.RoomNumber,
+                        Color = color,
+                        Type = item.BookingType
+                    };
+                _events.Add(customItem);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}");
+        }
+
     }
 
     private string ToSentenceCase(string input)

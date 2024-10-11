@@ -11,7 +11,7 @@
         <MudStack Class="w-100" Spacing="2">
             <MudText Typo="Typo.body1">Room Number: <strong>@roomNumber</strong></MudText>
             <MudTextField @bind-Value="cardValue" Label="Card ID" Variant="Variant.Outlined" ReadOnly ShrinkLabel Margin="Margin.Normal" />
-            
+
         </MudStack>
     </DialogContent>
     <DialogActions>
@@ -19,6 +19,7 @@
         <MudLoadingButton Variant="Variant.Filled"
                           Color="Color.Success"
                           Size="Size.Large"
+                          Disabled="@isValid"
                           OnClick="OnSubmit"
                           Loading="@(_loading)"
                           ButtonType="ButtonType.Button">
@@ -32,13 +33,27 @@
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
     [Parameter] public int roomNumber { get; set; }
     [Inject] IJSRuntime JSRuntime { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+
     private string? cardValue { get; set; }
     private bool _loading = false;
+    private bool isValid = true;
     [JSInvokable]
-    public void ReceiveRfidData(string data)
+    public async Task ReceiveRfidData(string data)
     {
         cardValue = null;
         cardValue = data;
+       
+        if(await VerifyCard(data))
+        {
+            Snackbar.Add("Access Card already in use.",Severity.Error);
+            isValid = true;
+        }
+        else
+        {
+            isValid = false;
+        }
         StateHasChanged();
     }
 
@@ -47,9 +62,38 @@
         await JSRuntime.InvokeVoidAsync("startKeyboardListener", DotNetObjectReference.Create(this));
         await base.OnInitializedAsync();
     }
-    
+
+    private async Task<bool> VerifyCard(string cardNumber)
+    {
+        try
+        {
+            var response = await httpClient.GetAsync($"CardManagement/VerifyAccessCard?cardId={cardNumber}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var exist = await response.Content.ReadFromJsonAsync<bool>();
+                return exist;
+            }
+            else
+            {
+                Snackbar.Add($"Verification failed. Status code: {response.StatusCode}");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occurred: {ex.Message}");
+            return false; // Return a default value in case of an exception
+        }
+    }
+
+    private async Task OnSubmit()
+    {        
+        MudDialog.Close(DialogResult.Ok(cardValue));        
+    }
+
 
     void Cancel() => MudDialog.Cancel();
-    void OnSubmit() => MudDialog.Close(DialogResult.Ok(cardValue));
+
 
 }

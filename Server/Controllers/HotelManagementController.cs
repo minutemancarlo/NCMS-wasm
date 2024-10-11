@@ -75,17 +75,19 @@ namespace NCMS_wasm.Server.Controllers
             {
                 //Insert Guest
                 var guestId = await _guestRepository.InsertGuestAsync(booking.Guests);
+                string invoiceNo = await _hotelRepository.InsertBookingAsync(booking, guestId);
                 //Insert AccessCard
-                foreach(var item in booking.AccessCard)
+                foreach (var item in booking.AccessCard)
                 {
                     await _cardRepository.InsertAccessCardAsync(item);
+                    await _hotelRepository.UpdateRoomStatusAsync(item.RoomNumber, RoomStatus.Occupied, booking.CreatedBy, invoiceNo);
                 }
 
                 //InsertBooking
 
 
-                string accId = await _hotelRepository.InsertBookingAsync(booking,guestId);
-                return Ok(accId);
+               
+                return Ok(invoiceNo);
             }
             catch (Exception ex)
             {
@@ -94,21 +96,7 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
-        [HttpPost("AddGuest")]
-        public async Task<ActionResult<int>> AddGuest(GuestsInfo guestsInfo)
-        {
-            try
-            {
-        
-                //int accId = await _hotelRepository.AddRoomsAsync(guestsInfo);             
-                return Ok(0);
-            }
-            catch (Exception ex)
-            {
-                _fileLogger.Log($"Exception Occured in Endpoint [AddGuest]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);              
-                return BadRequest($"Exception occurred while adding room info: {ex.Message}");
-            }
-        }
+   
 
         [HttpPost("UpdatedPriceAndStatus")]
         public async Task<ActionResult<int>> UpdatedPriceAndStatus(RoomInfo rooms)
@@ -138,6 +126,23 @@ namespace NCMS_wasm.Server.Controllers
             {
                 _fileLogger.Log($"Exception Occured in Endpoint [GetRooms]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
              
+                return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
+            }
+        }
+
+        [HttpGet("GetCalendarDisplay")]
+        public async Task<ActionResult<List<GuestsInfo>>> GetCalendarDisplay()
+        {
+            try
+            {
+                var guests = await _hotelRepository.GetCalendarDisplayAsync();
+                
+                return Ok(guests);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetCalendarDisplay]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
             }
         }

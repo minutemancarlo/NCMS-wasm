@@ -23,6 +23,17 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.QueryAsync<LoyaltyCardInfo>(sp, parameters, commandType: CommandType.StoredProcedure);
         }
 
+        public async Task<bool> VerifyAccessCardAsync(string cardId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@CardNumber", cardId);
+            
+            string sp = "Select count(*) as count from RFIDCards Where CardReference = @CardNumber and isActive = 1";
+            var result = await _dbConnection.ExecuteScalarAsync<int>(sp, parameters, commandType: CommandType.Text);
+
+            return result > 0;
+        }
+
         public async Task<int> InsertAccessCardAsync(RFIDCard accessCard)
         {
             var parameters = new DynamicParameters();

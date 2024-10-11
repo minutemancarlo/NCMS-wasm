@@ -82,6 +82,20 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteScalarAsync<int>("UpdatePriceAndStatus", parameters, commandType: CommandType.StoredProcedure);
         }
 
+        public async Task<int> UpdateRoomStatusAsync(int? roomNumber, RoomStatus roomStatus, string updatedBy,string invoiceNo)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@RoomNumber", roomNumber);
+            parameters.Add("@Status", roomStatus);
+            parameters.Add("@UpdatedBy", updatedBy);
+            parameters.Add("@InvoiceNo", invoiceNo);
+
+            string query = "UPDATE Rooms SET Status = @Status,BookingNo = (Select Top 1 BookingNo from Booking where InvoiceNo= @InvoiceNo) ,UpdatedBy = @UpdatedBy WHERE RoomNumber = @RoomNumber";
+
+            return await _dbConnection.ExecuteAsync(query, parameters);
+        }
+
+
         public async Task<IEnumerable<RoomInfo>> GetAllRoomsAsync()
         {
             string query = @"SELECT a.RoomId,
@@ -118,6 +132,13 @@ FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c o
             
             var result = await _dbConnection.ExecuteScalarAsync<int>(query, parameter);
             return result > 0;
+        }
+
+        public async Task<IEnumerable<GuestsInfo>> GetCalendarDisplayAsync()
+        {
+          
+            string query = "Select g.*,b.InvoiceNo,b.BookingNo,r.RoomNumber from Guests g inner join Booking b on g.Id = b.GuestId inner join Rooms r on b.BookingNo = r.BookingNo";
+            return await _dbConnection.QueryAsync<GuestsInfo>(query, commandType: CommandType.Text);
         }
 
 

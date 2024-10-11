@@ -37,5 +37,21 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpGet("VerifyAccessCard")]
+        public async Task<ActionResult<bool>> VerifyAccessCard(string cardId)
+        {
+            try
+            {
+                var result = await _cardRepository.VerifyAccessCardAsync(cardId);
+                
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [VerifyAccessCard]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "CardManagementController");                
+                return BadRequest($"Exception occurred while retrieving cards: {ex.Message}");
+            }
+        }
+
     }
 }
