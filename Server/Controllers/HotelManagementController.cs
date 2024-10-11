@@ -130,6 +130,7 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("GetRooms")]
         public async Task<ActionResult<List<RoomInfo>>> GetAllRooms()
         {
@@ -238,7 +239,7 @@ namespace NCMS_wasm.Server.Controllers
             }
 
             filePath = Path.Combine(folderPath, fileName);
-            var serverFilePath = $"{serverAddress}/images/{folder}/{fileName}";
+            var serverFilePath = $"{folder}/{fileName}";
             // Write the byte array to the file
             System.IO.File.WriteAllBytes(filePath, bytes);
             

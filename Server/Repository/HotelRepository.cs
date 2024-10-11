@@ -133,7 +133,9 @@ FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c o
 
         public async Task<IEnumerable<RoomInfo>> GetAllRoomsInfoAsync()
         {
-            string query = "select DISTINCT (b.type) as t,* from rooms a inner join roominfo b on a.roomId=b.roomId where a.status = 1 ORDER BY a.RoomId DESC";
+            
+            string query = "select DISTINCT(b.type) as t,*from roominfo b";
+            //string query = "select DISTINCT (b.type) as t,* from rooms a inner join roominfo b on a.roomId=b.roomId where a.status = 1 ORDER BY a.RoomId DESC";
             return await _dbConnection.QueryAsync<RoomInfo>(query);
         }
 
