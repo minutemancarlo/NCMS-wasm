@@ -41,6 +41,7 @@ namespace NCMS_wasm.Server.Repository
             parameters.Add("@BookingType", guest.BookingType);
             parameters.Add("@IDType", guest.IDType);
             parameters.Add("@IDNumber", guest.IDNumber);
+            
 
             return await _dbConnection.ExecuteScalarAsync<int>("InsertGuest", parameters, commandType: CommandType.StoredProcedure);
 

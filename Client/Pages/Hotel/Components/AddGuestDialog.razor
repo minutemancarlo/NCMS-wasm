@@ -280,7 +280,7 @@
                 bookingInfo.CreatedBy = userId;
                 bookingInfo.Guests.CreatedBy = userId;
                 bookingInfo.Billing.CreatedBy = userId;
-                bookingInfo.AccessCard.ForEach(card => card.CreatedBy = !string.IsNullOrEmpty(userId) ? userId : null);
+                bookingInfo.AccessCard.ForEach(card => card.CreatedBy = !string.IsNullOrEmpty(userId) ? userId : null);                
                 bookingInfo.Billing.Total = _selectedItems.Sum(p => p.PricePerNight);                
                 bookingInfo.Billing.Change = bookingInfo.Billing.CashReceived - _selectedItems.Sum(p => p.PricePerNight);
                 bookingInfo.Billing.Vatable = _selectedItems.Sum(p => p.PricePerNight) / 1.12M;

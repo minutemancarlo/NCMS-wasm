@@ -9,11 +9,11 @@ namespace NCMS_wasm.Shared
     public class GuestsInfo : BaseModel
     {
         public string? Id { get; set; }
-        public string FirstName { get; set; }
-        public string MiddleName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
+        public string? FirstName { get; set; }
+        public string? MiddleName { get; set; }
+        public string? LastName { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
         public string? IDType { get; set; }
         public string? IDNumber { get; set; }
         public DateTime? CheckInDate { get; set; }
@@ -36,7 +36,7 @@ namespace NCMS_wasm.Shared
         public GuestsInfo Guests { get; set; } = new();
         public List<RoomInfo> Room { get; set; } = new();
         public Billing Billing { get; set; } = new();
-        public List<RFIDCard> AccessCard { get; set; } = new();
+        public List<RFIDCard> AccessCard { get; set; } = new();        
     }
 
     public class Billing : BaseModel

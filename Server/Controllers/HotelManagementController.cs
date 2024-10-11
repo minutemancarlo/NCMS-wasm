@@ -96,7 +96,24 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
-   
+        [HttpPost("UpdateBookingStatus")]
+        public async Task<ActionResult<int>> UpdateBookingStatus(GuestsInfo guestsInfo)
+        {
+            try
+            {
+                //Insert Guest
+                var retVal = await _hotelRepository.UpdateBookingStatusAsync(guestsInfo);                                          
+
+                return Ok(retVal);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [UpdateBookingStatus]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+                return BadRequest($"Exception occurred while updating booking info: {ex.Message}");
+            }
+        }
+
+
 
         [HttpPost("UpdatedPriceAndStatus")]
         public async Task<ActionResult<int>> UpdatedPriceAndStatus(RoomInfo rooms)

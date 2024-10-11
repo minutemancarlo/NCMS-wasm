@@ -8,6 +8,10 @@
         <MudItem lg="12" xl="12" xs="12" sm="12" Class="w-100">
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Color="Color.Dark">
                 <MudTabPanel Text="Calendar" Icon="@Icons.Material.Filled.CalendarMonth">
+                    <MudOverlay @bind-Visible="isLoadingCalendar" DarkBackground AutoClose="false">
+                        <MudLoading @bind-Loading="isLoadingCalendar" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+                                    Color="Color.Primary" />
+                    </MudOverlay>
                     <MudCalendar HighlightToday
                                  ShowWorkWeek="false"
                                  ShowWeek="false"
@@ -26,24 +30,24 @@
                             <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Error" Size="Size.Small" /> Cancelled</MudText>
                         </ToolbarContent>
                         <CellTemplate>
-                            <div style="background-color: @GetColor(((CustomItem)context).Color)" class="pa-2 d-flex gap-1">
+                            <div style="background-color: @GetColor(((CustomItem)context).Color); border-top: 2px solid black;" class="pa-2 d-flex gap-1">
                                 <MudText Style="color: white" Class="fw-bold" Typo="Typo.body2">@context.Text</MudText>
                             </div>
                         </CellTemplate>
                     </MudCalendar>
                 </MudTabPanel>
                 <MudTabPanel Text="List" Icon="@Icons.Material.Filled.ListAlt">
-                    <MudDataGrid Items="@guestsList" T="GuestsInfo" Loading="@isLoading" Hover Striped Dense Class="w-100"
+                    <MudDataGrid Items="@guestsList" T="GuestsInfo" Loading="@isLoading" Hover Striped Dense Class="w-100" QuickFilter="_quickFilter"
                                  HeaderClass="w-100" HorizontalScrollbar="true" Filterable="false"
                                  ColumnResizeMode="ResizeMode.Container">
                         <ToolBarContent>
-                            <MudTextField Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Margin="Margin.Dense" />
-                            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh">Refresh</MudButton>
+                            <MudTextField Variant="Variant.Outlined" @bind-Value="searchQuery" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Margin="Margin.Dense" />
+                            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadGuestsList">Refresh</MudButton>
                             <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.FamilyRestroom" OnClick="OpenAddGuestDialog">Add Guest</MudButton>
                             <MudSpacer />
                         </ToolBarContent>
                         <Columns>
-                            <PropertyColumn Property="x => x.Id" Title="Booking Id" HeaderStyle="background-color: #1abc9c; color: white;" />
+                            <PropertyColumn Property="x => x.BookingNo" Title="Booking No" HeaderStyle="background-color: #1abc9c; color: white;" />
                             <PropertyColumn Property="x => x.FirstName" Title="Name" HeaderStyle="background-color: #1abc9c; color: white;">
                                 <CellTemplate>
                                     <MudText Typo="Typo.body1">@($"{ToSentenceCase(context.Item.FirstName)} {ToSentenceCase(context.Item.MiddleName)} {ToSentenceCase(context.Item.LastName)}")   </MudText>
@@ -54,19 +58,22 @@
                                     @switch (context.Item.BookingType)
                                     {
                                         case BookingType.Walkin_Booking:
-                                            <MudChip T="string" Size="Size.Small" Color="Color.Success">@BookingType.Walkin_Booking</MudChip>
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Success">@BookingType.Walkin_Booking.ToString().Replace("_", " ")</MudChip>
                                             break;
 
                                         case BookingType.Booked:
-                                            <MudChip T="string" Size="Size.Small" Color="Color.Success">@BookingType.Booked</MudChip>
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Success">@BookingType.Booked.ToString().Replace("_", " ")</MudChip>
                                             break;
 
                                         case BookingType.Reservation:
-                                            <MudChip T="string" Size="Size.Small" Color="Color.Info">@BookingType.Reservation</MudChip>
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Info">@BookingType.Reservation.ToString().Replace("_", " ")</MudChip>
                                             break;
 
                                         case BookingType.Cancelled:
-                                            <MudChip T="string" Size="Size.Small" Color="Color.Error">@BookingType.Cancelled</MudChip>
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Error">@BookingType.Cancelled.ToString().Replace("_", " ")</MudChip>
+                                            break;
+                                        case BookingType.Checked_Out:
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Warning">@BookingType.Checked_Out.ToString().Replace("_", " ")</MudChip>
                                             break;
                                     }
                                 </CellTemplate>
@@ -81,6 +88,14 @@
                                     <MudStack Spacing="0">
                                         <MudText Typo="Typo.subtitle1">@context.Item.CreatedBy</MudText>
                                         <MudText Typo="Typo.subtitle2" Class="text-muted">@context.Item.CreatedOn</MudText>
+                                    </MudStack>
+                                </CellTemplate>
+                            </TemplateColumn>
+                            <TemplateColumn Title="Updated By" HeaderStyle="background-color: #1abc9c; color: white;">
+                                <CellTemplate>
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.subtitle1">@context.Item.UpdatedBy</MudText>
+                                        <MudText Typo="Typo.subtitle2" Class="text-muted">@context.Item.UpdatedOn</MudText>
                                     </MudStack>
                                 </CellTemplate>
                             </TemplateColumn>
@@ -114,47 +129,12 @@
     private bool isLoading = false;
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
-
+    private bool isLoadingCalendar = false;
     private List<CustomItem> _events = new();
+    private string? searchQuery;
     protected override async Task OnInitializedAsync()
     {
-        // var item1 = new CustomItem
-        //     {
-        //         Start = DateTime.Today.AddDays(1),
-        //         End = DateTime.Today.AddDays(3),
-        //         Text = $"RM 401",
-        //         Color = Color.Success,
-        //         Type = BookingType.Booked
-        //     };
-        // var item2 = new CustomItem
-        //     {
-        //         Start = DateTime.Today.AddDays(1),
-        //         End = DateTime.Today.AddDays(5),
-        //         Text = $"RM 403",
-        //         Color = Color.Info,
-        //         Type = BookingType.Reservation
-        //     };
-        // _events.Add(item1);
-        // _events.Add(item2);
-        // GuestsInfo guest = new GuestsInfo
-        //     {
-        //         Id = "BN12345",
-        //         FirstName = "John",
-        //         MiddleName = "A.",
-        //         LastName = "Doe",
-        //         Email = "john.doe@example.com",
-        //         Phone = "+1234567890",
-        //         IDType = "Passport",
-        //         IDNumber = "X1234567",
-        //         CheckInDate = DateTime.Now,
-        //         CheckOutDate = DateTime.Now.AddDays(3),
-        //         ArrivalDate = DateTime.Now.AddDays(-1),
-        //         Rooms = 2,
-        //         Children = 1,
-        //         Adults = 2,
-        //         BookingType = BookingType.Reservation
-        //     };
-        // guestsList.Add(guest);
+
         MainLayout.SubTitle = "Hotel Management Module";
         await LoadGuestsList();
         await base.OnInitializedAsync();
@@ -186,6 +166,26 @@
     }
 
 
+    private Func<GuestsInfo, bool> _quickFilter => x =>
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery))
+                return true;
+
+            if (x.BookingNo.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            if (x.FirstName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (x.MiddleName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (x.LastName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return false;
+        };
+
+
+
 
 
     private async Task CellClicked(DateTime dateTime)
@@ -215,15 +215,60 @@
             var result = await dialog.Result;
             if (!result.Canceled)
             {
-                // await LoadCardsList();
+                await LoadGuestsList();
                 StateHasChanged();
             }
         }
     }
 
-    private Task ItemClicked(CalendarItem item)
+    private async Task ItemClicked(CalendarItem item)
     {
-        return DialogService.ShowMessageBox("Item Clicked", item.Text);
+        bool isEnabled = true;
+        if (item is CustomItem customItem)
+        {
+            if (customItem.Type == BookingType.Walkin_Booking || customItem.Type == BookingType.Booked || customItem.Type == BookingType.Reservation)
+            {
+                isEnabled = false;
+            }
+            else
+            {
+                isEnabled = true;
+            }
+
+            var options = new DialogOptions
+                {
+                    CloseOnEscapeKey = false,
+                    FullWidth = true,
+                    MaxWidth = MaxWidth.Small,
+                    BackdropClick = true,
+                    CloseButton = true
+                };
+            var guests = new GuestsInfo
+                {
+                    Id = customItem.Id,
+                    RoomNumber = customItem.Text,
+                    CheckInDate = customItem.Start,
+                    CheckOutDate = customItem.End,
+                    BookingNo = customItem.BookingNo,
+                    FirstName = customItem.FirstName,
+                    MiddleName = customItem.MiddleName,
+                    LastName = customItem.LastName
+
+                };
+            var parameters = new DialogParameters<ViewBooking>
+        {
+            {x=>x.isEnabled,isEnabled},
+            {x=>x.currentUserId,MainLayout.CurrentUserId},
+            {x=>x.guestsInfo,guests}
+        };
+            var dialog = await DialogService.ShowAsync<ViewBooking>("Simple Dialog", parameters, options);
+            var result = await dialog.Result;
+            if (!result.Canceled)
+            {
+                await LoadGuestsList();
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task LoadGuestsList()
@@ -231,7 +276,7 @@
 
         try
         {
-           
+            isLoadingCalendar = true;
             guestsList = await httpClient.GetFromJsonAsync<List<GuestsInfo>>($"HotelManagement/GetCalendarDisplay");
             _events.Clear();
             foreach (var item in guestsList)
@@ -253,21 +298,36 @@
 
                 var customItem = new CustomItem
                     {
-                        Start = item.CheckInDate??DateTime.Now,
-                        End = item.CheckOutDate??DateTime.Now,
+                        Id = item.Id,
+                        BookingNo = item.BookingNo,
+                        FirstName = item.FirstName,
+                        MiddleName = item.MiddleName,
+                        LastName = item.LastName,
+                        Start = item.CheckInDate ?? DateTime.Now,
+                        End = item.CheckOutDate ?? DateTime.Now,
                         Text = item.RoomNumber,
                         Color = color,
                         Type = item.BookingType
                     };
-                _events.Add(customItem);
+                if (item.BookingType != BookingType.Checked_Out)
+                {
+                    _events.Add(customItem);
+                }
+
             }
         }
         catch (Exception ex)
         {
             Snackbar.Add($"An error occured: {ex.Message}");
         }
+        finally
+        {
+            isLoadingCalendar = false;
+        }
 
     }
+
+
 
     private string ToSentenceCase(string input)
     {
@@ -279,7 +339,11 @@
 
     private class CustomItem : CalendarItem
     {
-        public int Id { get; set; } = 0;
+        public string? Id { get; set; }
+        public string? BookingNo { get; set; }
+        public string? FirstName { get; set; }
+        public string? MiddleName { get; set; }
+        public string? LastName { get; set; }
         public Color Color { get; set; } = Color.Info;
         public BookingType Type { get; set; } = BookingType.Reservation;
 

@@ -46,7 +46,7 @@ namespace NCMS_wasm.Server.Repository
             parameters.Add("@CashReceived", booking.Billing.CashReceived);            
             parameters.Add("@CreatedBy", booking.CreatedBy);     
             parameters.Add("@GuestId", guestId);
-            parameters.Add("@Vatable", booking.Billing.Vatable);
+            parameters.Add("@Vatable", booking.Billing.Vatable);            
             return await _dbConnection.ExecuteScalarAsync<string>("InsertBooking", parameters, commandType: CommandType.StoredProcedure);
 
         }
@@ -95,6 +95,20 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteAsync(query, parameters);
         }
 
+        public async Task<int> UpdateBookingStatusAsync(GuestsInfo guestsInfo)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@BookingNo", guestsInfo.BookingNo);
+            parameters.Add("@BookingType", guestsInfo.BookingType);
+            parameters.Add("@UpdatedBy", guestsInfo.UpdatedBy);
+            parameters.Add("@RoomNumber", guestsInfo.RoomNumber);
+
+
+            string sp = "UpdateBookingStatus";
+
+            return await _dbConnection.ExecuteAsync(sp, parameters,commandType: CommandType.StoredProcedure);
+        }
+
 
         public async Task<IEnumerable<RoomInfo>> GetAllRoomsAsync()
         {
@@ -137,8 +151,8 @@ FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c o
         public async Task<IEnumerable<GuestsInfo>> GetCalendarDisplayAsync()
         {
           
-            string query = "Select g.*,b.InvoiceNo,b.BookingNo,r.RoomNumber from Guests g inner join Booking b on g.Id = b.GuestId inner join Rooms r on b.BookingNo = r.BookingNo";
-            return await _dbConnection.QueryAsync<GuestsInfo>(query, commandType: CommandType.Text);
+            string sp = "GetBookingCalendar";
+            return await _dbConnection.QueryAsync<GuestsInfo>(sp, commandType: CommandType.StoredProcedure);
         }
 
 
