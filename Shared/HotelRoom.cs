@@ -10,7 +10,7 @@ namespace NCMS_wasm.Shared
     public class RoomInfo : BaseModel
     {
         public int? RoomId { get; set; }
-        public int RoomNumber { get; set; }
+        public int RoomNumber { get; set; } = 0;
         public RoomType Type { get; set; } = RoomType.Twin;
         public decimal PricePerNight { get; set; } = 0.00M;
         public int MaxGuest { get; set; } = 0;

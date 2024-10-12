@@ -21,8 +21,8 @@
             </MudCardHeader>
             <MudCardContent>
                 <MudPaper Class="w-100" Style="height: auto;" Elevation="4">
-                    <MudGrid Justify="Justify.Center" Class="pa-3" Spacing="1">
-                        <MudItem lg="2" sm="12" Class="w-100"> 
+                    <MudGrid Justify="Justify.Center" Class="pa-3" Spacing="122">
+                        <MudItem lg="2" sm="12" Class="w-100">
                             <MudDatePicker Label="Check In" @bind-Date="availability.dateFrom" Class="w-100" PickerVariant="PickerVariant.Dialog"
                                            AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
                                            IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
@@ -71,21 +71,21 @@
                                                             <MudRating SelectedValue="@item.Rating" Size="Size.Small" ReadOnly />
                                                         </div>
                                                         <div class="d-flex flex-row">
-                                                            Capacity: <strong>@item.MaxGuest person/s</strong>
+                                                            Capacity: <strong> @item.MaxGuest persons</strong>
                                                         </div>
-                                                       
+
                                                         <div class="mt-1 mb-0 text-muted small">
                                                             @{
                                                                 string[] featuresArray = item.Features.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                                                                 foreach (var feature in featuresArray)
                                                                 {
                                                                     <span>@feature.Trim()</span>
-                                                                    <span class="text-primary"> • </span>                                                   
+                                                                    <span class="text-primary"> • </span>
                                                                 }
-                                                            }                                                                                                                        
+                                                            }
                                                         </div>
-                                                        
-                                                      
+
+
                                                     </div>
                                                     <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
                                                         <div class="d-flex flex-row align-items-center mb-1">
@@ -94,10 +94,10 @@
                                                                 <h4 class="mb-1 me-1">@price</h4>
                                                             }
                                                             @* <span class="text-danger"><s>$20.99</s></span> *@
-                                                        </div>                                                      
+                                                        </div>
                                                         <div class="d-flex flex-column mt-4">
                                                             <button data-mdb-button-init data-mdb-ripple-init onclick="@(() => OnShowAR(item.Image))" class="btn btn-primary btn-sm" type="button">AR 360 view</button>
-                                                            <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary btn-sm mt-2" type="button">
+                                                            <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary btn-sm mt-2" onclick="@(() => OnBook(item.Type,item.Image,item.PricePerNight,item.RoomId))" type="button">
                                                                 Book Now
                                                             </button>
                                                         </div>
@@ -107,9 +107,9 @@
                                         </div>
                                     </div>
                                 </div>
-                            
+
                             }
-                                                      
+
                         </div>
                     </section>
                 </MudPaper>
@@ -123,8 +123,8 @@
 @code {
     [Parameter]
     public string EncryptedParams { get; set; }
-     private DateTime dateFrom { get; set; }
-    private DateTime dateTo { get; set; }
+    private DateTime? dateFrom { get; set; }
+    private DateTime? dateTo { get; set; }
     private int? rooms { get; set; }
     private int? children { get; set; }
     private int? adults { get; set; }
@@ -155,20 +155,40 @@
                 rooms = int.Parse(splitParams[2]);
                 adults = int.Parse(splitParams[3]);
                 children = int.Parse(splitParams[4]);
-                availability.dateFrom = new DateTime(dateFrom.Year, dateFrom.Month, dateFrom.Day, 14, 0, 0);
-                availability.dateTo = new DateTime(dateTo.Year, dateTo.Month, dateTo.Day, 11, 0, 0);
+                availability.dateFrom = new DateTime(
+     (dateFrom ?? DateTime.Now).Year,
+     (dateFrom ?? DateTime.Now).Month,
+     (dateFrom ?? DateTime.Now).Day,
+     14, 0, 0);
+
+                availability.dateTo = new DateTime(
+                    (dateTo ?? DateTime.Now.AddDays(1)).Year,
+                    (dateTo ?? DateTime.Now.AddDays(1)).Month,
+                    (dateTo ?? DateTime.Now.AddDays(1)).Day,
+                    11, 0, 0);
+
                 availability.Rooms = rooms ?? 1;
                 availability.Children = children ?? 0;
                 availability.Adults = adults ?? 1;
             }
             else
             {
-                Snackbar.Add("Invalid number of parameters.",Severity.Error);
+                availability.dateFrom = new DateTime((dateFrom ?? DateTime.Now).Year,(dateFrom ?? DateTime.Now).Month,(dateFrom ?? DateTime.Now).Day,14, 0, 0);
+                availability.dateTo = new DateTime((dateTo ?? DateTime.Now.AddDays(1)).Year,(dateTo ?? DateTime.Now.AddDays(1)).Month,(dateTo ?? DateTime.Now.AddDays(1)).Day,11, 0, 0);
+
+                availability.Rooms = rooms ?? 1;
+                availability.Children = children ?? 0;
+                availability.Adults = adults ?? 1;
             }
         }
         catch (Exception ex)
         {
-           Snackbar.Add($"Decryption failed: {ex.Message}",Severity.Error);
+            availability.dateFrom = new DateTime((dateFrom ?? DateTime.Now).Year, (dateFrom ?? DateTime.Now).Month, (dateFrom ?? DateTime.Now).Day, 14, 0, 0);
+            availability.dateTo = new DateTime((dateTo ?? DateTime.Now.AddDays(1)).Year, (dateTo ?? DateTime.Now.AddDays(1)).Month, (dateTo ?? DateTime.Now.AddDays(1)).Day, 11, 0, 0);
+
+            availability.Rooms = rooms ?? 1;
+            availability.Children = children ?? 0;
+            availability.Adults = adults ?? 1;
         }
         finally
         {
@@ -177,7 +197,7 @@
     }
 
     protected override async Task OnInitializedAsync()
-    {         
+    {
         await LoadRoomsList();
         await base.OnInitializedAsync();
     }
@@ -188,7 +208,7 @@
         try
         {
             var httpClient = httpClientFactory.CreateClient("Anonymous");
-            roomInfo = await httpClient.GetFromJsonAsync<List<RoomInfo>>($"HotelManagement/GetRooms");
+            roomInfo = await httpClient.GetFromJsonAsync<List<RoomInfo>>($"HotelManagement/GetAvailableRoomsForGuest?dateTime={availability.dateFrom}");
         }
         catch (Exception ex)
         {
@@ -198,6 +218,21 @@
         finally
         {
             isLoading = false;
+        }
+    }
+
+    private async Task OnBook(RoomType roomType, string image,decimal price,int? roomId)
+    {
+        if (availability.dateFrom.HasValue && availability.dateTo.HasValue)
+        {
+
+            var plainText = $"{availability.dateFrom:yyyy-MM-dd}|{availability.dateTo:yyyy-MM-dd}|{availability.Rooms}|{availability.Adults}|{availability.Children}|{roomType}|{image}|{price}|{roomId}";
+            string encryptedParams = await JSRuntime.InvokeAsync<string>("cryptoHelper.encryptData", plainText, encryptionKey);
+            Navigation.NavigateTo($"Booking/{encryptedParams}");
+        }
+        else
+        {
+            Snackbar.Add("Please choose check in and check out dates", Severity.Warning);
         }
     }
 
@@ -227,7 +262,8 @@
         };
 
             var dialog = await DialogService.ShowAsync<ViewARDialog>("Simple Dialog", parameters, options);
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             Snackbar.Add($"An error occured: {ex.Message}", Severity.Error);
         }

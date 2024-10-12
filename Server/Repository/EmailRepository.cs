@@ -36,6 +36,16 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteAsync(query, parameters, commandType: CommandType.Text);
         }
 
+        public async Task<int> InsertEmailAsync(EmailModel email)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@ToAddress", email.ToAddress);
+            parameters.Add("@Subject", email.Subject);
+            parameters.Add("@Body", email.Body);
+            parameters.Add("@EmailStatus", email.EmailStatus);
+            string query = "Insert into EmailMessages (ToAddress,Subject,Body,EmailStatus) Values (@ToAddress,@Subject,@Body,@EmailStatus)";
+            return await _dbConnection.ExecuteAsync(query, parameters, commandType: CommandType.Text);
+        }
 
 
     }

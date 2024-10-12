@@ -14,11 +14,12 @@ namespace NCMS_wasm.Server.Controllers
         private readonly HotelRepository _hotelRepository;
         private readonly GuestRepository _guestRepository;
         private readonly CardRepository _cardRepository;
+        private readonly EmailRepository _emailRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _env;
         private readonly FileLogger _fileLogger;
         private readonly string ModuleName;
-        public HotelManagementController(ILogger<HotelManagementController> logger, HotelRepository hotelRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env, GuestRepository guestRepository, CardRepository cardRepository)
+        public HotelManagementController(ILogger<HotelManagementController> logger, HotelRepository hotelRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env, GuestRepository guestRepository, CardRepository cardRepository,EmailRepository emailRepository)
         {
             _logger = logger;
             _hotelRepository = hotelRepository;
@@ -28,6 +29,7 @@ namespace NCMS_wasm.Server.Controllers
             ModuleName = "HotelManagementController";
             _guestRepository = guestRepository;
             _cardRepository = cardRepository;
+            _emailRepository = emailRepository;    
         }
 
         [HttpPost("AddAccomodations")]
@@ -96,6 +98,30 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpPost("AddReservation")]
+        public async Task<ActionResult<string>> AddReservation(Booking booking)
+        {
+            try
+            {               
+                string bookingNo = await _hotelRepository.InsertReservationAsync(booking);
+                var msg = new EmailModel
+                {
+                    ToAddress = booking.Guests.Email,
+                    Subject = "Booking Information",
+                    Body = $"<strong>Hi {booking.Guests.FirstName},</strong> <br/> <br/> Your booking No is <strong style=\"color: red\">{bookingNo}</strong>",
+                    EmailStatus = EmailStatus.OnQueue
+                };
+                await _emailRepository.InsertEmailAsync(msg);
+                return Ok(bookingNo);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [AddReservation]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+                return BadRequest($"Exception occurred while adding reservation info: {ex.Message}");
+            }
+        }
+
         [HttpPost("UpdateBookingStatus")]
         public async Task<ActionResult<int>> UpdateBookingStatus(GuestsInfo guestsInfo)
         {
@@ -144,6 +170,24 @@ namespace NCMS_wasm.Server.Controllers
             {
                 _fileLogger.Log($"Exception Occured in Endpoint [GetRooms]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
              
+                return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetAvailableRoomsForGuest")]
+        public async Task<ActionResult<List<RoomInfo>>> GetAvailableRoomsForGuest(DateTime dateTime)
+        {
+            try
+            {
+                var devices = await _hotelRepository.GetAvailableRoomsForGuestAsync(dateTime);
+                _logger.LogInformation("Rooms retrieved successfully.");
+                return Ok(devices);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetAvailableRoomsForGuest]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
             }
         }

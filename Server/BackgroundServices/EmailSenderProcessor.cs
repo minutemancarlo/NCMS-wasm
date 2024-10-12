@@ -39,13 +39,13 @@ namespace NCMS_wasm.Server.BackgroundServices
             {
                 logFileName = DateTime.Now.ToString("MM-dd-yyyy") + ".txt";
                 await ProcessEmailsAsync(stoppingToken);
-                await Task.Delay(5000, stoppingToken); // Runs every 10 seconds
+                await Task.Delay(5000, stoppingToken); // Runs every 5 seconds
             }
         }
 
         private async Task ProcessEmailsAsync(CancellationToken stoppingToken)
         {
-            // Retrieve the queued emails from the repository (could be database or a message queue)
+            // Retrieve the queued emails from the repository 
             var queuedEmails = await _emailRepository.GetQueuedEmailsAsync();
 
             foreach (var email in queuedEmails)

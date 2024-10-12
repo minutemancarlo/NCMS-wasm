@@ -51,7 +51,7 @@
             <Columns>
                 <PropertyColumn Property="x => x.RoomNumber" Title="Room Number" HeaderStyle="background-color: #1abc9c; color: white;">
                     <CellTemplate>
-                        <MudChip Size="Size.Small" Disabled="@(context.Item.Status == RoomStatus.Occupied?true:false)" OnClick="@(() => OnClickRoomNumber(context.Item))" Color="Color.Dark">@context.Item.RoomNumber</MudChip>
+                        <MudChip Size="Size.Small" Disabled="@(context.Item.Status == RoomStatus.Occupied || context.Item.Status == RoomStatus.Reservation?true:false)" OnClick="@(() => OnClickRoomNumber(context.Item))" Color="Color.Dark">@context.Item.RoomNumber</MudChip>
                     </CellTemplate>
                 </PropertyColumn>
                 <PropertyColumn Property="x => x.Type" Title="Room Type" HeaderStyle="background-color: #1abc9c; color: white;">
