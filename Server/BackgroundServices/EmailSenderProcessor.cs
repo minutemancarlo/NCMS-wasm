@@ -2,6 +2,7 @@
 using System.Net.Mail;
 using System.Net;
 using NCMS_wasm.Shared;
+using NCMS_wasm.Server.Repository;
 namespace NCMS_wasm.Server.BackgroundServices
 {
     public class EmailSenderProcessor : BackgroundService
@@ -10,16 +11,16 @@ namespace NCMS_wasm.Server.BackgroundServices
         private readonly FileLogger _fileLogger;
         private readonly SmtpClient _smtpClient;
         private readonly IConfiguration _configuration;
-        private readonly EmailDetails _emailDetails;
+        private readonly string FromAddress;
         private string logFileName = string.Empty;
         private string moduleName = "EmailSender Processor";
 
-        public EmailSenderProcessor(EmailRepository emailRepository, IConfiguration configuration, FileLogger fileLogger, EmailDetails emailDetails)
+        public EmailSenderProcessor(EmailRepository emailRepository, IConfiguration configuration)
         {
             _emailRepository = emailRepository;
             _configuration = configuration;
-            _fileLogger = fileLogger;
-            _emailDetails = emailDetails;
+            _fileLogger = new FileLogger(configuration);
+            FromAddress = _configuration["Smtp:Username"];
             _smtpClient = new SmtpClient(_configuration["Smtp:Host"])
             {
                 Port = int.Parse(_configuration["Smtp:Port"]),
@@ -38,7 +39,7 @@ namespace NCMS_wasm.Server.BackgroundServices
             {
                 logFileName = DateTime.Now.ToString("MM-dd-yyyy") + ".txt";
                 await ProcessEmailsAsync(stoppingToken);
-                await Task.Delay(10000, stoppingToken); // Runs every 10 seconds
+                await Task.Delay(5000, stoppingToken); // Runs every 10 seconds
             }
         }
 
@@ -55,11 +56,11 @@ namespace NCMS_wasm.Server.BackgroundServices
                 try
                 {
                     // Prepare email
-                    var mailMessage = new MailMessage(email.From, email.To)
+                    var mailMessage = new MailMessage(FromAddress, email.ToAddress)
                     {
                         Subject = email.Subject,
                         Body = email.Body,
-                        IsBodyHtml = email.IsHtml
+                        IsBodyHtml = true
                     };
 
                     // Send email
@@ -77,33 +78,13 @@ namespace NCMS_wasm.Server.BackgroundServices
                     _fileLogger.Log($"Failed to send email: {email.Subject}. Error: {ex.Message}", logFileName, moduleName);
 
                     // Mark email as failed
-                    await _emailRepository.MarkEmailAsFailedAsync(email, ex.Message);
+                    await _emailRepository.MarkEmailAsFailedAsync(email);
                 }
             }
         }
     }
 
-    // Example of EmailRepository to get email details from a database or queue
-    public class EmailRepository
-    {
-        public Task<List<EmailDetails>> GetQueuedEmailsAsync()
-        {
-            // Implementation to retrieve queued emails from database, message queue, etc.
-            throw new NotImplementedException();
-        }
-
-        public Task MarkEmailAsSentAsync(EmailDetails email)
-        {
-            // Implementation to mark email as sent
-            throw new NotImplementedException();
-        }
-
-        public Task MarkEmailAsFailedAsync(EmailDetails email, string errorMessage)
-        {
-            // Implementation to mark email as failed with error message
-            throw new NotImplementedException();
-        }
-    }
+   
 
 
 

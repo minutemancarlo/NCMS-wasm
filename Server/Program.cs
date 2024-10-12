@@ -40,6 +40,7 @@ builder.Services.AddTransient<EmployeeRepository>();
 builder.Services.AddTransient<PayslipRepository>();
 builder.Services.AddTransient<GasRepository>();
 builder.Services.AddTransient<GuestRepository>();
+builder.Services.AddTransient<EmailRepository>();
 
 //Add Services
 builder.Services.AddScoped<LeaveRequestService>();
@@ -48,7 +49,7 @@ builder.Services.AddScoped<ReceiptService>();
 
 //Add Background Services
 builder.Services.AddHostedService<PayslipProcessor>();
-//builder.Services.AddHostedService<EmailSenderProcessor>();
+builder.Services.AddHostedService<EmailSenderProcessor>();
 
 
 // Add services to the container.

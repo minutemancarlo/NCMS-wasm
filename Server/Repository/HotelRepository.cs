@@ -51,6 +51,26 @@ namespace NCMS_wasm.Server.Repository
 
         }
 
+        public async Task<string> InsertReservationAsync(Booking booking)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@RoomId", booking.Room.FirstOrDefault()?.RoomId);
+            parameters.Add("@FirstName", booking.Guests?.FirstName);
+            parameters.Add("@MiddleName", booking.Guests?.MiddleName);
+            parameters.Add("@LastName", booking.Guests?.LastName);
+            parameters.Add("@Email", booking.Guests?.Email);
+            parameters.Add("@Phone", booking.Guests?.Phone);
+            parameters.Add("@CheckInDate", booking.Guests?.CheckInDate);
+            parameters.Add("@CheckOutDate", booking.Guests?.CheckOutDate);
+            parameters.Add("@Rooms", booking.Guests?.Rooms);
+            parameters.Add("@Children", booking.Guests?.Children);
+            parameters.Add("@Adults", booking.Guests?.Adults);
+            parameters.Add("@BookingType", booking.Guests?.BookingType);
+            return await _dbConnection.ExecuteScalarAsync<string>("InsertReservation", parameters, commandType: CommandType.StoredProcedure);
+        }
+
+
         public async Task<int> AddRoomsAsync(RoomInfo room)
         {
             var parameters = new DynamicParameters();
@@ -204,6 +224,15 @@ FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c o
           
             string sp = "GetBookingCalendar";
             return await _dbConnection.QueryAsync<GuestsInfo>(sp, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<IEnumerable<RoomInfo>> GetAvailableRoomsForGuestAsync(DateTime dateTime)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@CheckInDate", dateTime);
+
+            string sp = "GetAvailableRoomsForGuest";
+            return await _dbConnection.QueryAsync<RoomInfo>(sp, parameter, commandType: CommandType.StoredProcedure);
         }
 
 
