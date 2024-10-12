@@ -5,7 +5,7 @@
 
 <MudStack>
     <MudText Typo="Typo.h5">Payslip Upload Facility</MudText>
-    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Download the template to fill payslip for employees. Click <MudLink Href="@BaseUrl" Underline="Underline.Always">here</MudLink></MudAlert>
+    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Download the template to fill payslip for employees. Click <MudLink OnClick="@(() => OnDownloadTemplate())" Underline="Underline.Always">here</MudLink></MudAlert>
     <MudStack>
         <MudDataGrid Items="@payslipUploads" T="PayslipUpload" Loading="@isLoading" HeaderClass="mud-theme-default text-wrap" ShowMenuIcon="false"
                      HorizontalScrollbar="true"
@@ -66,6 +66,7 @@
     [Inject] NavigationManager navigationManager { get; set; }
     [Inject] HttpClient httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
     private string BaseUrl = String.Empty;
     private bool isLoading = false;
     private List<PayslipUpload> payslipUploads = new List<PayslipUpload>();
@@ -76,6 +77,10 @@
         BaseUrl = $"{navigationManager.BaseUri}Templates/PayslipTemplate.xlsx";
         await LoadFileUploads();
         await base.OnInitializedAsync();
+    }
+    private async Task OnDownloadTemplate()
+    {
+        await JSRuntime.InvokeVoidAsync("downloadFile", BaseUrl,"PayslipTemplate.xlsx");
     }
 
     private async Task LoadFileUploads()
