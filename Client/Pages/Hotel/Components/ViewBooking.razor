@@ -9,6 +9,9 @@
     <DialogContent>
         <MudStack Class="w-100" Spacing="0">
             <MudText Typo="Typo.body1">Name: <strong>@($"{ToSentenceCase(guestsInfo.FirstName)} {ToSentenceCase(guestsInfo.MiddleName)} {ToSentenceCase(guestsInfo.LastName)}")</strong></MudText>
+            <MudText Typo="Typo.body1">Phone: <strong>@guestsInfo.Phone</strong></MudText>
+            <MudText Typo="Typo.body1">Email: <strong>@guestsInfo.Email</strong></MudText>
+
             <MudText Typo="Typo.body1">Check In: <strong>@guestsInfo.CheckInDate</strong></MudText>
             <MudText Typo="Typo.body1">Check Out: <strong>@guestsInfo.CheckOutDate</strong></MudText>            
         </MudStack>

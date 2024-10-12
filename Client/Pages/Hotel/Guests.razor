@@ -253,6 +253,8 @@
                     FirstName = customItem.FirstName,
                     MiddleName = customItem.MiddleName,
                     LastName = customItem.LastName,
+                    Email = customItem.Email,
+                    Phone = customItem.Phone,
                     BookingType = customItem.Type
 
                 };
@@ -304,6 +306,8 @@
                         FirstName = item.FirstName,
                         MiddleName = item.MiddleName,
                         LastName = item.LastName,
+                        Email = item.Email,
+                        Phone = item.Phone,
                         Start = item.CheckInDate ?? DateTime.Now,
                         End = item.CheckOutDate ?? DateTime.Now,
                         Text = item.RoomNumber,
@@ -345,6 +349,8 @@
         public string? FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
         public Color Color { get; set; } = Color.Info;
         public BookingType Type { get; set; } = BookingType.Reservation;
 
