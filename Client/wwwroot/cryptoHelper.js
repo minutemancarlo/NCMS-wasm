@@ -28,11 +28,26 @@ async function encryptData(plainText, key) {
     result.set(iv);
     result.set(encryptedData, iv.length);
 
-    return btoa(String.fromCharCode.apply(null, result));
+    // Convert to Base64
+    let base64String = btoa(String.fromCharCode.apply(null, result));
+
+    // Make Base64 URL-safe
+    base64String = base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+    return base64String;
 }
 
 // Decrypt using AES-GCM
 async function decryptData(encryptedBase64, key) {
+    // Make Base64 string back to standard format
+    encryptedBase64 = encryptedBase64.replace(/-/g, '+').replace(/_/g, '/');
+
+    // Pad the string if necessary
+    const padding = 4 - (encryptedBase64.length % 4);
+    if (padding < 4) {
+        encryptedBase64 += '='.repeat(padding);
+    }
+
     const encryptedData = atob(encryptedBase64);
     const encryptedArray = Uint8Array.from(encryptedData, c => c.charCodeAt(0));
 

@@ -24,8 +24,9 @@
     private string? returnUrl;
     protected override async Task OnInitializedAsync()
     {
-        
-         returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+        returnUrl = ExtractBasePath(returnUrl);
         if (returnUrl == "login" || returnUrl == "portal")
         {
             await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "returnUrl", returnUrl);
@@ -33,6 +34,15 @@
         }
 
         await base.OnInitializedAsync();
+    }
+
+    private string ExtractBasePath(string url)
+    {
+       
+        var segments = url.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+       
+        return segments.Length > 0 ? segments[0] : string.Empty;
     }
 
 }
