@@ -11,12 +11,12 @@
 </MudGrid>
 
 @code{
-    [Inject] NavigationManager navigation { get; set; }
+    // [Inject] NavigationManager navigation { get; set; }
 
-    protected override Task OnInitializedAsync()
-    {
-        navigation.NavigateTo("/404",true);
-        return base.OnInitializedAsync();
-    }
+    // protected override Task OnInitializedAsync()
+    // {
+    //     navigation.NavigateTo("/404",true);
+    //     return base.OnInitializedAsync();
+    // }
 
 }
