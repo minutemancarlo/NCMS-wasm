@@ -239,6 +239,8 @@
             bookingInfo.Room.Add(room_info);
             tempGuestInfo.BookingType = BookingType.Reservation;
             bookingInfo.Guests = tempGuestInfo;
+            bookingInfo.Guests.CheckInDate = new DateTime(dateFrom.Year, dateFrom.Month, dateFrom.Day, 14, 0, 0);
+            bookingInfo.Guests.CheckOutDate = new DateTime(dateTo.Year, dateTo.Month, dateTo.Day, 11, 0, 0);
             var httpClient = httpClientFactory.CreateClient("Anonymous");
             var response = await httpClient.PostAsJsonAsync("HotelManagement/AddReservation", bookingInfo);
             response.EnsureSuccessStatusCode();
