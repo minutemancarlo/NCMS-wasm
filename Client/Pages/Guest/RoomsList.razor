@@ -1,9 +1,10 @@
-﻿@page "/RoomsList/{dateFrom:datetime?}/{dateTo:datetime?}/{rooms:int?}/{children:int?}/{adults:int?}"
+﻿@page "/RoomsList/{encryptedParams}"
 @layout NoLayout
 @using MudExtensions
 @using MudBlazor.Services
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Guest.Components
+@inject IJSRuntime JSRuntime
 <PageTitle>Rooms - Mid Point Hotel</PageTitle>
 <MudTypographyProvider />
 <MudGrid Justify="Justify.Center" Class="pt-10">
@@ -21,13 +22,13 @@
             <MudCardContent>
                 <MudPaper Class="w-100" Style="height: auto;" Elevation="4">
                     <MudGrid Justify="Justify.Center" Class="pa-3" Spacing="1">
-                        <MudItem lg="2" sm="12" Class="w-100">
-                            <MudDatePicker Label="Check In" @bind-Date="availability.dateFrom" Class="w-100"
+                        <MudItem lg="2" sm="12" Class="w-100"> 
+                            <MudDatePicker Label="Check In" @bind-Date="availability.dateFrom" Class="w-100" PickerVariant="PickerVariant.Dialog"
                                            AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
                                            IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         </MudItem>
                         <MudItem lg="2" md="12" sm="12" Class="w-100">
-                            <MudDatePicker Label="Check Out" @bind-Date="availability.dateTo" Class="w-100"
+                            <MudDatePicker Label="Check Out" @bind-Date="availability.dateTo" Class="w-100" PickerVariant="PickerVariant.Dialog"
                                            AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
                                            IsDateDisabledFunc="@((DateTime dt) => dt.Date <= availability.dateFrom)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         </MudItem>
@@ -119,22 +120,14 @@
 </MudGrid>
 
 
-
-
-
-
-@* <h3>Date From: @(availability?.dateFrom?.ToString("MM/dd/yyyy"))</h3>
-<h3>Date To: @(availability?.dateTo?.ToString("MM/dd/yyyy"))</h3>
-<h3>Rooms: @availability?.Rooms</h3>
-<h3>Children: @availability?.Children</h3>
-<h3>Adults: @availability?.Adults</h3> *@
-
 @code {
-    [Parameter] public DateTime? dateFrom { get; set; }
-    [Parameter] public DateTime? dateTo { get; set; }
-    [Parameter] public int? rooms { get; set; }
-    [Parameter] public int? children { get; set; }
-    [Parameter] public int? adults { get; set; }
+    [Parameter]
+    public string EncryptedParams { get; set; }
+     private DateTime dateFrom { get; set; }
+    private DateTime dateTo { get; set; }
+    private int? rooms { get; set; }
+    private int? children { get; set; }
+    private int? adults { get; set; }
     private Availability? availability { get; set; } = new();
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] IDialogService? DialogService { get; set; }
@@ -143,14 +136,48 @@
     [Inject] NavigationManager Navigation { get; set; }
     private List<RoomInfo> roomInfo = new();
     private bool isLoading = false;
+    private readonly byte[] encryptionKey = Convert.FromBase64String("FVDBUTfXgSp0jG0yiWfPANqRXdyWFvtKsZ623W8Ok7Q=");
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            // Call the decryptData function in cryptoHelper.js
+            string decryptedData = await JSRuntime.InvokeAsync<string>("cryptoHelper.decryptData", EncryptedParams, encryptionKey);
+
+            // Split the decrypted data into parameters
+            var splitParams = decryptedData.Split('|');
+
+            if (splitParams.Length == 5)
+            {
+                dateFrom = DateTime.Parse(splitParams[0]);
+                dateTo = DateTime.Parse(splitParams[1]);
+                rooms = int.Parse(splitParams[2]);
+                adults = int.Parse(splitParams[3]);
+                children = int.Parse(splitParams[4]);
+                availability.dateFrom = new DateTime(dateFrom.Year, dateFrom.Month, dateFrom.Day, 14, 0, 0);
+                availability.dateTo = new DateTime(dateTo.Year, dateTo.Month, dateTo.Day, 11, 0, 0);
+                availability.Rooms = rooms ?? 1;
+                availability.Children = children ?? 0;
+                availability.Adults = adults ?? 1;
+            }
+            else
+            {
+                Snackbar.Add("Invalid number of parameters.",Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+           Snackbar.Add($"Decryption failed: {ex.Message}",Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
-    {
-        availability.dateFrom = dateFrom ?? DateTime.Today;
-        availability.dateTo = dateTo ?? DateTime.Today.AddDays(1);
-        availability.Rooms = rooms ?? 1;
-        availability.Children = children ?? 0;
-        availability.Adults = adults ?? 1;
+    {         
         await LoadRoomsList();
         await base.OnInitializedAsync();
     }

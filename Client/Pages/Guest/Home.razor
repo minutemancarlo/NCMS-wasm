@@ -3,6 +3,7 @@
 @using MudExtensions
 @using MudBlazor.Services
 @using NCMS_wasm.Shared
+
 @implements IBrowserViewportObserver
 @implements IAsyncDisposable
 
@@ -317,10 +318,10 @@
     private Availability availability = new();
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] NavigationManager Navigation { get; set; }
-   
+    [Inject] IJSRuntime JSRuntime { get; set; }
 
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
-
+    private readonly byte[] encryptionKey = Convert.FromBase64String("FVDBUTfXgSp0jG0yiWfPANqRXdyWFvtKsZ623W8Ok7Q=");
     private List<Breakpoint> _breakpointHistory = new();
     private Breakpoint _start;
 
@@ -340,12 +341,15 @@
         await base.OnInitializedAsync();
     }
 
-    private void NavigateToRoomsList()
+    private async Task NavigateToRoomsList()
     {              
 
         if (availability.dateFrom.HasValue && availability.dateTo.HasValue)
         {
-           Navigation.NavigateTo($"/RoomsList/{availability.dateFrom:yyyy-MM-dd}/{availability.dateTo:yyyy-MM-dd}/{availability.Rooms}/{availability.Children}/{availability.Adults}");
+           
+            var plainText = $"{availability.dateFrom:yyyy-MM-dd}|{availability.dateTo:yyyy-MM-dd}|{availability.Rooms}|{availability.Adults}|{availability.Children}";
+            string encryptedParams = await JSRuntime.InvokeAsync<string>("cryptoHelper.encryptData", plainText, encryptionKey);
+            Navigation.NavigateTo($"RoomsList/{encryptedParams}");
         }
         else
         {

@@ -31,6 +31,7 @@ builder.Services.AddOidcAuthentication(options =>
     options.ProviderOptions.ResponseType = "code";
     options.ProviderOptions.AdditionalProviderParameters.Add("audience", builder.Configuration["Auth0:Audience"]);
 }).AddAccountClaimsPrincipalFactory<ArrayClaimsPrincipalFactory<RemoteUserAccount>>();
+builder.Services.AddScoped<CryptoService>();
 
 builder.Services.AddMudServices();
 // use this to add MudServices and the MudBlazor.Extensions
