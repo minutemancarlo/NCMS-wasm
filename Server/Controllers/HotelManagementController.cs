@@ -70,6 +70,21 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("GetBookingInfo")]
+        public async Task<ActionResult<Booking>> GetBookingInfo(Booking booking)
+        {
+            try
+            {              
+                var result = await _hotelRepository.GetBookingInfoAsync(booking);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetBookingInfo]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+                return BadRequest($"Exception occurred while adding room info: {ex.Message}");
+            }
+        }
+
         [HttpPost("AddBooking")]
         public async Task<ActionResult<int>> AddBooking(Booking booking)
         {
@@ -157,6 +172,23 @@ namespace NCMS_wasm.Server.Controllers
             catch (Exception ex)
             {
                 _fileLogger.Log($"Exception Occured in Endpoint [UpdateBookingStatus]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+                return BadRequest($"Exception occurred while updating booking info: {ex.Message}");
+            }
+        }
+
+        [HttpPost("UpdateBooking")]
+        public async Task<ActionResult<int>> UpdateBooking(Booking booking)
+        {
+            try
+            {
+                //Insert Guest
+                var retVal = await _hotelRepository.UpdateBookingAsync(booking);
+
+                return Ok(retVal);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [UpdateBooking]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
                 return BadRequest($"Exception occurred while updating booking info: {ex.Message}");
             }
         }

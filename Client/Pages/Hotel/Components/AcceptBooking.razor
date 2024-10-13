@@ -1,0 +1,73 @@
+﻿@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Validations
+@using MudBlazor.Extensions
+@using MudExtensions.Utilities
+
+<MudTypographyProvider />
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="fas fa-users"></MudIcon>
+            Check In Guest
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Class="w-100">
+
+        </MudStack>
+    </DialogContent>
+</MudDialog>
+
+@code{
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    [Parameter] public GuestsInfo guestsInfo { get; set; }
+    [Parameter] public string? currentUserId { get; set; }
+
+    private Booking booking = new();
+    private bool _loading = false;
+    private bool _loadingSubmit = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await OnGetBooking();
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task OnGetBooking()
+    {
+        try
+        {
+            _loading = true;
+            var bookingTemp = new Booking
+            {
+                Guests = guestsInfo
+            };
+            var response = await httpClient.PostAsJsonAsync("HotelManagement/GetBookingInfo", bookingTemp);
+
+            if (response.IsSuccessStatusCode)
+            {
+               
+                booking = await response.Content.ReadFromJsonAsync<Booking>();
+            }
+            else
+            {
+               
+                throw new Exception("Failed to retrieve booking info");
+            }
+           
+         
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+}

@@ -210,7 +210,9 @@
         {
             {x => x.userId, MainLayout.CurrentUserId},
             {x => x.bookingInfo, new Booking()},
-            {x => x.dateFrom, new DateTime(dateTime.Year,dateTime.Month, dateTime.Day, 14, 0, 0)}
+            {x => x.dateFrom, new DateTime(dateTime.Year,dateTime.Month, dateTime.Day, 14, 0, 0)},
+            {x => x.Action, "Add"},
+            {x => x.bookingType, BookingType.Walkin_Booking},
         };
             var dialog = await DialogService.ShowAsync<AddGuestDialog>("Simple Dialog", parameters, options);
             var result = await dialog.Result;
@@ -263,7 +265,7 @@
         {
             {x=>x.isEnabled,isEnabled},
             {x=>x.currentUserId,MainLayout.CurrentUserId},
-            {x=>x.guestsInfo,guests}
+            {x=>x.guestsInfo,guests}            
         };
             var dialog = await DialogService.ShowAsync<ViewBooking>("Simple Dialog", parameters, options);
             var result = await dialog.Result;

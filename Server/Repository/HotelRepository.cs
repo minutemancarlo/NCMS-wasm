@@ -129,6 +129,29 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteAsync(sp, parameters,commandType: CommandType.StoredProcedure);
         }
 
+        public async Task<int> UpdateBookingAsync(Booking booking)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@BookingNo", booking.Guests.BookingNo);
+            parameters.Add("@GuestId", booking.Guests.Id);
+            parameters.Add("@Total", booking.Billing.Total);
+            parameters.Add("@Change", booking.Billing.Change);
+            parameters.Add("@CardTransactionId", booking.Billing.CardTransactionId);
+            parameters.Add("@IsCard", booking.Billing.IsCard);
+            parameters.Add("@VAT", booking.Billing.VAT);
+            parameters.Add("@CashReceived", booking.Billing.CashReceived);
+            parameters.Add("@UpdatedBy", booking.Billing.UpdatedBy);
+            parameters.Add("@Vatable", booking.Billing.Vatable);
+            parameters.Add("@IDType", booking.Guests.IDType);
+            parameters.Add("@IDNumber", booking.Guests.IDNumber);
+
+
+            string sp = "UpdateBooking";
+
+            return await _dbConnection.ExecuteAsync(sp, parameters, commandType: CommandType.StoredProcedure);
+            
+        }
+
 
         public async Task<IEnumerable<RoomInfo>> GetAllRoomsAsync()
         {
@@ -154,10 +177,59 @@ FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c o
         public async Task<IEnumerable<RoomInfo>> GetAllRoomsInfoAsync()
         {
             
-            string query = "select DISTINCT(b.type) as t,*from roominfo b";
+            string query = "select DISTINCT(b.type) as t,* from roominfo b";
             //string query = "select DISTINCT (b.type) as t,* from rooms a inner join roominfo b on a.roomId=b.roomId where a.status = 1 ORDER BY a.RoomId DESC";
             return await _dbConnection.QueryAsync<RoomInfo>(query);
         }
+
+        public async Task<Booking> GetBookingInfoAsync(Booking booking)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@BookingNo", booking.Guests.BookingNo);
+            
+            string query = "SELECT * FROM Booking WHERE BookingNo = @BookingNo";            
+            var billingTemp = (await _dbConnection.QueryAsync<Billing>(query, parameters)).FirstOrDefault();
+
+            var parametersGuest = new DynamicParameters();
+            parametersGuest.Add("@GuestId", booking.Guests.Id);
+
+            query = "SELECT * FROM Guests WHERE Id= @GuestId";
+            var guestsTemp = (await _dbConnection.QueryAsync<GuestsInfo>(query, parametersGuest)).FirstOrDefault();
+
+
+            query = @"SELECT 
+        a.Id AS RoomId,
+        a.RoomNumber,
+        a.RoomDescription,
+        a.Status,
+        a.BookingNo,
+        b.Type,
+        b.PricePerNight,
+        b.MaxGuest,
+        b.Thumbnail,
+        b.Image,
+        b.Features,
+        b.Rating
+    FROM 
+        Rooms a 
+    INNER JOIN 
+        RoomInfo b ON a.RoomId = b.RoomId 
+    WHERE 
+        a.BookingNo = @BookingNo";
+            var roomsTemp = await _dbConnection.QueryAsync<RoomInfo>(query,parameters);
+
+
+            var bookingResult = new Booking
+            {
+                Guests = guestsTemp,
+                Billing = billingTemp,
+                Room = roomsTemp.ToList()
+            };
+
+
+            return bookingResult;
+        }
+
 
         public async Task<bool> GetRoomsNumberExistAsync(int roomNumber)
         {
