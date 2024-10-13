@@ -105,11 +105,33 @@ namespace NCMS_wasm.Server.Controllers
             try
             {               
                 string bookingNo = await _hotelRepository.InsertReservationAsync(booking);
+
+                string name = $"{ToSentenceCase(booking.Guests.FirstName)} {ToSentenceCase(booking.Guests.LastName)}";
+                string bookingNumber = bookingNo;
+                string checkInDate = booking.Guests.CheckInDate.HasValue
+        ? booking.Guests.CheckInDate.Value.ToString("MMMM dd, yyyy")
+        : "N/A";
+
+                string checkInTime = booking.Guests.CheckInDate.HasValue
+                    ? booking.Guests.CheckInDate.Value.ToString("h:mm tt")
+                    : "N/A";
+
+                string checkOutDate = booking.Guests.CheckOutDate.HasValue
+                    ? booking.Guests.CheckOutDate.Value.ToString("MMMM dd, yyyy")
+                    : "N/A";
+
+                string checkOutTime = booking.Guests.CheckOutDate.HasValue
+                    ? booking.Guests.CheckOutDate.Value.ToString("h:mm tt")
+                    : "N/A";
+                string template = GetEmailtemplate(1);
+                string filledTemplate = template.Replace("{{Name}}", name).Replace("{{BookingNumber}}", bookingNumber).Replace("{{CheckInDate}}", checkInDate).Replace("{{CheckInTime}}", checkInTime).Replace("{{CheckOutDate}}", checkOutDate).Replace("{{CheckOutTime}}", checkOutTime);
+
+
                 var msg = new EmailModel
                 {
                     ToAddress = booking.Guests.Email,
                     Subject = "Booking Information",
-                    Body = $"<strong>Hi {booking.Guests.FirstName},</strong> <br/> <br/> Your booking No is <strong style=\"color: red\">{bookingNo}</strong>",
+                    Body = filledTemplate,
                     EmailStatus = EmailStatus.OnQueue
                 };
                 await _emailRepository.InsertEmailAsync(msg);
@@ -288,6 +310,137 @@ namespace NCMS_wasm.Server.Controllers
             System.IO.File.WriteAllBytes(filePath, bytes);
             
             return serverFilePath;
+        }
+
+        private string ToSentenceCase(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
+
+            return char.ToUpper(input[0]) + input.Substring(1).ToLower();
+        }
+
+        private string GetEmailtemplate(int template)
+        {
+            string templateContent = String.Empty;
+            switch (template)
+            {
+                case 1:
+                    templateContent = @"<!DOCTYPE html>
+<html lang=""en"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <meta http-equiv=""X-UA-Compatible"" content=""IE=edge"">
+    <title>Booking Confirmation</title>
+    <style type=""text/css"">
+        body, table, td, a {
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            color: #333;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+
+        .header {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;
+            color: #888;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <table class=""container"">
+        <tr>
+            <td class=""header"">
+                <h1>Booking Confirmation</h1>
+            </td>
+        </tr>
+        <tr>
+            <td class=""content"">
+                <p>Dear <strong>{{Name}}</strong>,</p>
+                <p>Thank you for your booking. Below are the details of your reservation:</p>
+
+                <table width=""100%"">
+                    <tr>
+                        <td><strong>Booking Number:</strong></td>
+                        <td>{{BookingNumber}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Check-In Date:</strong></td>
+                        <td>{{CheckInDate}} at {{CheckInTime}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Check-Out Date:</strong></td>
+                        <td>{{CheckOutDate}} at {{CheckOutTime}}</td>
+                    </tr>
+                </table>
+
+                <p>We look forward to hosting you. If you have any questions, feel free to contact us.</p>
+
+                <p>Best regards,<br>The Booking Team</p>
+            </td>
+        </tr>
+        <tr>
+            <td class=""footer"">
+                <p>&copy; 2024 Norlu CEDEC Midpoint Hotel. All rights reserved.</p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+";
+                    break;
+            }
+            return templateContent;
         }
 
     }
