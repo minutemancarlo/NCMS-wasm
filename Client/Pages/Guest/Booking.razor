@@ -122,29 +122,38 @@
                         <MudStack Row AlignItems="AlignItems.Stretch">
                             <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => Navigation.NavigateTo("RoomsList/default"))">Cancel</MudButton>
                             <MudSpacer />
-                            <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Send">Submit</MudButton>
+                            <MudLoadingButton Variant="Variant.Filled"
+                                              Color="Color.Success"
+                                              Size="Size.Large"
+                                              StartIcon="@Icons.Material.Filled.Send"
+                                              OnClick="OnSubmit"
+                                              Loading="@(_loading)"
+                                              ButtonType="ButtonType.Button">
+                                <LoadingContent>Submitting...</LoadingContent>
+                                <ChildContent>Submit</ChildContent>
+                            </MudLoadingButton>
                         </MudStack>
                     </MudPaper>
                 </MudForm>
 
                 <MudPaper Class="pa-2 w-100" Elevation="0">
                     <MudStack Class="w-100">
-                        <MudStack AlignItems="AlignItems.Stretch">
-                            <MudText Typo="Typo.h6" Class="pb-4">@roomTypeDisplay Room</MudText>
-                         
-                            <MudText Typo="Typo.h6" Class="pb-4">Price: @Price.ToString("C", new System.Globalization.CultureInfo("en-PH")) Room</MudText>
 
-                        </MudStack>
                         <MudPaper Elevation="4" Height="500px" Class="paper-container w-100">
+                            <!-- Overlay Text -->
+                            @* <div class="overlay-text">Overlay Text</div> *@
+                            <MudStack AlignItems="AlignItems.Stretch" Class="overlay-text" Spacing="0">
+                                <MudText Typo="Typo.h6">@roomTypeDisplay Room</MudText>
+                                <MudText Typo="Typo.h6">@Price.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+
+                            </MudStack>
+                            <!-- A-Frame Scene -->
                             <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%">
                                 <a-sky src="images/@Image"></a-sky>
                                 <a-entity camera look-controls></a-entity>
                             </a-scene>
                         </MudPaper>
-                        <MudStack Row AlignItems="AlignItems.Stretch">
 
-
-                        </MudStack>
                     </MudStack>
                 </MudPaper>
             </MudStack>
@@ -247,7 +256,7 @@
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Reservation has been created. Please check your email for your Booking Number", Severity.Success);
+                Snackbar.Add($"Reservation has been created. Please check your email for your booking number", Severity.Success);
 
             }
             else

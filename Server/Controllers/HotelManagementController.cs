@@ -193,8 +193,6 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
-
-
         [HttpPost("UpdatedPriceAndStatus")]
         public async Task<ActionResult<int>> UpdatedPriceAndStatus(RoomInfo rooms)
         {

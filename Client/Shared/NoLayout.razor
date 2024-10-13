@@ -37,7 +37,19 @@
                             <ChildContent>
                                 <AuthorizeView>
                                     <Authorized>
-                                        <MudAvatar Color="Color.Tertiary">CB</MudAvatar>
+                                        @if (profile.Contains("http"))
+                                        {
+                                            <MudAvatar Color="Color.Tertiary">
+                                           
+                                                <MudImage Src="@profile"></MudImage>
+                                            </MudAvatar>
+
+                                        }
+                                        else
+                                        {
+                                            <MudAvatar Color="Color.Tertiary">@profile.Substring(0, 2)</MudAvatar>
+
+                                        }
                                     </Authorized>
                                     <NotAuthorized>
                                         <MudImage Src="user.png" ObjectFit="ObjectFit.Fill"/>
@@ -71,7 +83,20 @@
         <MudDrawerHeader>
             <AuthorizeView>
                 <Authorized>
-                    <MudText Typo="Typo.subtitle1"><MudAvatar Color="Color.Tertiary">CB</MudAvatar> Carlo Boado</MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        @if(profile.Contains("http")){
+                        <MudAvatar Color="Color.Tertiary">
+                        
+                        <MudImage Src="@profile"></MudImage>    
+                        </MudAvatar> @name
+
+                        }
+                        else
+                        {
+                        <MudAvatar Color="Color.Tertiary">@profile.Substring(0,2)</MudAvatar> @name
+                            
+                        }
+                    </MudText>
                 </Authorized>
                 <NotAuthorized>
                     <MudText Typo="Typo.subtitle1">Book a room Now!!</MudText>
@@ -203,10 +228,37 @@
     private string baseUrl;
     private string relativePath;
     private string scrollTo;
+
+    public string profile = "";
+    public string name = "";
+    public bool isLoggedin = false;
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+    public List<Claim> UserClaims { get; set; } = new List<Claim>();
+
     protected override async Task OnInitializedAsync()
     {
         Navigation.LocationChanged += OnLocationChanged;
         await UpdatePath();
+        if (authenticationState is not null)
+        {
+            var state = await authenticationState;
+
+            if (state.User.Identity.IsAuthenticated)
+            {
+                var user = authenticationState.Result.User;
+                name = user.Identity.Name;
+                profile = state?.User.Claims
+                            .Where(c => c.Type.Equals("picture"))
+                            .Select(c => c.Value)
+                            .FirstOrDefault() ?? string.Empty;
+                // navigationManager.NavigateTo("login?redirectUri=/");
+                if (string.IsNullOrEmpty(profile))
+                {
+                    profile = user.Identity.Name;
+                }
+            }
+        }
         await base.OnInitializedAsync();
     }
 
