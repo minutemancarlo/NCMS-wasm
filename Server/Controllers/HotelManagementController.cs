@@ -86,7 +86,7 @@ namespace NCMS_wasm.Server.Controllers
         }
 
         [HttpPost("AddBooking")]
-        public async Task<ActionResult<int>> AddBooking(Booking booking)
+        public async Task<ActionResult<string>> AddBooking(Booking booking)
         {
             try
             {
@@ -177,11 +177,11 @@ namespace NCMS_wasm.Server.Controllers
         }
 
         [HttpPost("UpdateBooking")]
-        public async Task<ActionResult<int>> UpdateBooking(Booking booking)
+        public async Task<ActionResult<string>> UpdateBooking(Booking booking)
         {
             try
             {
-                //Insert Guest
+                //Update Guest
                 var retVal = await _hotelRepository.UpdateBookingAsync(booking);
 
                 return Ok(retVal);

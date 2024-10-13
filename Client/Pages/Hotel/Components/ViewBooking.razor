@@ -86,7 +86,7 @@
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Booking has been updated.{result}", Severity.Success);
+                Snackbar.Add($"Booking has been updated.", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
             }
             else

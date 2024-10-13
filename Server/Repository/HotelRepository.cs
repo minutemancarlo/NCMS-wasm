@@ -129,7 +129,7 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteAsync(sp, parameters,commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<int> UpdateBookingAsync(Booking booking)
+        public async Task<string> UpdateBookingAsync(Booking booking)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@BookingNo", booking.Guests.BookingNo);
@@ -148,7 +148,7 @@ namespace NCMS_wasm.Server.Repository
 
             string sp = "UpdateBooking";
 
-            return await _dbConnection.ExecuteAsync(sp, parameters, commandType: CommandType.StoredProcedure);
+            return await _dbConnection.ExecuteScalarAsync<string>(sp, parameters, commandType: CommandType.StoredProcedure);
             
         }
 
@@ -187,7 +187,7 @@ FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c o
             var parameters = new DynamicParameters();
             parameters.Add("@BookingNo", booking.Guests.BookingNo);
             
-            string query = "SELECT * FROM Booking WHERE BookingNo = @BookingNo";            
+            string query = "SELECT a.*,ISNULL(b.Name,'N/A') as UpdatedByDisplay FROM Booking a left join employee b on a.UpdatedBy = b.Auth0_Id WHERE a.BookingNo = @BookingNo";            
             var billingTemp = (await _dbConnection.QueryAsync<Billing>(query, parameters)).FirstOrDefault();
 
             var parametersGuest = new DynamicParameters();
@@ -230,6 +230,14 @@ FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c o
             return bookingResult;
         }
 
+        public async Task<GuestsInfo> GetBookingNumberAndGuestId(string invoiceNo)
+        {
+            var Parameter = new DynamicParameters();
+            Parameter.Add("@InvoiceNo", invoiceNo);
+            string query = "Select BookingNo, GuestId as Id from Booking where InvoiceNo = @InvoiceNo";
+            var result = await _dbConnection.QueryFirstOrDefaultAsync<GuestsInfo>(query, Parameter, commandType: CommandType.Text);
+            return result;
+        }
 
         public async Task<bool> GetRoomsNumberExistAsync(int roomNumber)
         {
@@ -288,8 +296,6 @@ FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c o
             var result = await _dbConnection.QueryAsync<DashboardValueSales>(query, parameter, commandType: CommandType.Text);
             return result.ToList();
         }
-
-
 
         public async Task<IEnumerable<GuestsInfo>> GetCalendarDisplayAsync()
         {

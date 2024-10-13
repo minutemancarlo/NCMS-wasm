@@ -50,7 +50,10 @@ namespace NCMS_wasm.Shared
         public decimal Change { get; set; } = 0.00M;
         public bool IsCard { get; set; } = false;
         public string? CardTransactionId { get; set; }
+        public string? UpdatedByDisplay { get; set; }
     }
+
+  
 
 
     public class Availability

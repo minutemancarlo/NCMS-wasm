@@ -207,5 +207,48 @@ namespace NCMS_wasm.Server.Controllers
             }           
         }
 
+        [HttpGet("GetReceiptPrintBooking")]
+        public async Task<IActionResult> GetReceiptPrintBooking([FromQuery] string invoiceNo)
+        {
+            try
+            {
+                var dt = new DataTable();
+                dt = await _receiptService.GetReceiptBookingAsync(invoiceNo);
+                string mimeType = "";
+                int extenstion = 1;
+                //var path = $"{this._webHostEnvironment.WebRootPath}\\Reports\\Report1.rdlc";
+                var path = Path.Combine(_webHostEnvironment.WebRootPath, "Reports", "ReceiptBooking.rdlc");
+                //var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "Reports", "Report1.rdlc");
+
+                if (!System.IO.File.Exists(path))
+                {
+                    Console.WriteLine("File not found.");
+                    return NotFound("Report file not found.");
+                }
+                else
+                {
+                    Console.WriteLine("File exists");
+                }
+                LocalReport localReport = new(path);
+                localReport.AddDataSource(dataSetName: "dsReceiptBooking", dt);
+                var result = localReport.Execute(RenderType.Pdf);
+
+                var pdfStream = new MemoryStream(result.MainStream);
+                var timestamp = DateTime.Now.ToString("MMddyyyyHHmmss");
+                var fileName = $"Receipt_{invoiceNo}_{timestamp}.pdf";
+                mimeType = "application/pdf";
+
+                return new FileStreamResult(pdfStream, mimeType)
+                {
+                    FileDownloadName = fileName
+                };
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetReceiptPrintBooking]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+                return StatusCode(500, "An error occurred while generating the report.");
+            }
+        }
+
     }
 }

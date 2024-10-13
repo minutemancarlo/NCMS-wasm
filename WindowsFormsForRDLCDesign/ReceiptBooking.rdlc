@@ -30,7 +30,7 @@
           <Paragraph>
             <TextRuns>
               <TextRun>
-                <Value>Gas Station</Value>
+                <Value>Midpoint Hotel</Value>
                 <Style>
                   <FontSize>14pt</FontSize>
                   <FontWeight>Heavy</FontWeight>
@@ -43,8 +43,8 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox1</rd:DefaultName>
-        <Top>0cm</Top>
-        <Left>0.0064cm</Left>
+        <Top>0.43599cm</Top>
+        <Left>0.09384cm</Left>
         <Height>1.36729cm</Height>
         <Width>4.98391cm</Width>
         <Style>
@@ -77,8 +77,8 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox3</rd:DefaultName>
-        <Top>0.94051cm</Top>
-        <Left>0.0064cm</Left>
+        <Top>1.3765cm</Top>
+        <Left>0.09384cm</Left>
         <Height>1.44667cm</Height>
         <Width>4.98391cm</Width>
         <ZIndex>1</ZIndex>
@@ -108,8 +108,8 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox4</rd:DefaultName>
-        <Top>2.38717cm</Top>
-        <Left>0.0064cm</Left>
+        <Top>2.82316cm</Top>
+        <Left>0.10024cm</Left>
         <Height>0.6cm</Height>
         <Width>4.98391cm</Width>
         <ZIndex>2</ZIndex>
@@ -143,8 +143,8 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox4</rd:DefaultName>
-        <Top>2.81078cm</Top>
-        <Left>0.0064cm</Left>
+        <Top>3.24677cm</Top>
+        <Left>0.10024cm</Left>
         <Height>0.45969cm</Height>
         <Width>4.98391cm</Width>
         <ZIndex>3</ZIndex>
@@ -174,8 +174,8 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>ExecutionTime</rd:DefaultName>
-        <Top>3.44686cm</Top>
-        <Left>0.0064cm</Left>
+        <Top>3.88285cm</Top>
+        <Left>0cm</Left>
         <Height>0.6cm</Height>
         <Width>4.98391cm</Width>
         <ZIndex>4</ZIndex>
@@ -189,7 +189,31 @@
           <PaddingBottom>2pt</PaddingBottom>
         </Style>
       </Textbox>
-      <Textbox Name="Textbox9">
+      <Line Name="Line1">
+        <Top>3.88285cm</Top>
+        <Left>0.09072cm</Left>
+        <Height>0cm</Height>
+        <Width>4.70239cm</Width>
+        <ZIndex>5</ZIndex>
+        <Style>
+          <Border>
+            <Style>Solid</Style>
+          </Border>
+        </Style>
+      </Line>
+      <Line Name="Line2">
+        <Top>4.51813cm</Top>
+        <Left>0.09384cm</Left>
+        <Height>0cm</Height>
+        <Width>4.69927cm</Width>
+        <ZIndex>6</ZIndex>
+        <Style>
+          <Border>
+            <Style>Solid</Style>
+          </Border>
+        </Style>
+      </Line>
+      <Textbox Name="Textbox10">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
@@ -202,7 +226,7 @@
                 </Style>
               </TextRun>
               <TextRun>
-                <Value>=First(Fields!InvoiceNo.Value, "dsReceipt")</Value>
+                <Value>=Fields!InvoiceNo.Value</Value>
                 <Style>
                   <FontSize>8pt</FontSize>
                 </Style>
@@ -211,19 +235,65 @@
             <Style />
           </Paragraph>
         </Paragraphs>
-        <rd:DefaultName>Textbox9</rd:DefaultName>
-        <Top>4.1527cm</Top>
-        <Left>0.0064cm</Left>
-        <Height>0.42361cm</Height>
+        <rd:DefaultName>Textbox10</rd:DefaultName>
+        <Top>4.51813cm</Top>
+        <Left>0.09072cm</Left>
+        <Height>0.44446cm</Height>
         <Width>4.69287cm</Width>
-        <ZIndex>5</ZIndex>
+        <ZIndex>7</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Textbox>
-      <Textbox Name="Textbox10">
+      <Line Name="Line3">
+        <Top>5.99262cm</Top>
+        <Left>0.09072cm</Left>
+        <Height>0cm</Height>
+        <Width>4.70239cm</Width>
+        <ZIndex>8</ZIndex>
+        <Style>
+          <Border>
+            <Style>Solid</Style>
+          </Border>
+        </Style>
+      </Line>
+      <Textbox Name="Textbox11">
+        <CanGrow>true</CanGrow>
+        <KeepTogether>true</KeepTogether>
+        <Paragraphs>
+          <Paragraph>
+            <TextRuns>
+              <TextRun>
+                <Value>Booking No: </Value>
+                <Style>
+                  <FontSize>8pt</FontSize>
+                </Style>
+              </TextRun>
+              <TextRun>
+                <Value>=Fields!BookingNo.Value</Value>
+                <Style>
+                  <FontSize>8pt</FontSize>
+                </Style>
+              </TextRun>
+            </TextRuns>
+            <Style />
+          </Paragraph>
+        </Paragraphs>
+        <rd:DefaultName>Textbox10</rd:DefaultName>
+        <Top>5.03315cm</Top>
+        <Left>0.09072cm</Left>
+        <Height>0.44446cm</Height>
+        <Width>4.69287cm</Width>
+        <ZIndex>9</ZIndex>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox Name="Textbox12">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
@@ -236,7 +306,7 @@
                 </Style>
               </TextRun>
               <TextRun>
-                <Value>=First(Fields!CreatedBy.Value, "dsReceipt")</Value>
+                <Value>=Fields!UpdatedBy.Value</Value>
                 <Style>
                   <FontSize>8pt</FontSize>
                 </Style>
@@ -246,11 +316,11 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox10</rd:DefaultName>
-        <Top>4.52018cm</Top>
-        <Left>0.00631cm</Left>
+        <Top>5.51289cm</Top>
+        <Left>0.10024cm</Left>
         <Height>0.44446cm</Height>
         <Width>4.69287cm</Width>
-        <ZIndex>6</ZIndex>
+        <ZIndex>10</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
@@ -261,95 +331,62 @@
         <TablixBody>
           <TablixColumns>
             <TablixColumn>
-              <Width>2.3332cm</Width>
+              <Width>3.00497cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>2.35966cm</Width>
+              <Width>1.594cm</Width>
             </TablixColumn>
           </TablixColumns>
           <TablixRows>
             <TablixRow>
-              <Height>0.43965cm</Height>
+              <Height>0.6cm</Height>
               <TablixCells>
                 <TablixCell>
                   <CellContents>
-                    <Textbox Name="Textbox11">
+                    <Textbox Name="Textbox13">
                       <CanGrow>true</CanGrow>
                       <KeepTogether>true</KeepTogether>
                       <Paragraphs>
                         <Paragraph>
                           <TextRuns>
                             <TextRun>
-                              <Value>Items</Value>
-                              <Style>
-                                <FontSize>9pt</FontSize>
-                                <FontWeight>Bold</FontWeight>
-                              </Style>
-                            </TextRun>
-                          </TextRuns>
-                          <Style>
-                            <TextAlign>Center</TextAlign>
-                          </Style>
-                        </Paragraph>
-                      </Paragraphs>
-                      <rd:DefaultName>Textbox11</rd:DefaultName>
-                      <Style>
-                        <Border>
-                          <Color>LightGrey</Color>
-                          <Style>Solid</Style>
-                        </Border>
-                        <VerticalAlign>Middle</VerticalAlign>
-                      </Style>
-                    </Textbox>
-                    <ColSpan>2</ColSpan>
-                  </CellContents>
-                </TablixCell>
-                <TablixCell />
-              </TablixCells>
-            </TablixRow>
-            <TablixRow>
-              <Height>0.43965cm</Height>
-              <TablixCells>
-                <TablixCell>
-                  <CellContents>
-                    <Textbox Name="GasType">
-                      <CanGrow>true</CanGrow>
-                      <KeepTogether>true</KeepTogether>
-                      <Paragraphs>
-                        <Paragraph>
-                          <TextRuns>
-                            <TextRun>
-                              <Value>=Fields!GasType.Value</Value>
+                              <Value>Room</Value>
                               <Style>
                                 <FontSize>8pt</FontSize>
+                                <FontWeight>Bold</FontWeight>
                               </Style>
                             </TextRun>
                           </TextRuns>
                           <Style />
                         </Paragraph>
                       </Paragraphs>
-                      <rd:DefaultName>GasType</rd:DefaultName>
+                      <rd:DefaultName>Textbox13</rd:DefaultName>
                       <Style>
                         <Border>
                           <Color>LightGrey</Color>
                           <Style>Solid</Style>
                         </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
                       </Style>
                     </Textbox>
                   </CellContents>
                 </TablixCell>
                 <TablixCell>
                   <CellContents>
-                    <Textbox Name="SubTotal">
+                    <Textbox Name="Textbox17">
                       <CanGrow>true</CanGrow>
                       <KeepTogether>true</KeepTogether>
                       <Paragraphs>
                         <Paragraph>
                           <TextRuns>
                             <TextRun>
-                              <Value>=Fields!SubTotal.Value</Value>
+                              <Value>Price</Value>
                               <Style>
                                 <FontSize>8pt</FontSize>
+                                <FontWeight>Bold</FontWeight>
                               </Style>
                             </TextRun>
                           </TextRuns>
@@ -358,12 +395,89 @@
                           </Style>
                         </Paragraph>
                       </Paragraphs>
-                      <rd:DefaultName>SubTotal</rd:DefaultName>
+                      <rd:DefaultName>Textbox17</rd:DefaultName>
                       <Style>
                         <Border>
                           <Color>LightGrey</Color>
                           <Style>Solid</Style>
                         </Border>
+                        <VerticalAlign>Middle</VerticalAlign>
+                        <PaddingLeft>1pt</PaddingLeft>
+                        <PaddingRight>1pt</PaddingRight>
+                        <PaddingTop>1pt</PaddingTop>
+                        <PaddingBottom>1pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+            <TablixRow>
+              <Height>0.6cm</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox14">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!RoomNumber.Value &amp; " - " &amp; Fields!RoomType.Value</Value>
+                              <Style>
+                                <FontSize>8pt</FontSize>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style />
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox14</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>1pt</PaddingLeft>
+                        <PaddingRight>1pt</PaddingRight>
+                        <PaddingTop>1pt</PaddingTop>
+                        <PaddingBottom>1pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox18">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=First(Fields!PricePerNight.Value, "dsReceiptBooking")</Value>
+                              <Style>
+                                <FontSize>8pt</FontSize>
+                                <Format>#,0.00;(#,0.00)</Format>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox18</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>1pt</PaddingTop>
+                        <PaddingBottom>1pt</PaddingBottom>
                       </Style>
                     </Textbox>
                   </CellContents>
@@ -388,19 +502,18 @@
             </TablixMember>
           </TablixMembers>
         </TablixRowHierarchy>
-        <DataSetName>dsReceipt</DataSetName>
-        <Top>5.17603cm</Top>
-        <Left>0.0064cm</Left>
-        <Height>0.8793cm</Height>
-        <Width>4.69286cm</Width>
-        <ZIndex>7</ZIndex>
+        <Top>6.18808cm</Top>
+        <Left>0.10024cm</Left>
+        <Height>1.2cm</Height>
+        <Width>4.59897cm</Width>
+        <ZIndex>11</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Tablix>
-      <Textbox Name="Textbox17">
+      <Textbox Name="Textbox19">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
@@ -418,28 +531,29 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox17</rd:DefaultName>
-        <Top>6.48186cm</Top>
-        <Left>0.00639cm</Left>
+        <Top>7.56446cm</Top>
+        <Left>0cm</Left>
         <Height>0.45889cm</Height>
         <Width>1.20037cm</Width>
-        <ZIndex>8</ZIndex>
+        <ZIndex>12</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Textbox>
-      <Textbox Name="Textbox18">
+      <Textbox Name="Textbox20">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
           <Paragraph>
             <TextRuns>
               <TextRun>
-                <Value>=First(Fields!DiscountedTotal.Value, "dsReceipt")</Value>
+                <Value>=First(Fields!Total.Value, "dsReceiptBooking")</Value>
                 <Style>
                   <FontSize>8pt</FontSize>
                   <FontWeight>Bold</FontWeight>
+                  <Format>#,0.00;(#,0.00)</Format>
                 </Style>
               </TextRun>
             </TextRuns>
@@ -449,18 +563,18 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox17</rd:DefaultName>
-        <Top>6.48186cm</Top>
+        <Top>7.56446cm</Top>
         <Left>1.99041cm</Left>
         <Height>0.45889cm</Height>
         <Width>2.7088cm</Width>
-        <ZIndex>9</ZIndex>
+        <ZIndex>13</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Textbox>
-      <Textbox Name="Textbox19">
+      <Textbox Name="Textbox21">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
@@ -477,71 +591,11 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>7.22855cm</Top>
-        <Left>0.3239cm</Left>
+        <Top>8.16447cm</Top>
+        <Left>0.31109cm</Left>
         <Height>0.36027cm</Height>
         <Width>0.88287cm</Width>
-        <ZIndex>10</ZIndex>
-        <Style>
-          <Border>
-            <Style>None</Style>
-          </Border>
-        </Style>
-      </Textbox>
-      <Textbox Name="Textbox20">
-        <CanGrow>true</CanGrow>
-        <KeepTogether>true</KeepTogether>
-        <Paragraphs>
-          <Paragraph>
-            <TextRuns>
-              <TextRun>
-                <Value>=First(Fields!CashReceived.Value, "dsReceipt")</Value>
-                <Style>
-                  <FontSize>8pt</FontSize>
-                </Style>
-              </TextRun>
-            </TextRuns>
-            <Style>
-              <TextAlign>Right</TextAlign>
-            </Style>
-          </Paragraph>
-        </Paragraphs>
-        <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>7.22855cm</Top>
-        <Left>1.99043cm</Left>
-        <Height>0.36027cm</Height>
-        <Width>2.7088cm</Width>
-        <ZIndex>11</ZIndex>
-        <Style>
-          <Border>
-            <Style>None</Style>
-          </Border>
-        </Style>
-      </Textbox>
-      <Textbox Name="Textbox21">
-        <CanGrow>true</CanGrow>
-        <KeepTogether>true</KeepTogether>
-        <Paragraphs>
-          <Paragraph>
-            <TextRuns>
-              <TextRun>
-                <Value>=First(Fields!Change.Value, "dsReceipt")</Value>
-                <Style>
-                  <FontSize>8pt</FontSize>
-                </Style>
-              </TextRun>
-            </TextRuns>
-            <Style>
-              <TextAlign>Right</TextAlign>
-            </Style>
-          </Paragraph>
-        </Paragraphs>
-        <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>7.65938cm</Top>
-        <Left>1.99039cm</Left>
-        <Height>0.46419cm</Height>
-        <Width>2.70881cm</Width>
-        <ZIndex>12</ZIndex>
+        <ZIndex>14</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
@@ -549,6 +603,68 @@
         </Style>
       </Textbox>
       <Textbox Name="Textbox22">
+        <CanGrow>true</CanGrow>
+        <KeepTogether>true</KeepTogether>
+        <Paragraphs>
+          <Paragraph>
+            <TextRuns>
+              <TextRun>
+                <Value>=First(Fields!CashReceived.Value, "dsReceiptBooking")</Value>
+                <Style>
+                  <FontSize>8pt</FontSize>
+                  <Format>#,0.00;(#,0.00)</Format>
+                </Style>
+              </TextRun>
+            </TextRuns>
+            <Style>
+              <TextAlign>Right</TextAlign>
+            </Style>
+          </Paragraph>
+        </Paragraphs>
+        <rd:DefaultName>Textbox19</rd:DefaultName>
+        <Top>8.12919cm</Top>
+        <Left>1.98402cm</Left>
+        <Height>0.36027cm</Height>
+        <Width>2.7088cm</Width>
+        <ZIndex>15</ZIndex>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox Name="Textbox23">
+        <CanGrow>true</CanGrow>
+        <KeepTogether>true</KeepTogether>
+        <Paragraphs>
+          <Paragraph>
+            <TextRuns>
+              <TextRun>
+                <Value>=First(Fields!Change.Value, "dsReceiptBooking")</Value>
+                <Style>
+                  <FontSize>8pt</FontSize>
+                  <Format>#,0.00;(#,0.00)</Format>
+                </Style>
+              </TextRun>
+            </TextRuns>
+            <Style>
+              <TextAlign>Right</TextAlign>
+            </Style>
+          </Paragraph>
+        </Paragraphs>
+        <rd:DefaultName>Textbox19</rd:DefaultName>
+        <Top>8.5953cm</Top>
+        <Left>1.98398cm</Left>
+        <Height>0.46419cm</Height>
+        <Width>2.70881cm</Width>
+        <ZIndex>16</ZIndex>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox Name="Textbox24">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
@@ -565,18 +681,18 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>7.58883cm</Top>
-        <Left>0.32387cm</Left>
+        <Top>8.52475cm</Top>
+        <Left>0.31746cm</Left>
         <Height>0.53475cm</Height>
         <Width>1.19913cm</Width>
-        <ZIndex>13</ZIndex>
+        <ZIndex>17</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Textbox>
-      <Textbox Name="Textbox23">
+      <Textbox Name="Textbox25">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
@@ -593,25 +709,25 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>8.12357cm</Top>
-        <Left>0.32391cm</Left>
+        <Top>9.05949cm</Top>
+        <Left>0.3175cm</Left>
         <Height>0.39956cm</Height>
         <Width>1.19913cm</Width>
-        <ZIndex>14</ZIndex>
+        <ZIndex>18</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Textbox>
-      <Textbox Name="Textbox24">
+      <Textbox Name="Textbox26">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
           <Paragraph>
             <TextRuns>
               <TextRun>
-                <Value>=First(Fields!CardTransactionId.Value, "dsReceipt")</Value>
+                <Value>=First(Fields!CardTransactionId.Value, "dsReceiptBooking")</Value>
                 <Style>
                   <FontSize>8pt</FontSize>
                 </Style>
@@ -623,18 +739,18 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>8.12357cm</Top>
-        <Left>1.99037cm</Left>
+        <Top>9.05949cm</Top>
+        <Left>1.98398cm</Left>
         <Height>0.39956cm</Height>
         <Width>2.70881cm</Width>
-        <ZIndex>15</ZIndex>
+        <ZIndex>19</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Textbox>
-      <Textbox Name="Textbox25">
+      <Textbox Name="Textbox27">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
@@ -651,28 +767,28 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>8.86257cm</Top>
-        <Left>0.3239cm</Left>
+        <Top>9.79849cm</Top>
+        <Left>0.31749cm</Left>
         <Height>0.39956cm</Height>
         <Width>1.19913cm</Width>
-        <ZIndex>16</ZIndex>
+        <ZIndex>20</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Textbox>
-      <Textbox Name="Textbox26">
+      <Textbox Name="Textbox28">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
           <Paragraph>
             <TextRuns>
               <TextRun>
-                <Value>=IIF(IsNothing(First(Fields!Total.Value, "dsReceipt")), 0, First(Fields!Total.Value, "dsReceipt")) - 
- IIF(IsNothing(First(Fields!VAT.Value, "dsReceipt")), 0, First(Fields!VAT.Value, "dsReceipt"))</Value>
+                <Value>=First(Fields!Vatable.Value, "dsReceiptBooking")</Value>
                 <Style>
                   <FontSize>8pt</FontSize>
+                  <Format>#,0.00;(#,0.00)</Format>
                 </Style>
               </TextRun>
             </TextRuns>
@@ -682,18 +798,18 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>8.86257cm</Top>
-        <Left>1.99046cm</Left>
+        <Top>9.79849cm</Top>
+        <Left>1.98405cm</Left>
         <Height>0.39956cm</Height>
         <Width>2.70881cm</Width>
-        <ZIndex>17</ZIndex>
+        <ZIndex>21</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Textbox>
-      <Textbox Name="Textbox27">
+      <Textbox Name="Textbox29">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
@@ -710,69 +826,11 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>9.26213cm</Top>
-        <Left>0.3239cm</Left>
+        <Top>10.19805cm</Top>
+        <Left>0.31749cm</Left>
         <Height>0.39956cm</Height>
         <Width>1.19913cm</Width>
-        <ZIndex>18</ZIndex>
-        <Style>
-          <Border>
-            <Style>None</Style>
-          </Border>
-        </Style>
-      </Textbox>
-      <Textbox Name="Textbox28">
-        <CanGrow>true</CanGrow>
-        <KeepTogether>true</KeepTogether>
-        <Paragraphs>
-          <Paragraph>
-            <TextRuns>
-              <TextRun>
-                <Value>=First(Fields!VAT.Value, "dsReceipt")</Value>
-                <Style>
-                  <FontSize>8pt</FontSize>
-                </Style>
-              </TextRun>
-            </TextRuns>
-            <Style>
-              <TextAlign>Right</TextAlign>
-            </Style>
-          </Paragraph>
-        </Paragraphs>
-        <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>9.26213cm</Top>
-        <Left>1.99046cm</Left>
-        <Height>0.39956cm</Height>
-        <Width>2.70881cm</Width>
-        <ZIndex>19</ZIndex>
-        <Style>
-          <Border>
-            <Style>None</Style>
-          </Border>
-        </Style>
-      </Textbox>
-      <Textbox Name="Textbox29">
-        <CanGrow>true</CanGrow>
-        <KeepTogether>true</KeepTogether>
-        <Paragraphs>
-          <Paragraph>
-            <TextRuns>
-              <TextRun>
-                <Value>Discount:</Value>
-                <Style>
-                  <FontSize>8pt</FontSize>
-                </Style>
-              </TextRun>
-            </TextRuns>
-            <Style />
-          </Paragraph>
-        </Paragraphs>
-        <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>6.86828cm</Top>
-        <Left>0.32387cm</Left>
-        <Height>0.36027cm</Height>
-        <Width>1.19915cm</Width>
-        <ZIndex>20</ZIndex>
+        <ZIndex>22</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
@@ -786,9 +844,10 @@
           <Paragraph>
             <TextRuns>
               <TextRun>
-                <Value>=First(Fields!Discounts.Value, "dsReceipt")</Value>
+                <Value>=Fields!VAT.Value</Value>
                 <Style>
                   <FontSize>8pt</FontSize>
+                  <Format>#,0.00;(#,0.00)</Format>
                 </Style>
               </TextRun>
             </TextRuns>
@@ -798,52 +857,18 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>6.86828cm</Top>
-        <Left>1.99039cm</Left>
-        <Height>0.36027cm</Height>
-        <Width>2.7088cm</Width>
-        <ZIndex>21</ZIndex>
-        <Style>
-          <Border>
-            <Style>None</Style>
-          </Border>
-        </Style>
-      </Textbox>
-      <Textbox Name="Textbox31">
-        <CanGrow>true</CanGrow>
-        <KeepTogether>true</KeepTogether>
-        <Paragraphs>
-          <Paragraph>
-            <TextRuns>
-              <TextRun>
-                <Value>Loyalty No: </Value>
-                <Style>
-                  <FontSize>8pt</FontSize>
-                </Style>
-              </TextRun>
-              <TextRun>
-                <Value>=Fields!LoyaltyCardId.Value</Value>
-                <Style>
-                  <FontSize>8pt</FontSize>
-                </Style>
-              </TextRun>
-            </TextRuns>
-            <Style />
-          </Paragraph>
-        </Paragraphs>
-        <rd:DefaultName>Textbox19</rd:DefaultName>
-        <Top>9.76752cm</Top>
-        <Left>0.00639cm</Left>
+        <Top>10.19804cm</Top>
+        <Left>1.98405cm</Left>
         <Height>0.39956cm</Height>
-        <Width>4.6928cm</Width>
-        <ZIndex>22</ZIndex>
+        <Width>2.70881cm</Width>
+        <ZIndex>23</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Textbox>
-      <Textbox Name="Textbox33">
+      <Textbox Name="Textbox34">
         <CanGrow>true</CanGrow>
         <KeepTogether>true</KeepTogether>
         <Paragraphs>
@@ -862,11 +887,11 @@
           </Paragraph>
         </Paragraphs>
         <rd:DefaultName>Textbox33</rd:DefaultName>
-        <Top>10.34347cm</Top>
-        <Left>0.00951cm</Left>
+        <Top>10.77399cm</Top>
+        <Left>0.10032cm</Left>
         <Height>0.6cm</Height>
         <Width>4.69279cm</Width>
-        <ZIndex>23</ZIndex>
+        <ZIndex>24</ZIndex>
         <Style>
           <Border>
             <Style>None</Style>
@@ -878,59 +903,11 @@
           <PaddingBottom>2pt</PaddingBottom>
         </Style>
       </Textbox>
-      <Line Name="Line1">
-        <Top>4.01158cm</Top>
-        <Left>0.00312cm</Left>
-        <Height>0cm</Height>
-        <Width>4.69918cm</Width>
-        <ZIndex>24</ZIndex>
-        <Style>
-          <Border>
-            <Style>Solid</Style>
-          </Border>
-        </Style>
-      </Line>
-      <Line Name="Line2">
-        <Top>3.37631cm</Top>
-        <Left>0.00631cm</Left>
-        <Height>0cm</Height>
-        <Width>4.69918cm</Width>
-        <ZIndex>25</ZIndex>
-        <Style>
-          <Border>
-            <Style>Solid</Style>
-          </Border>
-        </Style>
-      </Line>
-      <Line Name="Line3">
-        <Top>5.10547cm</Top>
-        <Left>0.00312cm</Left>
-        <Height>0cm</Height>
-        <Width>4.69918cm</Width>
-        <ZIndex>26</ZIndex>
-        <Style>
-          <Border>
-            <Style>Solid</Style>
-          </Border>
-        </Style>
-      </Line>
-      <Line Name="Line4">
-        <Top>6.23171cm</Top>
-        <Left>0.00951cm</Left>
-        <Height>0cm</Height>
-        <Width>4.69918cm</Width>
-        <ZIndex>27</ZIndex>
-        <Style>
-          <Border>
-            <Style>Solid</Style>
-          </Border>
-        </Style>
-      </Line>
     </ReportItems>
-    <Height>11.12773cm</Height>
+    <Height>12.02607cm</Height>
     <Style />
   </Body>
-  <Width>5.14843cm</Width>
+  <Width>5.25291cm</Width>
   <Page>
     <PageHeight>27.94cm</PageHeight>
     <PageWidth>4.8cm</PageWidth>
@@ -943,98 +920,82 @@
   </Page>
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
-    <DataSource Name="dsReceipt">
+    <DataSource Name="dsReceiptBooking">
       <ConnectionProperties>
         <DataProvider>System.Data.DataSet</DataProvider>
         <ConnectString>/* Local Connection */</ConnectString>
       </ConnectionProperties>
-      <rd:DataSourceID>8fbe3be6-9d34-478e-80f4-6cd45d0c6e6a</rd:DataSourceID>
+      <rd:DataSourceID>6cae7f07-b939-4a12-b09b-4c77973a54b6</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
-    <DataSet Name="dsReceipt">
+    <DataSet Name="dsReceiptBooking">
       <Query>
-        <DataSourceName>dsReceipt</DataSourceName>
+        <DataSourceName>dsReceiptBooking</DataSourceName>
         <CommandText>/* Local Query */</CommandText>
       </Query>
       <Fields>
-        <Field Name="TransactionId">
-          <DataField>TransactionId</DataField>
+        <Field Name="InvoiceNo">
+          <DataField>InvoiceNo</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="TransactionType">
-          <DataField>TransactionType</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="CardTransactionId">
-          <DataField>CardTransactionId</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="IsVoid">
-          <DataField>IsVoid</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="IsCard">
-          <DataField>IsCard</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="Points">
-          <DataField>Points</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="Discounts">
-          <DataField>Discounts</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="VAT">
-          <DataField>VAT</DataField>
+        <Field Name="BookingNo">
+          <DataField>BookingNo</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="Total">
           <DataField>Total</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="DiscountedTotal">
-          <DataField>DiscountedTotal</DataField>
+        <Field Name="Change">
+          <DataField>Change</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Vatable">
+          <DataField>Vatable</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="VAT">
+          <DataField>VAT</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="CashReceived">
           <DataField>CashReceived</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Change">
-          <DataField>Change</DataField>
+        <Field Name="CardTransactionId">
+          <DataField>CardTransactionId</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="LoyaltyCardId">
-          <DataField>LoyaltyCardId</DataField>
+        <Field Name="UpdatedBy">
+          <DataField>UpdatedBy</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="InvoiceNo">
-          <DataField>InvoiceNo</DataField>
+        <Field Name="CheckInDate">
+          <DataField>CheckInDate</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="CreatedBy">
-          <DataField>CreatedBy</DataField>
+        <Field Name="CheckOutDate">
+          <DataField>CheckOutDate</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="GasType">
-          <DataField>GasType</DataField>
+        <Field Name="RoomNumber">
+          <DataField>RoomNumber</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Value">
-          <DataField>Value</DataField>
+        <Field Name="RoomType">
+          <DataField>RoomType</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="SubTotal">
-          <DataField>SubTotal</DataField>
+        <Field Name="PricePerNight">
+          <DataField>PricePerNight</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
       <rd:DataSetInfo>
-        <rd:DataSetName>dsReceipt</rd:DataSetName>
-        <rd:SchemaPath>C:\Users\cboado\Source\Repos\NCMS-wasm\WindowsFormsForRDLCDesign\dsReceipt.xsd</rd:SchemaPath>
-        <rd:TableName>dsReceipt</rd:TableName>
+        <rd:DataSetName>dsReceiptBooking</rd:DataSetName>
+        <rd:SchemaPath>C:\Users\cboado\Source\Repos\NCMS-wasm\WindowsFormsForRDLCDesign\dsReceiptBooking.xsd</rd:SchemaPath>
+        <rd:TableName>dsReceiptBooking</rd:TableName>
         <rd:TableAdapterFillMethod />
         <rd:TableAdapterGetDataMethod />
         <rd:TableAdapterName />
@@ -1042,5 +1003,5 @@
     </DataSet>
   </DataSets>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
-  <rd:ReportID>ddc57e70-a390-423c-8d52-f22a58315dcf</rd:ReportID>
+  <rd:ReportID>675deb3a-5d98-495c-b57d-95c3764c0e66</rd:ReportID>
 </Report>

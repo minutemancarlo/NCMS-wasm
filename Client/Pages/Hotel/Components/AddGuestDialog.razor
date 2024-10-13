@@ -2,6 +2,8 @@
 @using NCMS_wasm.Client.Pages.Validations
 @using MudBlazor.Extensions
 @using MudExtensions.Utilities
+@using Append.Blazor.Printing
+@inject IPrintingService PrintingService
 
 <MudTypographyProvider />
 <MudDialog>
@@ -90,23 +92,24 @@
                             {
                                 <MudText Color="Color.Error" Class="py-2">No room type selected.</MudText>
                             }
-
-                            <MudDataGrid Items="@roomsList.Where(x=> (x.Status == RoomStatus.Available || x.Status == RoomStatus.Reservation) && (x.Type == selectType || _selectedItems.Any(s => s.RoomId == x.RoomId)) ).ToList()" T="RoomInfo" Dense HorizontalScrollbar="true" Class="w-100 py-2"
-                                         @bind-SelectedItems="_selectedItems" SelectOnRowClick="@(!isReadOnly)" RowClass="cursor-pointer"
-                                         MultiSelection="true" ColumnResizeMode="ResizeMode.Container">
-                                <Columns>
-                                    <TemplateColumn T="RoomInfo" Tag="@("select-column")"
-                                                    HeaderStyle="background-color: #1abc9c; color: white;"
-                                                    Sortable="false"
-                                                    ShowColumnOptions="false"
-                                                    Hidden="@isReadOnly"
-                                                    Filterable="false"
-                                                    Hideable="false">
-                                        <CellTemplate>
-                                            @{
-                                                context.Item.Selected = context.Selected;
-                                            }
-                                            <MudSwitch @bind-Value="context.Item.Selected"
+                            @if (!isReadOnly)
+                            {
+                                <MudDataGrid Items="@roomsList.Where(x=> (x.Status == RoomStatus.Available || x.Status == RoomStatus.Reservation) && (x.Type == selectType || _selectedItems.Any(s => s.RoomId == x.RoomId)) ).ToList()" T="RoomInfo" Dense HorizontalScrollbar="true" Class="w-100 py-2"
+                                @bind-SelectedItems="_selectedItems" SelectOnRowClick="@(!isReadOnly)" RowClass="cursor-pointer"
+                                MultiSelection="true" ColumnResizeMode="ResizeMode.Container">
+                                    <Columns>
+                                        <TemplateColumn T="RoomInfo" Tag="@("select-column")"
+                                        HeaderStyle="background-color: #1abc9c; color: white;"
+                                        Sortable="false"
+                                        ShowColumnOptions="false"
+                                        Hidden="@isReadOnly"
+                                        Filterable="false"
+                                        Hideable="false">
+                                            <CellTemplate>
+                                                @{
+                                                    context.Item.Selected = context.Selected;
+                                                }
+                                                <MudSwitch @bind-Value="context.Item.Selected"
                                                        ThumbIcon="@(context.Selected==true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)"
                                                        ThumbIconColor="@(context.Selected==true ? Color.Success : Color.Error)"></MudSwitch>
                                         </CellTemplate>
@@ -138,7 +141,7 @@
                                     <MudDataGridPager T="RoomInfo" />
                                 </PagerContent>
                             </MudDataGrid>
-
+                            }
                         </MudPaper>
                     </ChildContent>
                 </MudStepExtended>
@@ -232,18 +235,7 @@
 
 
     </DialogContent>
-    @*   <DialogActions>
-    <MudButton OnClick="Cancel">Cancel</MudButton>
-    <MudLoadingButton Variant="Variant.Filled"
-    Color="Color.Success"
-    Size="Size.Large"
-    OnClick="OnSubmit"
-    Loading="@(_loading)"
-    ButtonType="ButtonType.Button">
-    <LoadingContent>Submitting...</LoadingContent>
-    <ChildContent>Submit</ChildContent>
-    </MudLoadingButton>
-    </DialogActions> *@
+  
 </MudDialog>
 
 @code {
@@ -320,6 +312,7 @@
                 {
                     var result = await response.Content.ReadAsStringAsync();
                     Snackbar.Add($"Booking has been {(Action == "Add" ? "created" : "updated")}.", Severity.Success);
+                    await OnPrintReceipt(result);
                     MudDialog.Close(DialogResult.Ok(true));
                 }
                 else
@@ -391,11 +384,7 @@
                 bookingInfo.Guests.BookingType = BookingType.Booked;
                 selectType = bookingInfo.Room.FirstOrDefault().Type;
                 _selectedItems.Add(bookingInfo.Room.FirstOrDefault());
-                if (tempGuestInfo.CheckInDate.HasValue && tempGuestInfo.CheckOutDate.HasValue)
-                {
-                    TimeSpan? difference = tempGuestInfo.CheckOutDate.Value - tempGuestInfo.CheckInDate.Value;
-                    Days = (int)difference.Value.TotalDays + 1;
-                }
+               
             }
             else
             {
@@ -412,6 +401,32 @@
 
     }
 
+    private async Task OnPrintReceipt(string invoiceNo)
+    {
+        try
+        {
+
+            var url = $"Report/GetReceiptPrintBooking?invoiceNo={invoiceNo}";
+
+            var response = await httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var pdfContent = await response.Content.ReadAsByteArrayAsync();
+                // var blobUrl = $"data:application/pdf;base64,{Convert.ToBase64String(pdfContent)}";
+                PrintingService.Print(new PrintOptions(Convert.ToBase64String(pdfContent)) { Base64 = true });
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to generate the report. Status Code: {response.StatusCode}. Message: {errorMessage}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to generate the report. Error Info: {ex.Message}", Severity.Error);
+        }
+    }
 
 
     private async Task ScanCard(int RoomNumber)
@@ -498,6 +513,12 @@
                 tempGuestInfo.CheckInDate = tempGuestInfo.CheckInDate?.Date.AddHours(14);
                 tempGuestInfo.CheckOutDate = tempGuestInfo.CheckOutDate?.Date.AddHours(11);
                 bookingInfo.Guests = tempGuestInfo;
+                if (tempGuestInfo.CheckInDate.HasValue && tempGuestInfo.CheckOutDate.HasValue)
+                {
+                    TimeSpan? difference = tempGuestInfo.CheckOutDate.Value - tempGuestInfo.CheckInDate.Value;
+                    Days = (int)difference.Value.TotalDays + 1;
+                    Snackbar.Add($"{Days}");
+                }
             }
             return !guestForm.IsValid;
 
@@ -507,7 +528,7 @@
             _loading = true;
             await Task.Delay(1000);
             _loading = false;
-
+           
             return _selectedItems.Count == 0;
 
 
