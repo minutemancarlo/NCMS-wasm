@@ -27,7 +27,7 @@ namespace ArduinoWebAPI.Controllers
         {
             try
             {
-                int deviceId = await _deviceRepository.SaveHandshakeDetails(details);                
+                int deviceId = await _deviceRepository.SaveHandshakeDetailsAsync(details);                
                 return Ok(deviceId);
             }
             catch (Exception ex)
@@ -36,5 +36,21 @@ namespace ArduinoWebAPI.Controllers
                 return BadRequest($"Exception occurred while adding/updating device: {ex.Message}");
             }
         }
+
+        [HttpPost("PostCheckCard")]
+        public async Task<ActionResult<bool>> PostCheckCard(HandshakeDetails details)
+        {
+            try
+            {
+                bool deviceId = await _deviceRepository.PostCheckCardAsync(details);
+                return Ok(deviceId);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest($"Exception occurred while adding/updating device: {ex.Message}");
+            }
+        }
+
     }
 }

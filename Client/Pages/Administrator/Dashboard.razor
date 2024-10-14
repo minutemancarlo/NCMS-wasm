@@ -188,7 +188,7 @@
             string startDate = $"{_dateRange_Gas.Start:yyyy-MM-dd}";
             string endDate = $"{_dateRange_Gas.End:yyyy-MM-dd}";
 
-            var url = $"https://localhost:44319/Gas/GetSubTransactionsByDate?startDate={startDate}&endDate={endDate}";
+            var url = $"Gas/GetSubTransactionsByDate?startDate={startDate}&endDate={endDate}";
 
             subTransaction = await httpClient.GetFromJsonAsync<List<SubTransaction>>(url);
             GasRevenue = subTransaction.Sum(x => x.SubTotal);

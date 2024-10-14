@@ -115,7 +115,7 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
-                _fileLogger.Log($"Exception Occured in Endpoint [GetEmployeeInfoReport]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+                _fileLogger.Log($"Exception Occured in Endpoint [GetEmployeeInfoReport]: {ex.Message}, {ex.Source} , {ex.InnerException}, {ex.StackTrace}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
                 return StatusCode(500, "An error occurred while generating the report.");
             }
         }

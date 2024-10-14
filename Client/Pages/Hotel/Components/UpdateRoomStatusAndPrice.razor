@@ -51,9 +51,6 @@
         {
             
             roomInfo.UpdatedBy = userId;
-          
-
-
             var response = await httpClient.PostAsJsonAsync("HotelManagement/UpdatedPriceAndStatus", roomInfo);
             response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)

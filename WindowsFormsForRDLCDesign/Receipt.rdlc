@@ -162,7 +162,7 @@
           <Paragraph>
             <TextRuns>
               <TextRun>
-                <Value>=Globals!ExecutionTime</Value>
+                <Value>=Now()</Value>
                 <Style>
                   <FontSize>8pt</FontSize>
                 </Style>
@@ -669,8 +669,12 @@
           <Paragraph>
             <TextRuns>
               <TextRun>
-                <Value>=IIF(IsNothing(First(Fields!Total.Value, "dsReceipt")), 0, First(Fields!Total.Value, "dsReceipt")) - 
- IIF(IsNothing(First(Fields!VAT.Value, "dsReceipt")), 0, First(Fields!VAT.Value, "dsReceipt"))</Value>
+                <Value>=Switch(
+    IsNothing(First(Fields!Total.Value, "dsReceipt")) AND IsNothing(First(Fields!VAT.Value, "dsReceipt")), 0,
+    IsNothing(First(Fields!Total.Value, "dsReceipt")), 0 - First(Fields!VAT.Value, "dsReceipt"),
+    IsNothing(First(Fields!VAT.Value, "dsReceipt")), First(Fields!Total.Value, "dsReceipt") - 0,
+    True, First(Fields!Total.Value, "dsReceipt") - First(Fields!VAT.Value, "dsReceipt")
+)</Value>
                 <Style>
                   <FontSize>8pt</FontSize>
                 </Style>
