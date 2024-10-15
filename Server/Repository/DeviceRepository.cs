@@ -18,6 +18,13 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.QueryAsync<Device>(query);
         }
 
+
+        public async Task<bool> GetLeakResult()
+        {
+            string query = "SELECT DeviceValue FROM Devices Where DeviceType=1";
+            var res = await _dbConnection.ExecuteScalarAsync<int>(query);
+            return res < 750;
+        }
         public async Task<int> AddDeviceAsync(Device device)
         {
             var parameters = new DynamicParameters();

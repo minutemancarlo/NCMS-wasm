@@ -1,6 +1,8 @@
 ﻿@page "/gas-cards"
 @using NCMS_wasm.Shared
+@using MudBlazor.Extensions
 @using NCMS_wasm.Client.Pages.Gas.Components
+<LeakPopUp />
 @attribute [Authorize(Roles = "Gas Employee")]
 <PageTitle>Card Management | NCMS</PageTitle>
 <MudStack>

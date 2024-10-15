@@ -41,6 +41,25 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        
+          [HttpGet("GetLeakResult")]
+        public async Task<ActionResult<bool>> GetLeakResult()
+        {
+            try
+            {
+                var result = await _deviceRepository.GetLeakResult();
+             
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetLeakResult]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "DevicesController");
+
+                _logger.LogError($"Exception occurred while retrieving network devices: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving network devices: {ex.Message}");
+            }
+        }
+
         [HttpPost("AddUpdateDevice")]
         public async Task<ActionResult<int>> AddUpdateDevice(Device device)
         {

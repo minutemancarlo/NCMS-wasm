@@ -19,7 +19,8 @@ namespace ArduinoWebAPI.Repository
             parameters.Add("@LocalIP", handshakeDetails.LocalIp);
             parameters.Add("@MacAddress", handshakeDetails.MacAddress);
             parameters.Add("@IsConnected", handshakeDetails.IsConnected);
-
+            parameters.Add("@DeviceValue", handshakeDetails.DeviceValue);
+            parameters.Add("@DeviceType", handshakeDetails.DeviceType);
             // Execute the stored procedure
             return await _dbConnection.ExecuteScalarAsync<int>("AddUpdateDevice", parameters, commandType: CommandType.StoredProcedure);
         }
