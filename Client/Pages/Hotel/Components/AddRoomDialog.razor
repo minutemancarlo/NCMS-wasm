@@ -1,5 +1,10 @@
 ﻿@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Hotel.Components
 @using NCMS_wasm.Client.Pages.Validations
+@using MudExtensions
+
+<MudTypographyProvider />
+
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
@@ -9,22 +14,78 @@
     </TitleContent>
     <DialogContent>
         @* <MudForm @ref="form" Model="@rfidInfo" Validation="@(modelValidator.ValidateValue)" ValidationDelay="0"> *@
-        <MudForm @ref="form" Model="@rooms">
-            <MudTextField @bind-Value="rooms.RoomNumber" Label="Room Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-            <MudTextField @bind-Value="rooms.RoomDescription" Label="Room Description" Lines="3" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-            <MudNumericField Class="py-1" @bind-Value="rooms.PricePerNight" Label="Price Per Night" Variant="Variant.Outlined" HideSpinButtons Min="1" Margin="Margin.Dense" />
-            <MudSelect T="RoomType" Label="Room Type" @bind-Value="rooms.Type" Variant="Variant.Outlined"
-                       AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense">
-                <MudSelectItem Value="@RoomType.Twin" />
-                <MudSelectItem Value="@RoomType.Double_Twin" />
-                <MudSelectItem Value="@RoomType.Triple" />
-                <MudSelectItem Value="@RoomType.Deluxe_Double" />
-                <MudSelectItem Value="@RoomType.Superior_Queen" />
-                <MudSelectItem Value="@RoomType.Suite" />
-                <MudSelectItem Value="@RoomType.King_Suite" />
-            </MudSelect>
-            <MudNumericField Class="py-1" @bind-Value="rooms.MaxGuest" Label="Max Guest" Variant="Variant.Outlined" HideSpinButtons Min="1" Max="99" Margin="Margin.Dense" />
-        </MudForm>
+        <MudItem Class="pa-2">
+            <MudForm @ref="form" Model="@rooms">
+
+                <MudSelect T="RoomType" Label="Room Type" @bind-Value="rooms.Type" Variant="Variant.Outlined"
+                           AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense">
+                    @foreach (var type in Enum.GetValues(typeof(RoomType)).Cast<RoomType>())
+                    {
+                        <MudSelectItem Value="type">@type.ToString().Replace("_", " ")</MudSelectItem>
+                    }
+                </MudSelect>
+
+                <MudTextField @bind-Value="rooms.RoomNumber" Label="Room Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                <MudNumericField Class="py-1" @bind-Value="rooms.PricePerNight" Label="Price Per Night" Variant="Variant.Outlined" HideSpinButtons Min="1" Margin="Margin.Dense" />
+                <MudNumericField Class="py-1" @bind-Value="rooms.MaxGuest" Label="Max Guest" Variant="Variant.Outlined" HideSpinButtons Min="1" Max="99" Margin="Margin.Dense" />
+                <MudTextField Variant="Variant.Outlined" @bind-Value="rooms.RoomDescription" Label="Room Description" />
+                <MudTextField Variant="Variant.Outlined" @bind-Value="rooms.Features" Lines="5" HelperText="Comma separated. e.g Wifi Access,Slippers,Airconditioned" Label="Features" />
+                <MudStack Spacing="2" Row AlignItems="AlignItems.Baseline" Justify="Justify.Center">
+                    <MudStack Class="float-start" Spacing="0">
+                        <MudTextM3 Typo="TypoM3.Body" Class="text-wrap" Size="Size.Small">
+                            @Thumbnail
+                        </MudTextM3>
+                        <MudFileUpload T="IBrowserFile" Accept=".jpg, .jpeg" FilesChanged="HandleThumbNail">
+                            <ActivatorContent>
+                                <MudLoadingButton Variant="Variant.Filled"
+                                                  Color="Color.Info"
+                                                  Size="Size.Small"
+                                                  StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                  Loading="@(isLoadingThumbnail)"
+                                                  FullWidth
+                                                  ButtonType="ButtonType.Button">
+                                    <LoadingContent>Uploading...</LoadingContent>
+                                    <ChildContent>Select Room Thumbnail</ChildContent>
+                                </MudLoadingButton>
+
+                            </ActivatorContent>
+                        </MudFileUpload>
+                    </MudStack>
+                    <MudStack Class="float-end" Spacing="0">
+                        <MudTextM3 Typo="TypoM3.Body" Class="text-wrap" Size="Size.Small">
+                            @Image
+                        </MudTextM3>
+                        <MudFileUpload T="IBrowserFile" Accept=".jpg, .jpeg" FilesChanged="HandleImage">
+                            <ActivatorContent>
+                                <MudLoadingButton Variant="Variant.Filled"
+                                                  Color="Color.Info"
+                                                  Size="Size.Small"
+                                                  FullWidth
+                                                  StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                  Loading="@(isLoadingImage)"
+                                                  ButtonType="ButtonType.Button">
+                                    <LoadingContent>Uploading...</LoadingContent>
+                                    <ChildContent>Select Room AR Image</ChildContent>
+                                </MudLoadingButton>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                    </MudStack>
+
+                    @*   <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+
+                    </MudTextM3>
+                    <MudFileUpload T="IBrowserFile" FilesChanged="HandleAR">
+                    <ActivatorContent>
+                    <MudButton Variant="Variant.Filled"
+                    Color="Color.Primary"
+                    StartIcon="@Icons.Material.Filled.CloudUpload">
+                    Select Room ARView Image
+                    </MudButton>
+                    </ActivatorContent>
+                    </MudFileUpload> *@
+                </MudStack>
+            </MudForm>
+        </MudItem>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -45,23 +106,94 @@
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] IJSRuntime JSRuntime { get; set; }
+    [Inject] IDialogService? DialogService { get; set; }
+    [Parameter] public string userId { get; set; }
     MudForm form;
-    private HotelRoom rooms { get; set; }
+    private RoomInfo rooms { get; set; }
     private bool _loading = false;
     private IEnumerable<RoomType> roomType { get; set; } = new HashSet<RoomType>();
-    private List<HotelRoom> roomsList = new List<HotelRoom>();
+    private List<RoomInfo> roomsList = new List<RoomInfo>();
+    private bool isLoading = false;
+    string? stringValue;
+    private string? Thumbnail;
+    private string? Image;
+    private bool isLoadingImage = false;
+    private bool isLoadingThumbnail = false;
+
+
+    IBrowserFile _files;
+    private async Task HandleThumbNail(IBrowserFile file)
+    {
+        try
+        {
+            isLoadingThumbnail = true;
+            // Read the content of the file as a byte array
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.OpenReadStream(20971520).CopyToAsync(memoryStream); //Maximum file size is 20 mb
+                var bytes = memoryStream.ToArray();
+
+                // Convert the byte array to a base64 string
+                var base64String = Convert.ToBase64String(bytes);
+                Thumbnail = file.Name;
+                // Construct the data URL
+                rooms.Thumbnail =base64String;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Maximum thumbnail image reached", MudBlazor.Severity.Success);
+        }
+        finally
+        {
+            isLoadingThumbnail = false;
+        }
+
+    }
+    private async Task HandleImage(IBrowserFile file)
+    {
+        try
+        {
+            isLoadingImage = true;
+            // Read the content of the file as a byte array
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.OpenReadStream(20971520).CopyToAsync(memoryStream); //Maximum file size is 20 mb
+                var bytes = memoryStream.ToArray();
+
+                // Convert the byte array to a base64 string
+                var base64String = Convert.ToBase64String(bytes);
+                Image = file.Name;
+                // Construct the data URL
+                rooms.Image = base64String;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Maximum thumbnail image reached", MudBlazor.Severity.Success);
+        }
+        finally
+        {
+            isLoadingImage = false;
+        }
+
+    }
+
 
     private async Task OnSubmit()
     {
         _loading = true;
         try
         {
-            rooms.IsAvailable = true;
             rooms.Status = RoomStatus.Available;
-            rooms.CreatedBy = "Test";
-            rooms.CreatedOn = DateTime.Now;
-            rooms.UpdatedBy = "Test";
-            rooms.UpdatedOn = DateTime.Now;
+            rooms.CreatedBy = userId;
+            if (await IsRoomNumberExist(rooms.RoomNumber))
+            {
+                Snackbar.Add($"Room Number {rooms.RoomNumber} already exist",Severity.Error);
+                return;
+            }
+
+
             var response = await httpClient.PostAsJsonAsync("HotelManagement/AddRooms", rooms);
             response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
@@ -86,18 +218,58 @@
         {
             _loading = false;
         }
-        
+
 
     }
+
+
+   
 
     protected override async Task OnInitializedAsync()
     {
-        rooms = new HotelRoom();
+        rooms = new RoomInfo();
+        await LoadRoomsList();
         await base.OnInitializedAsync();
     }
 
+    private async Task LoadRoomsList()
+    {
+        isLoading = true;
+        try
+        {
+            roomsList = await httpClient.GetFromJsonAsync<List<RoomInfo>>($"HotelManagement/GetRooms");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to retrieve rooms: {ex.Message}", Severity.Error);
+
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task<bool> IsRoomNumberExist(int roomNumber)
+    {        
+        try
+        {
+            return await httpClient.GetFromJsonAsync<bool>($"HotelManagement/GetRoomNumberExist?roomNumber={roomNumber}");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to verify room existence: {ex.Message}", Severity.Error);
+
+            return true;
+
+         
+        }
+       
+    }
 
 
+    private Func<RoomInfo, string> convertFunc = ci => ci?.Type.ToString().Replace("_", " ");
 
 
     void Cancel() => MudDialog.Cancel();

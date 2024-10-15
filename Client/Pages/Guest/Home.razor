@@ -1,86 +1,311 @@
 ﻿@page "/Home"
+@layout NoLayout
+@using MudExtensions
+@using MudBlazor.Services
+@using NCMS_wasm.Shared
 
-<MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-width-full">
-    <MudPaper Elevation="4">
-        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
-            <MudDatePicker Label="Check In" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
-            <MudDatePicker Label="Check Out" @bind-Date="date" Variant="Variant.Outlined" Margin="Margin.Dense" />
-            <MudNumericField @bind-Value="IntValue" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
-            <MudSelect T="string" Label="Guests" Variant="Variant.Outlined" Margin="Margin.Dense">
-                <MudSelectItem Value="@("Children")" />
-                <MudSelectItem Value="@("Adults")" />
-            </MudSelect>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/rooms" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" IconSize="Size.Large">Search</MudButton>
-        </MudStack>
-    </MudPaper>
-    <MudCarousel Class="mud-width-full py-3" Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
-        @for (int i = 1; i <= 8; i++)
-        {
-            string image = $"images/{i}.jpg";
-            <MudCarouselItem Transition="transition">
-                <div class="d-flex" style="height:100%; width: 100%">
-                    <MudImage ObjectFit="ObjectFit.Cover" Src="@image" Style="height:100%; width: 100%" />
-                </div>
-            </MudCarouselItem>
-        }
+@implements IBrowserViewportObserver
+@implements IAsyncDisposable
+
+<MudTypographyProvider />
+<PageTitle>Home - Mid Point Hotel</PageTitle>
+<MudStack AlignItems="AlignItems.Center" Class="w-100 pt-3">
+    <MudBreakpointProvider>
+        @* DEKSTOP VIEW *@
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+            <MudGrid Class="pl-3" Spacing="3" Justify="Justify.Center">
+                <MudItem xs="8">
+                    <MudCarousel Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+                        @for (int i = 1; i <= 8; i++)
+                        {
+                            string image = $"images/{i}.jpg";
+                            <MudCarouselItem Transition="transition">
+                                <div class="d-flex" style="height:100%; width: 100%">
+                                    <MudImage ObjectFit="ObjectFit.Cover" Src="@image" Style="height:100%; width: 100%" />
+                                </div>
+                            </MudCarouselItem>
+                        }
+                    </MudCarousel>
+                </MudItem>
+                <MudItem xs="4">
+                    <br />
+                    <MudPaper Elevation="4" Class="w-100" Outlined="true">
+                        <MudStack Row>
+                            <MudImage Src="images/illustrations/travelers_re_y25a.svg" Height="150" />
+                            <MudStack>
+                                <MudText Typo="Typo.h6" Class="fw-bold text-center">Book your room now</MudText>
+                                <MudText Typo="Typo.body1" Class="text-center">
+                                    Don't worry, our hotel offers the best
+                                    affordable rates you can ever find.
+                                </MudText>
+                            </MudStack>
+                        </MudStack>
+                        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
+                            <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Check In" @bind-Date="availability.dateFrom" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Check Out" @bind-Date="availability.dateTo"
+                                           AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" 
+                            IsDateDisabledFunc="@((DateTime dt) => dt.Date <= availability.dateFrom)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </MudStack>
+                        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
+                            <MudNumericField @bind-Value="availability.Rooms" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                        </MudStack>
+                        <MudText Typo="Typo.subtitle2" Class="pl-2">Guests</MudText>
+                        <MudStack Class="pa-2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+                            <MudStack Row>
+                                <MudNumericField @bind-Value="availability.Adults" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                                <MudNumericField @bind-Value="availability.Children" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                            </MudStack>
+                            <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="NavigateToRoomsList" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" FullWidth IconSize="Size.Large">Check Availability</MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+
+            </MudGrid>
+        </MudHidden>
+
+        @* MOBILE VIEW *@
+
+        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+            <MudGrid Class="pl-3" Spacing="1" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudCarousel Style="height:450px;width:100%;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+                        @for (int i = 1; i <= 8; i++)
+                        {
+                            string image = $"images/{i}.jpg";
+                            <MudCarouselItem Transition="transition">
+                                <div class="d-flex" style="height:100%; width: 100%">
+                                    <MudImage ObjectFit="ObjectFit.Cover" Src="@image" Style="height:100%; width: 100%" />
+                                </div>
+                            </MudCarouselItem>
+                        }
+                    </MudCarousel>
+                </MudItem>
+                <MudItem xs="12">
+
+                    <MudPaper Elevation="4" Outlined="true">
+                        <MudStack Row>
+                            <MudImage Src="images/illustrations/travelers_re_y25a.svg" Height="150" />
+                            <MudStack>
+                                <MudText Typo="Typo.h6" Class="fw-bold text-center mx-0 px-0">Book your room now</MudText>
+                                <MudText Typo="Typo.body1" Class="text-center">
+                                    Don't worry, our hotel offers the best
+                                    affordable rates you can ever find.
+                                </MudText>
+                            </MudStack>
+                        </MudStack>
+                        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
+                            <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Check In" @bind-Date="availability.dateFrom" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Check Out" @bind-Date="availability.dateTo"
+                                           AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" 
+                            IsDateDisabledFunc="@((DateTime dt) => dt.Date <= availability.dateFrom)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </MudStack>
+                        <MudStack Row Class="pa-2" AlignItems="AlignItems.Center">
+                            <MudNumericField @bind-Value="availability.Rooms" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                        </MudStack>
+                        <MudText Typo="Typo.subtitle2" Class="pl-2">Guests</MudText>
+                        <MudStack Class="pa-2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+                            <MudStack Row>
+                                <MudNumericField @bind-Value="availability.Adults" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                                <MudNumericField @bind-Value="availability.Children" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                            </MudStack>
+                            <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="NavigateToRoomsList" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Search" FullWidth IconSize="Size.Large">Check Availability</MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudHidden>
+    </MudBreakpointProvider>
+    <hr class="horizontal">
+    <MudBreakpointProvider>
+        @* DESKTOP VIEW *@
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+            <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="0">
+                <MudItem xs="8">
+                    <MudItem xs="8" Class="float-end">
+                        <MudItem xs="8">
+                            <MudText Typo="Typo.h6">
+                                Enjoy your stay
+                                at our hotel
+                            </MudText>
+                            <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                We are more than being a hotel because we are able
+                                to combine the quality standard of a hotel with the
+                                advantages of an apartment.
+                            </MudTextM3>
+                        </MudItem>
+                        <MudStack Row>
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudIcon Icon="fas fa-clock" Size="Size.Medium" Color="Color.Warning" />
+                                    </CardHeaderAvatar>
+                                    <CardHeaderContent>
+                                        <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                            24 hours Room Service
+                                        </MudTextM3>
+                                        <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                            You have access to 24-hours a day room service at our hotel.
+                                        </MudTextM3>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                            </MudCard>
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudIcon Icon="fas fa-wifi" Size="Size.Medium" Color="Color.Warning" />
+                                    </CardHeaderAvatar>
+                                    <CardHeaderContent>
+                                        <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                            Free Wi-Fi Access
+                                        </MudTextM3>
+                                        <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                            You have access to 24-hours free Wi-Fi services irrespective of any room.
+                                        </MudTextM3>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                            </MudCard>
+                        </MudStack>
+                        <MudStack Row Justify="Justify.SpaceEvenly">
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudIcon Icon="fas fa-bed" Size="Size.Medium" Color="Color.Warning" />
+                                    </CardHeaderAvatar>
+                                    <CardHeaderContent>
+                                        <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                            Room Amenities
+                                        </MudTextM3>
+                                        <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                            All rooms include premium toiletries, bathrobes, and slippers for comfort.
+                                        </MudTextM3>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                            </MudCard>
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudIcon Icon="fas fa-hamburger" Size="Size.Medium" Color="Color.Warning" />
+                                    </CardHeaderAvatar>
+                                    <CardHeaderContent>
+                                        <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                            Near Fast Food Chains
+                                        </MudTextM3>
+                                        <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                            Our hotel is conveniently located near popular fast food chains, perfect for a quick bite.
+                                        </MudTextM3>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                            </MudCard>
+
+                        </MudStack>
+                    </MudItem>
+                </MudItem>
+                <MudItem xs="4" Class="w-100">
+                    <MudImage Src="images/illustrations/staying_in_i-80-u.svg" Height="300" ObjectFit="ObjectFit.Cover" Class="float-start" />
+                </MudItem>
+            </MudStack>
+        </MudHidden>
+        @* MOBILE VIEW *@
+        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+            <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="pl-1" Spacing="0">
+                <MudStack>
+                    <MudImage Src="images/illustrations/staying_in_i-80-u.svg" Height="200" ObjectFit="ObjectFit.Contain" Class="float-start" />
+                    <MudStack Class="pr-3 pl-3" AlignItems="AlignItems.Start">
+                        <MudText Typo="Typo.h6">
+                            Enjoy your stay
+                            at our hotel
+                        </MudText>
+                        <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                            We are more than being a hotel because we are able
+                            to combine the quality standard of a hotel with the
+                            advantages of an apartment.
+                        </MudTextM3>
+                    </MudStack>
+                    <MudStack Row>
+                        <MudCard Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudIcon Icon="fas fa-clock" Size="Size.Medium" Color="Color.Warning" />
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                        24 hours Room Service
+                                    </MudTextM3>
+                                    <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                        You have access to 24-hours a day room service at our hotel.
+                                    </MudTextM3>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                        </MudCard>
+                        <MudCard Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudIcon Icon="fas fa-wifi" Size="Size.Medium" Color="Color.Warning" />
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                        Free Wi-Fi Access
+                                    </MudTextM3>
+                                    <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                        You have access to 24-hours free Wi-Fi services irrespective of any room.
+                                    </MudTextM3>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                        </MudCard>
+                    </MudStack>
+                    <MudStack Row>
+                        <MudCard Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudIcon Icon="fas fa-bed" Size="Size.Medium" Color="Color.Warning" />
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                        Room Amenities
+                                    </MudTextM3>
+                                    <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                        All rooms include premium toiletries, bathrobes, and slippers for comfort.
+                                    </MudTextM3>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                        </MudCard>
+                        <MudCard Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudIcon Icon="fas fa-hamburger" Size="Size.Medium" Color="Color.Warning" />
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudTextM3 Typo="TypoM3.Headline" Class="fw-bold" Size="Size.Small">
+                                        Near Fast Food Chains
+                                    </MudTextM3>
+                                    <MudTextM3 Typo="TypoM3.Headline" Size="Size.Small">
+                                        Our hotel is conveniently located near popular fast food chains, perfect for a quick bite.
+                                    </MudTextM3>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                        </MudCard>
+                    </MudStack>
+
+                </MudStack>
 
 
-
-    </MudCarousel>
-
-    @* <MudItem Class="text-center text-lg-start bg-body-tertiary text-muted wh-100" xs="8">
-    <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0">
-    <MudText Typo="Typo.caption">Get connected with us on social networks:</MudText>
-    <MudSpacer />
-    <MudIconButton Icon="fab fa-facebook-f" Class="me-4 text-reset" />
-    <MudIconButton Icon="fab fa-twitter" Class="me-4 text-reset" />
-    <MudIconButton Icon="fab fa-google" Class="me-4 text-reset" />
-    <MudIconButton Icon="fab fa-instagram" Class="me-4 text-reset" />
-    </MudStack>
-    <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-    <MudStack Spacing="0" >
-    <MudText Typo="Typo.h6"><MudIcon Icon="fas fa-gem me-3"></MudIcon>Company Name</MudText>
-    <MudText Typo="Typo.body1">
-    Here you can use rows and columns to organize your footer content. Lorem ipsum
-    dolor sit amet, consectetur adipisicing elit.
-    </MudText>
-    </MudStack>
-    <MudStack>
-    <MudText Typo="Typo.h6">Services</MudText>
-    <MudText Typo="Typo.body1">Rooms</MudText>
-    <MudText Typo="Typo.body1">Baths</MudText>
-    <MudText Typo="Typo.body1">Sample</MudText>
-    <MudText Typo="Typo.body1">Sample</MudText>
-    </MudStack>
-    <MudStack>
-    <MudText Typo="Typo.h6">Links</MudText>
-    <MudText Typo="Typo.body1">Prices</MudText>
-    <MudText Typo="Typo.body1">Sample</MudText>
-    <MudText Typo="Typo.body1">Faqs</MudText>
-    <MudText Typo="Typo.body1">Help</MudText>
-    </MudStack>
-    <MudStack Wrap="Wrap.NoWrap">
-    <MudText Typo="Typo.h6">Contact</MudText>
-    <MudText Typo="Typo.body1">
-    <MudIcon Icon="fas fa-home me-3"></MudIcon> Brgy. Camp One, Udiao, Rosario, La Union
-    </MudText>
-    <MudText Typo="Typo.body1">
-    <MudIcon Icon="fas fa-envelope me-3"></MudIcon> support@ncmslu.com
-    </MudText>
-    <MudText Typo="Typo.body1">
-    <MudIcon Icon="fas fa-phone me-3"></MudIcon> +63912345678
-    </MudText>
-    </MudStack>
-    </MudStack>
-
-    </MudItem> *@
-   
-    <Footer/>
-
+            </MudStack>
+        </MudHidden>
+    </MudBreakpointProvider>
+    <hr class="horizontal">
+    <MudText Typo="Typo.h3" id="rooms">Our Rooms</MudText>
+    <MudItem xs="8" Class="w-100">        
+        <RoomsCard />
+    </MudItem>
+    <MudText Typo="Typo.h3">About Us</MudText>
+    <About IdLink="about" />
 
 </MudStack>
 
 
+
+
+<MudInputStyler Selector=".availability-card" LabelBackgroundColor="#f1c40f" TextColor="#f3ec4eff" />
 
 
 @code {
@@ -90,6 +315,79 @@
     private bool autocycle = true;
     private Transition transition = Transition.Slide;
     public int IntValue { get; set; } = 1;
+    private Availability availability = new();
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] NavigationManager Navigation { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
 
-    DateTime? date = DateTime.Today;
+    [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
+    private readonly byte[] encryptionKey = Convert.FromBase64String("FVDBUTfXgSp0jG0yiWfPANqRXdyWFvtKsZ623W8Ok7Q=");
+    private List<Breakpoint> _breakpointHistory = new();
+    private Breakpoint _start;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await BrowserViewportService.SubscribeAsync(this, fireImmediately: true);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        availability = new();     
+        await base.OnInitializedAsync();
+    }
+
+    private async Task NavigateToRoomsList()
+    {              
+
+        if (availability.dateFrom.HasValue && availability.dateTo.HasValue)
+        {
+           
+            var plainText = $"{availability.dateFrom:yyyy-MM-dd}|{availability.dateTo:yyyy-MM-dd}|{availability.Rooms}|{availability.Adults}|{availability.Children}";
+            string encryptedParams = await JSRuntime.InvokeAsync<string>("cryptoHelper.encryptData", plainText, encryptionKey);
+            Navigation.NavigateTo($"RoomsList/{encryptedParams}");
+        }
+        else
+        {
+           Snackbar.Add("Please choose check in and check out dates",Severity.Warning);            
+        }             
+    }
+
+
+
+    // BELOW CODE WAS USED FOR DETECTING SCREEN SIZE
+    public async ValueTask DisposeAsync() => await BrowserViewportService.UnsubscribeAsync(this);
+
+    Guid IBrowserViewportObserver.Id { get; } = Guid.NewGuid();
+
+    ResizeOptions IBrowserViewportObserver.ResizeOptions { get; } = new()
+        {
+            ReportRate = 250,
+            NotifyOnBreakpointOnly = true
+        };
+
+    Task IBrowserViewportObserver.NotifyBrowserViewportChangeAsync(BrowserViewportEventArgs browserViewportEventArgs)
+    {
+        if (browserViewportEventArgs.IsImmediate)
+        {
+            _start = browserViewportEventArgs.Breakpoint;
+           // Snackbar.Add($"View Started with {_start}", Severity.Info);
+        }
+        else
+        {
+            _breakpointHistory.Add(browserViewportEventArgs.Breakpoint);
+            Breakpoint last = Breakpoint.Sm;
+            foreach (var item in _breakpointHistory)
+            {
+                last = item;
+            }
+           // Snackbar.Add($"View Changed to {last.ToString()}", Severity.Info);
+        }
+
+        return InvokeAsync(StateHasChanged);
+    }
 }

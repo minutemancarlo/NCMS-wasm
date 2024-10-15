@@ -44,18 +44,17 @@ namespace NCMS_wasm.Server.Repository
                 parameters.Add("@CreatedBy", employeeInfo.CreatedBy);
                 parameters.Add("@CreatedOn", employeeInfo.CreatedOn);
                 parameters.Add("@UpdatedBy", employeeInfo.UpdatedBy);
-                parameters.Add("@UpdatedOn", employeeInfo.UpdatedOn);
+                parameters.Add("@UpdatedOn", employeeInfo.UpdatedOn);                
 
-
-                // Execute the stored procedure
-                return await _dbConnection.ExecuteScalarAsync<int>("AddOrUpdateEmployee", parameters, commandType: CommandType.StoredProcedure);
+            // Execute the stored procedure
+            return await _dbConnection.ExecuteScalarAsync<int>("AddOrUpdateEmployee", parameters, commandType: CommandType.StoredProcedure);
            
 
         }
 
         public async Task<IEnumerable<Employee>> GetAllEmployeesAsync()
         {
-            string query = "SELECT * FROM Employee";
+            string query = "SELECT *,Profile as ImageUrl FROM Employee";
             return await _dbConnection.QueryAsync<Employee>(query);
         }
 
@@ -65,7 +64,7 @@ namespace NCMS_wasm.Server.Repository
             // Adding wildcard characters for partial match using the LIKE operator
             parameters.Add("@Email", "%" + email + "%");
 
-            string query = "SELECT TOP 1 * FROM Employee WHERE Email LIKE @Email";
+            string query = "SELECT TOP 1 *,Profile as ImageUrl FROM Employee WHERE Email LIKE @Email";
 
             var employee = await _dbConnection.QueryFirstOrDefaultAsync<Employee>(query, parameters);
 
@@ -83,13 +82,24 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteAsync(query, parameters);
         }
 
+        public async Task<int> UnBindUserAccountAsync(string employee)
+        {
+            var parameters = new DynamicParameters();
+            
+            parameters.Add("@AuthId", employee);
+
+            string query = "UPDATE Employee SET Auth0_Id = NULL WHERE Auth0_Id = @AuthId";
+
+            return await _dbConnection.ExecuteAsync(query, parameters);
+        }
+
         public async Task<Employee> GetMyInfoAsync(string auth_id)
         {
             var parameters = new DynamicParameters();
             
             parameters.Add("@Id",auth_id);
 
-            string query = "SELECT TOP 1 * FROM Employee WHERE Auth0_Id = @Id";
+            string query = "SELECT TOP 1 *,Profile as ImageUrl FROM Employee WHERE Auth0_Id = @Id";
 
             var employee = await _dbConnection.QueryFirstOrDefaultAsync<Employee>(query, parameters);
 
@@ -102,7 +112,7 @@ namespace NCMS_wasm.Server.Repository
 
             parameters.Add("@Id", idNumber);
 
-            string query = "SELECT TOP 1 * FROM Employee WHERE IDNumber = @Id";
+            string query = "SELECT TOP 1 *,Profile as ImageUrl FROM Employee WHERE IDNumber = @Id";
 
             var employee = await _dbConnection.QueryFirstOrDefaultAsync<Employee>(query, parameters);
 

@@ -1,0 +1,34 @@
+﻿@page "/360View/{image}"
+@layout NoLayout
+
+<MudGrid Justify="Justify.Center" Class="vh-100">
+    <MudItem lg="12">
+        <MudOverlay @bind-Visible="isLoading" DarkBackground AutoClose="false">
+            <MudLoading @bind-Loading="isLoading" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+                        Color="Color.Primary" />
+        </MudOverlay>
+        <a-scene>
+            <a-sky src="images/360images/@Image"></a-sky>
+            <a-entity camera look-controls></a-entity>
+        </a-scene>
+    </MudItem>
+</MudGrid>
+
+
+
+
+@code {
+    [Parameter] public string Image { get; set; }
+    private bool isLoading = true;
+
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        isLoading = false;
+        await base.OnInitializedAsync();
+
+    }
+
+}

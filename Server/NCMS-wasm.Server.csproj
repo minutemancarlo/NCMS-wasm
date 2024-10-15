@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Reports\**" />
+    <Content Remove="Reports\**" />
+    <EmbeddedResource Remove="Reports\**" />
+    <None Remove="Reports\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\Reports\dsEmployee.Designer.cs" />
     <Content Remove="wwwroot\Reports\dsEmployee.xsc" />
     <Content Remove="wwwroot\Reports\dsEmployee.xsd" />
@@ -38,6 +45,7 @@
     <PackageReference Include="EPPlus" Version="7.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.18" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.16" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="System.CodeDom" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
@@ -50,7 +58,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Reports\" />
+    <Folder Include="wwwroot\images\360images\" />
+    <Folder Include="wwwroot\images\Thumbnail\" />
     <Folder Include="wwwroot\Uploads\Payslip\Failed\" />
     <Folder Include="wwwroot\Uploads\Payslip\Processing\" />
     <Folder Include="wwwroot\Uploads\Payslip\OnQueue\" />
@@ -77,6 +86,24 @@
     <Content Update="wwwroot\Reports\dsLeaveRequest.xsd">
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>dsLeaveRequest.Designer.cs</LastGenOutput>
+    </Content>
+    <Content Update="wwwroot\Reports\dsReceipt.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>dsReceipt.xsd</DependentUpon>
+    </Content>
+    <Content Update="wwwroot\Reports\dsReceipt.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsReceipt.Designer.cs</LastGenOutput>
+    </Content>
+    <Content Update="wwwroot\Reports\dsReceiptBooking.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>dsReceiptBooking.xsd</DependentUpon>
+    </Content>
+    <Content Update="wwwroot\Reports\dsReceiptBooking.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsReceiptBooking.Designer.cs</LastGenOutput>
     </Content>
     <Content Update="wwwroot\Reports\EmployeeInfoSingle.Designer.cs">
       <DesignTime>True</DesignTime>

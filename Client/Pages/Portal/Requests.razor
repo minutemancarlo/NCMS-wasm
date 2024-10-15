@@ -3,65 +3,93 @@
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Portal.Components
 @attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
-
+<PageTitle>NCMS | My Requests</PageTitle>
+@if(!string.IsNullOrEmpty(currentUserId)){
 <MudTabs Elevation="4" Rounded="true" Class="pt-3 w-100" Centered="false" Color="@Color.Primary">
-   
-    <MudTabPanel Icon="fas fa-calendar-week" IconColor="Color.Warning" Text="Requests Calendar">
-        <MudStack Class="w-100">            
+    <MudTabPanel Icon="fas fa-calendar-week" IconColor="Color.Warning" Text="Requests Calendar" >
+        <MudStack Class="w-100">
             <MudOverlay @bind-Visible="_overlayVisible" DarkBackground AutoClose="false">
                 <MudLoading @bind-Loading="_overlayVisible" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
                             Color="Color.Primary" />
             </MudOverlay>
-            <MudCalendar HighlightToday
-                         ShowWorkWeek="false"
-                         ShowWeek="false"
-                         ShowDay="false"
-                         Elevation="1"
-                         ShowTodayButton="false"
-                         Style="width: 100%"
-                         CellClicked="CellClicked"
-                         ItemClicked="ItemClicked"
-                         MonthCellMinHeight="100"
-                         Items="_events">
-                <ToolbarContent>
-                    <MudSpacer />
-                    <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Warning" Size="Size.Small" /> Holiday</MudText>
-                    <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" /> Approved Leave</MudText>
-                    <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Info" Size="Size.Small" /> For Approval Leave</MudText>
-                    <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Error" Size="Size.Small" /> Rejected Leave</MudText>
-                </ToolbarContent>
-                <CellTemplate>
-                    <div style="background-color: @GetColor(((CustomItem)context).Color)" class="pa-2 d-flex gap-1">
-                        <MudText Style="color: white" Class="fw-bold" Typo="Typo.body2">@context.Text</MudText>
-                    </div>
-                </CellTemplate>
-            </MudCalendar>
 
+            
+            <MudBreakpointProvider>
+                <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                    <MudCalendar HighlightToday
+                                 ShowWorkWeek="false"
+                                 ShowWeek="false"
+                                 ShowDay="false"
+                                 Elevation="1"
+                                 ShowTodayButton="false"
+                                 Style="width: 100%"
+                                 CellClicked="CellClicked"                        
+                                 MonthCellMinHeight="100"
+                                 Items="_events">
+                        <ToolbarContent>
+                            <MudSpacer />
+                            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Warning" Size="Size.Small" /> Holiday</MudText>
+                            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" /> Approved Leave</MudText>
+                            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Info" Size="Size.Small" /> For Approval Leave</MudText>
+                            <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Error" Size="Size.Small" /> Rejected Leave</MudText>
+                        </ToolbarContent>
+                        <CellTemplate>
+                            <div style="background-color: @GetColor(((CustomItem)context).Color)" class="pa-2 d-flex gap-1">
+                                <MudText Style="color: white" Class="fw-bold" Typo="Typo.body2">@context.Text</MudText>
+                            </div>
+                        </CellTemplate>
+                    </MudCalendar>
+                </MudHidden>
+                <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                    <MudStack Row Spacing="1">                        
+                        <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Warning" Size="Size.Small" /> Holiday</MudText>
+                        <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" /> Approved Leave</MudText>
+                        <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Info" Size="Size.Small" /> For Approval Leave</MudText>
+                        <MudText Typo="Typo.button" Class="pt-1 py-2"><MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Error" Size="Size.Small" /> Rejected Leave</MudText>
+                    </MudStack>
+                    <MudCalendar HighlightToday
+                                 ShowWorkWeek="false"
+                                 ShowWeek="false"
+                                 ShowDay="false"
+                                 Elevation="1"
+                                 Class="pr-1 pb-3"
+                                 ShowTodayButton="false"                                 
+                                 CellClicked="CellClicked"                                 
+                                 MonthCellMinHeight="100"
+                                 Items="_events">                       
+                        <CellTemplate>
+                            <div style="background-color: @GetColor(((CustomItem)context).Color)" class="pa-2 d-flex gap-1">
+                                <MudText Style="color: white" Class="fw-bold" Typo="Typo.body2">@context.Text</MudText>
+                            </div>
+                        </CellTemplate>
+                    </MudCalendar>
+                </MudHidden>
+            </MudBreakpointProvider>
         </MudStack>
     </MudTabPanel>
     <MudTabPanel Icon="fas fa-vote-yea" IconColor="Color.Success" Text="My Requests">
-        <MudStack>            
-            <MudDataGrid Items="@leaveRequests" T="LeaveRequests" Loading="@isLoading" HeaderClass="mud-theme-default text-wrap" ShowMenuIcon="false"
+        <MudStack>
+            <MudDataGrid Items="@leaveRequests" T="LeaveRequests" Loading="@isLoading" HeaderClass="mud-theme-default text-wrap" Dense ShowMenuIcon="false"
                          HorizontalScrollbar="true"
                          ColumnResizeMode="ResizeMode.Column">
                 <ToolBarContent>
-                    <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadEventsList">Refresh</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" Size="Size.Small" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadEventsList">Refresh</MudButton>
                     @* <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.FamilyRestroom" OnClick="OpenAddGuestDialog">Add Guest</MudButton> *@
                     <MudSpacer />
                 </ToolBarContent>
                 <Columns>
-                   @*  <TemplateColumn Title="Action">
-                        <CellTemplate>
-                            @if (context.Item.IsApproved == ApprovalType.ForApproval)
-                            {
-                                <MudTooltip Arrow="true" Text="Approve" Placement="Placement.Top">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Medium" OnClick="(() => UpdateRequests(context.Item,ApprovalType.Approved))" Variant="Variant.Filled" Color="Color.Success"></MudIconButton>
-                                </MudTooltip>
-                                <MudTooltip Arrow="true" Text="Reject" Placement="Placement.Top">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Medium" OnClick="(() => UpdateRequests(context.Item,ApprovalType.Rejected))" Variant="Variant.Filled" Color="Color.Error"></MudIconButton>
-                                </MudTooltip>
-                            }
-                        </CellTemplate>
+                    @*  <TemplateColumn Title="Action">
+                    <CellTemplate>
+                    @if (context.Item.IsApproved == ApprovalType.ForApproval)
+                    {
+                    <MudTooltip Arrow="true" Text="Approve" Placement="Placement.Top">
+                    <MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Medium" OnClick="(() => UpdateRequests(context.Item,ApprovalType.Approved))" Variant="Variant.Filled" Color="Color.Success"></MudIconButton>
+                    </MudTooltip>
+                    <MudTooltip Arrow="true" Text="Reject" Placement="Placement.Top">
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Medium" OnClick="(() => UpdateRequests(context.Item,ApprovalType.Rejected))" Variant="Variant.Filled" Color="Color.Error"></MudIconButton>
+                    </MudTooltip>
+                    }
+                    </CellTemplate>
                     </TemplateColumn> *@
                     <PropertyColumn Title="Name" Property="x => x.EventName" Filterable="true">
                         <CellTemplate>
@@ -117,22 +145,26 @@
         </MudStack>
     </MudTabPanel>
 </MudTabs>
-
-@code{
+}
+@code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
     private List<LeaveRequests> eventsList = new List<LeaveRequests>();
-    private List<CustomItem> _events = new();    
+    private List<CustomItem> _events = new();
     private bool _overlayVisible;
     private List<LeaveRequests> leaveRequests = new List<LeaveRequests>();
     private bool isLoading = false;
+    private string? currentUserId;
+    [Inject] NavigationManager Navigation { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "Employee Portal Module";
+       var id = MainLayout.CurrentUserId; 
+        currentUserId = await GetEmployeeInfoAsync(id);
         await LoadEventsList();
         await base.OnInitializedAsync();
     }
@@ -180,7 +212,7 @@
                     _events.Add(customItem);
                 }
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -210,7 +242,7 @@
             {
              {x => x.StartDate,dateTime},
              {x => x.EndDate,dateTime},
-             {x => x.EmployeeId, MainLayout.CurrentUserId}             
+             {x => x.EmployeeId, MainLayout.CurrentUserId}
             };
         var dialog = await DialogService.ShowAsync<AddLeaveRequest>("Simple Dialog", parameters, options);
         var result = await dialog.Result;
@@ -221,39 +253,36 @@
         }
     }
 
-    private async Task ItemClicked(CalendarItem item)
+    public async Task<string> GetEmployeeInfoAsync(string id)
     {
-        // var options = new DialogOptions
-        //     {
-        //         CloseOnEscapeKey = false,
-        //         FullWidth = true,
-        //         MaxWidth = MaxWidth.Small,
-        //         BackdropClick = true,
-        //         CloseButton = true
-        //     };
+        try
+        {
+            // Send a POST request with the ID in the request body
+            var response = await httpClient.PostAsJsonAsync("Employee/GetMyInfo", id);
 
+            // Ensure the request was successful
+            if (response.IsSuccessStatusCode)
+            {
+                // Deserialize the response to an Employee object
+                var employee = await response.Content.ReadFromJsonAsync<Employee>();
+                return employee.IDNumber;
+            }
+            else
+            {
 
-        // if (item is CustomItem customItem)
-        // {
-        //     var parameters = new DialogParameters<ShowEventDialog>
-        //     {
-        //      {x => x.eventId,customItem.Id},
-        //      {x => x.from,customItem.Start},
-        //      {x => x.to,customItem.End},
-        //      {x => x.description,customItem.Text},
-        //      {x => x.eventType,customItem.Type},
-        //      {x => x.type,customItem.SubType},
-        //      {x => x.enableDelete,customItem.Type == EventsType.Holiday ? true : false }
-        //     };
-
-        //     var dialog = await DialogService.ShowAsync<ShowEventDialog>("Simple Dialog", parameters, options);
-        //     var result = await dialog.Result;
-        //     if (!result.Canceled)
-        //     {
-        //         await LoadEventsList();
-        //         StateHasChanged();
-        //     }
-        // }
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Navigation.NavigateTo("/Error");
+                return String.Empty;
+                // throw new HttpRequestException($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception occurred: {ex.Message}");
+            throw;
+        }
     }
+
+   
 
 }

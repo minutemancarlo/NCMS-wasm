@@ -54,36 +54,20 @@ namespace NCMS_wasm.Server.Repository
 
         public async Task<int> ApproveLeaveRequestAsync(LeaveRequests events)
         {
+            // Create parameters for the stored procedure
             var parameters = new DynamicParameters();
             parameters.Add("@EventId", events.EventId);
             parameters.Add("@IsApproved", events.IsApproved);
+            parameters.Add("@UpdatedBy", events.UpdatedBy);
 
-            // Fetch the updatedBy user name from the database
-            string userQuery = $"Select Name from employee where Auth0_id='{events.UpdatedBy}'";
-            string? result = await _dbConnection.ExecuteScalarAsync<string>(userQuery);
+            // Specify the stored procedure name
+            string storedProcedureName = "UpdateLeaveRequest";
 
-            // Check if result is null before using it
-            if (result != null)
-            {
-                parameters.Add("@UpdatedBy", result);
-            }
-            else
-            {                
-                parameters.Add("@UpdatedBy", DBNull.Value);
-            }
-
-            string query = @"
-                Update Events 
-                    set IsApproved = @IsApproved 
-                    where EventId = @EventId;
-
-                Update LeaveRequests 
-                    set UpdatedBy = @UpdatedBy, UpdatedOn = GETDATE() 
-                    where EventId = @EventId;
-                ";
-
-            return await _dbConnection.ExecuteAsync(query, parameters);
+            // Execute the stored procedure
+            return await _dbConnection.ExecuteAsync(storedProcedureName, parameters, commandType: CommandType.StoredProcedure);
         }
+
+
 
 
 

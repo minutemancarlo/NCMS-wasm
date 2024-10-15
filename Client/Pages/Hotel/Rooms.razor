@@ -1,93 +1,148 @@
-﻿@page "/hotel-roomsmanagement"
+﻿@page "/hotel-RoomsManagement"
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Hotel.Components
 <PageTitle>Rooms | NCMS</PageTitle>
-<MudStack Class="w-100">
-    <MudText Typo="Typo.h5">Rooms Management</MudText>
-    <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
-        <MudTextField @bind-Value="searchRoom" Variant="Variant.Outlined" 
-        Placeholder="Enter room number here.."
-        Label="Search Room" 
-        AdornmentIcon="@Icons.Material.Filled.Search" 
-        Margin="Margin.Dense"        
-        Adornment="Adornment.Start"></MudTextField>
-        <MudSelect T="RoomStatus" Label="Room Status" @bind-SelectedValues="roomStatus" ShrinkLabel Placeholder="Filter Room Status.." Variant="Variant.Outlined"
-                   MultiSelection="true"
-                   AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" Adornment="Adornment.Start" 
-                   AdornmentIcon="@Icons.Material.Filled.FilterAlt" Clearable>
-            <MudSelectItem Value="@RoomStatus.Available" />
-            <MudSelectItem Value="@RoomStatus.Occupied" />
-            <MudSelectItem Value="@RoomStatus.Reserved" />
-            <MudSelectItem Value="@RoomStatus.Under_Maintenance" />
-            <MudSelectItem Value="@RoomStatus.Not_Available" />
-        </MudSelect>
-        <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Medium">Search</MudButton>
-    </MudStack>
-    <MudDataGrid Items="@roomsList" T="HotelRoom" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense HorizontalScrollbar="true"
-                 ColumnResizeMode="ResizeMode.Column">
-        <ToolBarContent>
-            <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadRoomsList">Refresh</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddRoomDialog">Add Room</MudButton>
-            <MudSpacer />
-        </ToolBarContent>
-        <Columns>
-            <PropertyColumn Property="x => x.RoomNumber" Title="Room Number" Filterable="true" />
-            <PropertyColumn Property="x => x.Type" Title="Room Type" Filterable="true" >
-                <CellTemplate>
-                    <MudStack Row Spacing="0" AlignItems="AlignItems.Baseline">
-                        <MudText Typo="Typo.body2">@context.Item.Type</MudText>
-                        @if (!string.IsNullOrEmpty(context.Item.RoomDescription))
+<MudStack Spacing="2" Class="w-100 pt-5">
+    <MudItem xl="12" lg="12" md="12" sm="12">
+        <MudText Typo="Typo.h5">Rooms Management</MudText>
+    </MudItem>
+    <MudItem xl="12" lg="12" md="12" sm="12">
+        <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="py-2">
+            <MudTextField @bind-Value="searchRoom" Variant="Variant.Outlined"
+                          Placeholder="Enter room number here.."
+                          Label="Search Room Number"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Margin="Margin.Dense"
+                          Adornment="Adornment.Start"></MudTextField>
+            <MudSelect T="RoomType" Label="Room Type" @bind-SelectedValues="roomtype"
+                       ShrinkLabel Placeholder="Filter Room Type.."
+                       Variant="Variant.Outlined"
+                       MultiSelection="true"
+                       AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" Adornment="Adornment.Start"
+                       AdornmentIcon="@Icons.Material.Filled.FilterAlt">
+                @foreach (var type in Enum.GetValues(typeof(RoomType)).Cast<RoomType>())
+                {
+                    <MudSelectItem Value="type">@type.ToString().Replace("_", " ")</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="RoomStatus" Label="Room Status" @bind-SelectedValues="roomStatus"
+                       ShrinkLabel Placeholder="Filter Room Status.." Variant="Variant.Outlined"
+                       MultiSelection="true"
+                       AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" Adornment="Adornment.Start"
+                       AdornmentIcon="@Icons.Material.Filled.FilterAlt">
+                @foreach (var type in Enum.GetValues(typeof(RoomStatus)).Cast<RoomStatus>())
+                {
+                    <MudSelectItem Value="type">@type.ToString().Replace("_", " ")</MudSelectItem>
+                }
+            </MudSelect>
+            <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Medium" OnClick="FilterRooms">Search</MudButton>
+            <MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Medium" OnClick="Clear">Clear Search</MudButton>
+        </MudStack>
+        <MudDataGrid Items="@roomsList" T="RoomInfo" Loading="@isLoading" Dense HorizontalScrollbar="true"
+                     ColumnResizeMode="ResizeMode.Container">
+            <ToolBarContent>
+                
+                <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddRoomDialog">Add Room</MudButton>
+                @* <MudIconButton Icon="@Icons.Material.Filled.Refresh" OnClick="LoadRoomsList" Size="Size.Small" Class="rounded-pill" Color="Color.Success" Variant="Variant.Filled"/> *@
+                <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadRoomsList">Refresh</MudButton>
+                <MudSpacer />
+            </ToolBarContent>
+            <Columns>
+                <PropertyColumn Property="x => x.RoomNumber" Title="Room Number" HeaderStyle="background-color: #1abc9c; color: white;">
+                    <CellTemplate>
+                        <MudChip Size="Size.Small" Disabled="@(context.Item.Status == RoomStatus.Occupied || context.Item.Status == RoomStatus.Reservation?true:false)" OnClick="@(() => OnClickRoomNumber(context.Item))" Color="Color.Dark">@context.Item.RoomNumber</MudChip>
+                    </CellTemplate>
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.Type" Title="Room Type" HeaderStyle="background-color: #1abc9c; color: white;">
+                    <CellTemplate>
+                        <MudStack Row Spacing="0" AlignItems="AlignItems.Baseline">
+                            <MudText Typo="Typo.body2">@context.Item.Type.ToString().Replace("_", " ")</MudText>
+                            @if (!string.IsNullOrEmpty(context.Item.RoomDescription))
+                            {
+                                <MudTooltip Text="@context.Item.RoomDescription" Arrow ShowOnClick Color="Color.Info" Placement="Placement.Top">
+                                    <MudIconButton Icon="fas fa-info-circle" Size="Size.Medium" Color="Color.Info" />
+                                </MudTooltip>
+                            }
+                        </MudStack>
+                    </CellTemplate>
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.PricePerNight" Title="Price per Night" HeaderStyle="background-color: #1abc9c; color: white;">
+                    <CellTemplate>
+                        <MudText Typo="Typo.body1">@context.Item.PricePerNight.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+                    </CellTemplate>
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.MaxGuest" Title="Max Guest" HeaderStyle="background-color: #1abc9c; color: white;">
+                    <CellTemplate>
+                        <MudText Typo="Typo.body1">@($"{context.Item.MaxGuest} Person/s")</MudText>
+                    </CellTemplate>
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.Status" Title="Status" HeaderStyle="background-color: #1abc9c; color: white;">
+                    <CellTemplate>
+                        @switch (context.Item.Status)
                         {
-                            <MudTooltip Text="@context.Item.RoomDescription" Arrow ShowOnClick Color="Color.Info" Placement="Placement.Top">
-                                <MudIconButton Icon="fas fa-info-circle" Size="Size.Medium" Color="Color.Info" />
-                            </MudTooltip>
+                            case RoomStatus.Available:
+                                <MudChip Size="Size.Small" Color="Color.Success">@context.Item.Status.ToString().Replace("_", " ")</MudChip>
+                                break;
+                            case RoomStatus.Occupied:
+                                <MudChip Size="Size.Small" Color="Color.Info">@context.Item.Status.ToString().Replace("_", " ")</MudChip>
+                                break;
+                            case RoomStatus.Not_Available:
+                                <MudChip Size="Size.Small" Color="Color.Error">@context.Item.Status.ToString().Replace("_", " ")</MudChip>
+                                break;
+                            case RoomStatus.Reservation:
+                                <MudChip Size="Size.Small" Color="Color.Warning">@context.Item.Status.ToString().Replace("_", " ")</MudChip>
+                                break;
                         }
-                    </MudStack>                    
-                </CellTemplate>
-            </PropertyColumn>
-            <PropertyColumn Property="x => x.Status" Title="Status" Filterable="true" />
-            <TemplateColumn Title="Created By">
-                <CellTemplate>
-                    <MudStack Spacing="0">
-                        <MudText Typo="Typo.body2">@context.Item.CreatedBy</MudText>
-                        <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.CreatedOn</MudText>
-                    </MudStack>
-                </CellTemplate>
-            </TemplateColumn>
-            <TemplateColumn Title="Updated By">
-                <CellTemplate>
-                    <MudStack Spacing="0">
-                        <MudText Typo="Typo.body2">@context.Item.UpdatedBy</MudText>
-                        <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.UpdatedOn</MudText>
-                    </MudStack>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-        <NoRecordsContent>
-            <MudText>No Records to show</MudText>
-        </NoRecordsContent>
-        <LoadingContent>
-            <MudText>Loading Content...</MudText>
-        </LoadingContent>
-        <PagerContent>
-            <MudDataGridPager T="HotelRoom" />
-        </PagerContent>
-    </MudDataGrid>
+                    </CellTemplate>
+                </PropertyColumn>
+                <TemplateColumn Title="Created By" HeaderStyle="background-color: #1abc9c; color: white;">
+                    <CellTemplate>
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.body2">@context.Item.CreatedBy</MudText>
+                            <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.CreatedOn</MudText>
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Title="Updated By" HeaderStyle="background-color: #1abc9c; color: white;">
+                    <CellTemplate>
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.body2">@context.Item.UpdatedBy</MudText>
+                            <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.UpdatedOn</MudText>
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <NoRecordsContent>
+                <MudText>No Records to show</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading Content...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudDataGridPager T="RoomInfo" />
+            </PagerContent>
+        </MudDataGrid>
+    </MudItem>
+
 </MudStack>
 
 @code {
+    [CascadingParameter]
+    public MainLayout MainLayout { get; private set; }
     [Inject] IDialogService? DialogService { get; set; }
     [Inject] HttpClient? httpClient { get; set; }
     private string? searchRoom { get; set; }
     private string? filterStatus { get; set; }
-    private List<HotelRoom> roomsList = new List<HotelRoom>();
+    private List<RoomInfo> roomsList = new List<RoomInfo>();
+    private List<RoomInfo> roomsListSearch = new List<RoomInfo>();
+
     private bool isLoading = false;
     private IEnumerable<RoomStatus> roomStatus { get; set; } = new HashSet<RoomStatus>();
-    [CascadingParameter]
-    public MainLayout MainLayout { get; private set; }
+    private IEnumerable<RoomType> roomtype { get; set; } = new HashSet<RoomType>();
+    private RoomStatus roomStatusvalue { get; set; }
+    private RoomType roomtypevalue { get; set; }
 
-    
     private async Task OpenAddRoomDialog()
     {
         var options = new DialogOptions
@@ -98,7 +153,11 @@
                 BackdropClick = true,
                 CloseButton = true
             };
-        var dialog = await DialogService.ShowAsync<AddRoomDialog>("Simple Dialog", options);
+        var parameters = new DialogParameters<AddRoomDialog>
+        {
+            {x=>x.userId,MainLayout.CurrentUserId}
+        };
+        var dialog = await DialogService.ShowAsync<AddRoomDialog>("Simple Dialog", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
         {
@@ -114,13 +173,38 @@
         await base.OnInitializedAsync();
     }
 
+    private async Task OnClickRoomNumber(RoomInfo dto)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = true,
+                CloseButton = true
+            };
+        var parameters = new DialogParameters<UpdateRoomStatusAndPrice>
+        {
+            {x=>x.userId,MainLayout.CurrentUserId},
+            {x=>x.roomInfo,dto}
+        };
+        var dialog = await DialogService.ShowAsync<UpdateRoomStatusAndPrice>("Simple Dialog", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await LoadRoomsList();
+            StateHasChanged();
+        }
+    }
+
 
     private async Task LoadRoomsList()
     {
         isLoading = true;
         try
         {
-            roomsList = await httpClient.GetFromJsonAsync<List<HotelRoom>>($"HotelManagement/GetRooms");
+            roomsList = await httpClient.GetFromJsonAsync<List<RoomInfo>>($"HotelManagement/GetRooms");
+            roomsListSearch = roomsList;
         }
         catch (Exception ex)
         {
@@ -131,5 +215,61 @@
             isLoading = false;
         }
     }
+
+    private void FilterRooms()
+    {
+
+        var filteredRooms = roomsList.AsEnumerable();
+
+
+        if (!string.IsNullOrEmpty(searchRoom))
+        {
+            filteredRooms = filteredRooms.Where(room =>
+                (room.RoomNumber.ToString().Contains(searchRoom, StringComparison.OrdinalIgnoreCase))
+            );
+        }
+
+
+        if (roomStatus != null && roomStatus.Any())
+        {
+            filteredRooms = filteredRooms.Where(room => roomStatus.Contains(room.Status));
+        }
+        if (roomtype != null && roomtype.Any())
+        {
+            filteredRooms = filteredRooms.Where(room => roomtype.Contains(room.Type));
+        }
+        roomsList = filteredRooms.ToList();
+    }
+
+    private void Clear()
+    {
+        roomsList = roomsListSearch;
+        searchRoom = String.Empty;
+        roomStatus = new HashSet<RoomStatus>();
+        roomtype = new HashSet<RoomType>();
+
+    }
+    private string GetRoomTypeSelectionText(List<string> selectedValues)
+    {
+        if (selectedValues == null || !selectedValues.Any())
+            return "Select Room Types";
+
+        // Convert the selected values from string back to RoomType
+        var selectedRoomTypes = selectedValues.Select(x => Enum.Parse<RoomType>(x)).ToList();
+        return string.Join(", ", selectedRoomTypes.Select(x => x.ToString().Replace("_", " ")));
+    }
+
+    private string GetRoomStatusSelectionText(List<string> selectedValues)
+    {
+        if (selectedValues == null || !selectedValues.Any())
+            return "Select Room Statuses";
+
+        // Convert the selected values from string back to RoomStatus
+        var selectedRoomStatuses = selectedValues.Select(x => Enum.Parse<RoomStatus>(x)).ToList();
+        return string.Join(", ", selectedRoomStatuses.Select(x => x.ToString().Replace("_", " ")));
+    }
+
+
+
 
 }

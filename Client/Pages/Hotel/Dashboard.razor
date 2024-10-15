@@ -2,9 +2,139 @@
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
 <PageTitle>Dashboard | NCMS</PageTitle>
-<MudStack>
-    <MudText Typo="Typo.h5">Front Desk Dashboard</MudText>
+<MudStack Spacing="2" Class="w-100 pt-5">
+    <MudOverlay @bind-Visible="isLoading" DarkBackground AutoClose="false">
+        <MudLoading @bind-Loading="isLoading" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+                    Color="Color.Primary" />
+    </MudOverlay>
+       <MudGrid Justify="Justify.Center" Class="w-100">   
+           <MudItem xl="3" lg="3" md="3" sm="3">
+            <MudPaper Elevation="4" Height="150">
+                <MudCard Style="background-color: #3498db">
+                       <MudCardHeader>
+                           <CardHeaderContent>
+                               <MudText Typo="Typo.h6">Reservation</MudText>
+                           </CardHeaderContent>
+                       </MudCardHeader>
+                           <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h1" Class="fw-bold">@roomsList.Count(x => x.Status == RoomStatus.Reservation)</MudText>
+                        </MudStack>
+                           </MudCardContent>
+                   </MudCard>
+               </MudPaper>            
+           </MudItem>
+        <MudItem xl="3" lg="3" md="3" sm="3">
+            <MudPaper Elevation="4" Height="150">
+                <MudCard Style="background-color: #2ecc71">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Occupied</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h1" Class="fw-bold">@roomsList.Count(x => x.Status == RoomStatus.Occupied)</MudText>
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudPaper>
+        </MudItem>
+        <MudItem xl="3" lg="3" md="3" sm="3">
+            <MudPaper Elevation="4" Height="150" >
+                <MudCard Style="background-color: #e74c3c">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Not Available</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h1" Class="fw-bold">@roomsList.Count(x => x.Status == RoomStatus.Not_Available)</MudText>
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudPaper>
+        </MudItem>
+        <MudItem xl="3" lg="3" md="3" sm="3">
+            <MudPaper Elevation="4" Height="150" >
+                <MudCard Style="background-color: #e67e22">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Available Today</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h1" Class="fw-bold">@roomsList.Count(x => x.Status == RoomStatus.Available)</MudText>
+                        </MudStack>                        
+                    </MudCardContent>
+                </MudCard>
+            </MudPaper>
+        </MudItem>
+      
+            <MudItem xs="12">
+                <MudPaper Elevation="4" Class="align-content-center">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Hotel sales for @_yearDay</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>                         
+                            <div>
+                            <MudChart ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="350" ChartOptions="@options" ></MudChart>
+                                @* <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart> *@
+                            </div>
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+        
+
+       </MudGrid>    
 </MudStack>
 @code {
+    private string GetColor(Color color) => $"var(--mud-palette-{color.ToDescriptionString()})";
+    [Inject] HttpClient? httpClient { get; set; }    
+    [Inject] ISnackbar Snackbar { get; set; }
+    private bool isLoading = false;
+    private List<RoomInfo> roomsList = new();
+    private int _yearDay;
+    public List<ChartSeries> Series = new List<ChartSeries>();
+    private int Index = -1;
+    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    private List<DashboardValueSales> dashboardValues = new();
+    double[] chartValues;
+    private ChartOptions options = new ChartOptions();
+    protected override async Task OnInitializedAsync()
+    {
+     
+        options.YAxisFormat = "N2";
+        _yearDay = DateTime.Now.Year;
+        await LoadRoomsList();
+        await base.OnInitializedAsync();
+    }
 
+    private async Task LoadRoomsList()
+    {
+        isLoading = true;
+        try
+        {
+            roomsList = new();
+            roomsList = await httpClient.GetFromJsonAsync<List<RoomInfo>>($"HotelManagement/GetRooms");
+            dashboardValues = await httpClient.GetFromJsonAsync<List<DashboardValueSales>>($"HotelManagement/GetDashboardSales?year={_yearDay}");
+            chartValues = dashboardValues.Select(x => (double)x.Sales).ToArray();
+            Series.Add(new ChartSeries { Name = "Sales", Data = chartValues });
+          
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
 }

@@ -27,13 +27,26 @@
                 </MudDrawerHeader>
                 <NavMenu/>
             </MudDrawer>
-            <MudMainContent Class="pt-16 px-16">
-                <MudContainer MaxWidth="MaxWidth.ExtraLarge" Fixed="true">
-                    <MudGrid Class="pt-6">
-                        @Body
-                    </MudGrid>
-                </MudContainer>
-            </MudMainContent>
+            <MudBreakpointProvider>
+                <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                        <MudMainContent Class="pt-16 px-16">
+                            <MudContainer MaxWidth="MaxWidth.ExtraLarge" Fixed="true">
+                                <MudGrid Class="pt-6" Justify="Justify.Center">
+                                    @Body
+                                </MudGrid>
+                            </MudContainer>
+                        </MudMainContent>
+                </MudHidden>
+                <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                        <MudMainContent Class="pt-16 pl-8">
+                            <MudContainer MaxWidth="MaxWidth.Large" Fixed="true">
+                                <MudGrid Class="pt-6 pl-8">
+                                    @Body
+                                </MudGrid>
+                            </MudContainer>
+                        </MudMainContent>
+                </MudHidden>
+            </MudBreakpointProvider>            
         </MudLayout>
     </Authorized>
     <NotAuthorized>

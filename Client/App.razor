@@ -17,12 +17,23 @@
             if (firstRender)
             {
                 var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
-                if (returnUrl == "portal")
+                returnUrl = ExtractBasePath(returnUrl);
+                        if (returnUrl == "portal")
                 {
                         await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "returnUrl", returnUrl);
                         Navigation.NavigateTo("authentication/login", true);
                 }
             }
+        }
+
+
+        private string ExtractBasePath(string url)
+        {
+
+            var segments = url.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+
+            return segments.Length > 0 ? segments[0] : string.Empty;
         }
                     }
 
@@ -33,11 +44,12 @@
                 </NotAuthorized>
             </AuthorizeRouteView>
         </Found>
-        <NotFound>
+         <NotFound>
             <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(MainLayout)">
-                <p role="alert">Sorry, there's nothing at this address.</p>
+            <LayoutView Layout="@typeof(BlankLayout)">
+               
             </LayoutView>
+      
         </NotFound>
     </Router>
 </CascadingAuthenticationState>

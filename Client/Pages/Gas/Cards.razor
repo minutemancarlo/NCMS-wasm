@@ -9,8 +9,8 @@
     ColumnResizeMode="ResizeMode.Column">
         <ToolBarContent>
             <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(async () => await LoadCardsList())">Refresh</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.AddCard" OnClick="OpenAddCardDialog">Add Card</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.CardGiftcard" OnClick="OpenAddCardDialog">Check Balance</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.AddCard" OnClick="@(() => OpenAddCardDialog(ViewType.Add))">Add Card</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.CardGiftcard" OnClick="@(() => OpenAddCardDialog(ViewType.ReadOnly))">Check Balance</MudButton>
             <MudSpacer />
         </ToolBarContent>
         <Columns>
@@ -47,8 +47,9 @@
     [Inject] IDialogService? DialogService { get; set; }
     private List<LoyaltyCardInfo> cards = new List<LoyaltyCardInfo>();
     private bool isLoading = true;
+    [Inject] IJSRuntime JS { get; set; }
 
-    private async Task OpenAddCardDialog()
+    private async Task OpenAddCardDialog(ViewType viewType)
     {
         var options = new DialogOptions
             {
@@ -58,7 +59,12 @@
                 BackdropClick = true,
                 CloseButton = true
             };
-        var dialog = await DialogService.ShowAsync<AddCardDialog>("Simple Dialog", options);
+        var parameters = new DialogParameters<AddCardDialog>
+        {
+            {x=>x.userId,MainLayout.CurrentUserId },
+            {x=>x.viewType,viewType }
+        };
+        var dialog = await DialogService.ShowAsync<AddCardDialog>("Simple Dialog",parameters ,options);
         var result = await dialog.Result;
         if (!result.Canceled)
         {
@@ -79,7 +85,7 @@
         isLoading = true;
         try
         {
-            cards = await httpClient.GetFromJsonAsync<List<LoyaltyCardInfo>>($"CardManagement/GetLoyaltyCards?cardType={0}");
+            cards = await httpClient.GetFromJsonAsync<List<LoyaltyCardInfo>>($"CardManagement/GetLoyaltyCards?cardType={RFIDType.Loyalty}");
         }catch(Exception ex)
         {
             Console.WriteLine($"Exception Occured: {ex.Message}");
@@ -89,5 +95,7 @@
             isLoading = false;
         }
     }
+
+  
 
 }

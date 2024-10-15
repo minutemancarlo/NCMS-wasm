@@ -1,0 +1,282 @@
+﻿@page "/Booking/{encryptedParams}"
+@layout NoLayout
+@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Validations
+@inject IJSRuntime JSRuntime
+
+<style>
+    .paper-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .overlay-text {
+        position: absolute;
+        top: 10px; /* Adjust position from the top */
+        left: 10px; /* Adjust position from the left */
+        color: white; /* Text color */
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        padding: 5px; /* Padding around the text */
+        font-size: 16px; /* Font size */
+        z-index: 1; /* Ensure it stays on top of the scene */
+    }
+
+    a-scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    a-entity[camera] {
+        height: 100%;
+        width: 100%;
+    }
+</style>
+<MudStack Class="w-100 pt-3 px-3" Row>
+    <MudBreakpointProvider>
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+            <MudForm @ref="guestForm" Model="@tempGuestInfo" Validation="@(guestValidator.ValidateValue)" ValidationDelay="0">
+                <MudPaper Class="pa-2" Elevation="0">
+                    <MudText Typo="Typo.h6" Class="pb-4">Booking Information</MudText>
+                    <MudStack Row Class="pb-2">
+                        <MudTextField @bind-Value="tempGuestInfo.FirstName" For="@(() => tempGuestInfo.FirstName)" Label="First Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                        <MudTextField @bind-Value="tempGuestInfo.MiddleName" For="@(() => tempGuestInfo.MiddleName)" Label="Middle Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                        <MudTextField @bind-Value="tempGuestInfo.LastName" For="@(() => tempGuestInfo.LastName)" Label="Last Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    </MudStack>
+                    <MudTextField Class="pb-2" @bind-Value="tempGuestInfo.Phone" For="@(() => tempGuestInfo.Phone)" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField Class="pb-2" @bind-Value="tempGuestInfo.Email" For="@(() => tempGuestInfo.Email)" Label="Email Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudStack Row AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+                        <MudDatePicker ReadOnly PickerVariant="PickerVariant.Dialog" Label="Check In" @bind-Date="tempGuestInfo.CheckInDate" For="@(() => tempGuestInfo.CheckInDate)" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        <MudDatePicker ReadOnly PickerVariant="PickerVariant.Dialog" Label="Check Out" @bind-Date="tempGuestInfo.CheckOutDate" For="@(() => tempGuestInfo.CheckOutDate)" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
+                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date <= tempGuestInfo.CheckInDate)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                    </MudStack>
+                    <MudStack Row>
+                        <MudNumericField Class="py-1" @bind-Value="tempGuestInfo.Rooms" For="@(() => tempGuestInfo.Rooms)" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                        <MudNumericField Class="py-1" @bind-Value="tempGuestInfo.Children" For="@(() => tempGuestInfo.Children)" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                        <MudNumericField Class="py-1" @bind-Value="tempGuestInfo.Adults" For="@(() => tempGuestInfo.Adults)" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                    </MudStack>
+                    <MudStack Row AlignItems="AlignItems.Stretch" Class="pt-2">
+                        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => Navigation.NavigateTo("RoomsList/default"))">Cancel</MudButton>
+                        <MudSpacer />
+                        <MudLoadingButton Variant="Variant.Filled"
+                                          Color="Color.Success"
+                                          Size="Size.Large"
+                                          StartIcon="@Icons.Material.Filled.Send"
+                                          OnClick="OnSubmit"
+                                          Loading="@(_loading)"
+                                          ButtonType="ButtonType.Button">
+                            <LoadingContent>Submitting...</LoadingContent>
+                            <ChildContent>Submit</ChildContent>
+                        </MudLoadingButton>
+                    </MudStack>
+                </MudPaper>
+            </MudForm>
+
+            <MudPaper Class="pa-2 w-100" Elevation="0">
+                <MudStack Class="w-100">
+                    
+                    <MudPaper Elevation="4" Height="500px" Class="paper-container w-100">
+                        <!-- Overlay Text -->
+                        @* <div class="overlay-text">Overlay Text</div> *@
+                        <MudStack AlignItems="AlignItems.Stretch" Class="overlay-text" Spacing="0">
+                            <MudText Typo="Typo.h6">@roomTypeDisplay Room</MudText>                            
+                            <MudText Typo="Typo.h6">@Price.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+
+                        </MudStack>
+                        <!-- A-Frame Scene -->
+                        <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%">
+                            <a-sky src="images/@Image"></a-sky>
+                            <a-entity camera look-controls></a-entity>
+                        </a-scene>
+                    </MudPaper>
+                  
+                </MudStack>
+            </MudPaper>
+
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+            <MudStack>
+
+                <MudForm @ref="guestForm" Model="@tempGuestInfo" Validation="@(guestValidator.ValidateValue)" ValidationDelay="0">
+                    <MudPaper Class="pa-2" Elevation="0">
+                        <MudText Typo="Typo.h6" Class="pb-4">Booking Information</MudText>
+                        <MudStack Row>
+                            <MudTextField @bind-Value="tempGuestInfo.FirstName" For="@(() => tempGuestInfo.FirstName)" Label="First" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                            <MudTextField @bind-Value="tempGuestInfo.MiddleName" For="@(() => tempGuestInfo.MiddleName)" Label="Middle" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                            <MudTextField @bind-Value="tempGuestInfo.LastName" For="@(() => tempGuestInfo.LastName)" Label="Last" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                        </MudStack>
+                        <MudTextField @bind-Value="tempGuestInfo.Phone" For="@(() => tempGuestInfo.Phone)" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                        <MudTextField @bind-Value="tempGuestInfo.Email" For="@(() => tempGuestInfo.Email)" Label="Email Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                        <MudStack Row Class="py-1" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+                            <MudDatePicker ReadOnly PickerVariant="PickerVariant.Dialog" Label="Check In" @bind-Date="tempGuestInfo.CheckInDate" For="@(() => tempGuestInfo.CheckInDate)" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))" IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudDatePicker ReadOnly PickerVariant="PickerVariant.Dialog" Label="Check Out" @bind-Date="tempGuestInfo.CheckOutDate" For="@(() => tempGuestInfo.CheckOutDate)" AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
+                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date <= tempGuestInfo.CheckInDate)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </MudStack>
+                        <MudStack Row>
+                            <MudNumericField Class="py-1" @bind-Value="tempGuestInfo.Rooms" For="@(() => tempGuestInfo.Rooms)" Label="Rooms" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                            <MudNumericField Class="py-1" @bind-Value="tempGuestInfo.Children" For="@(() => tempGuestInfo.Children)" Label="Children" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                            <MudNumericField Class="py-1" @bind-Value="tempGuestInfo.Adults" For="@(() => tempGuestInfo.Adults)" Label="Adults" Variant="Variant.Outlined" Step="1" Min="1" Max="99" Margin="Margin.Dense" />
+                        </MudStack>
+                        <MudStack Row AlignItems="AlignItems.Stretch">
+                            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => Navigation.NavigateTo("RoomsList/default"))">Cancel</MudButton>
+                            <MudSpacer />
+                            <MudLoadingButton Variant="Variant.Filled"
+                                              Color="Color.Success"
+                                              Size="Size.Large"
+                                              StartIcon="@Icons.Material.Filled.Send"
+                                              OnClick="OnSubmit"
+                                              Loading="@(_loading)"
+                                              ButtonType="ButtonType.Button">
+                                <LoadingContent>Submitting...</LoadingContent>
+                                <ChildContent>Submit</ChildContent>
+                            </MudLoadingButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudForm>
+
+                <MudPaper Class="pa-2 w-100" Elevation="0">
+                    <MudStack Class="w-100">
+
+                        <MudPaper Elevation="4" Height="500px" Class="paper-container w-100">
+                            <!-- Overlay Text -->
+                            @* <div class="overlay-text">Overlay Text</div> *@
+                            <MudStack AlignItems="AlignItems.Stretch" Class="overlay-text" Spacing="0">
+                                <MudText Typo="Typo.h6">@roomTypeDisplay Room</MudText>
+                                <MudText Typo="Typo.h6">@Price.ToString("C", new System.Globalization.CultureInfo("en-PH"))</MudText>
+
+                            </MudStack>
+                            <!-- A-Frame Scene -->
+                            <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%">
+                                <a-sky src="images/@Image"></a-sky>
+                                <a-entity camera look-controls></a-entity>
+                            </a-scene>
+                        </MudPaper>
+
+                    </MudStack>
+                </MudPaper>
+            </MudStack>
+
+        </MudHidden>
+    </MudBreakpointProvider>
+
+
+
+
+</MudStack>
+
+
+
+@code {
+    [Parameter]
+    public string EncryptedParams { get; set; }
+    private DateTime dateFrom { get; set; }
+    private DateTime dateTo { get; set; }
+    private int? rooms { get; set; }
+    private int? children { get; set; }
+    private int? adults { get; set; }
+    private RoomType roomType { get; set; }
+    private string? roomTypeDisplay { get; set; }
+    private string? Image { get; set; }
+    private decimal Price { get; set; }
+    private int? RoomId { get; set; }
+    private NCMS_wasm.Shared.Booking bookingInfo { get; set; } = new();
+
+    private bool _loading = false;
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IDialogService? DialogService { get; set; }
+    [Inject] IHttpClientFactory httpClientFactory { get; set; }
+    [Inject] NavigationManager Navigation { get; set; }
+    private List<RoomInfo> roomInfo = new();
+    private readonly byte[] encryptionKey = Convert.FromBase64String("FVDBUTfXgSp0jG0yiWfPANqRXdyWFvtKsZ623W8Ok7Q=");
+    MudForm? guestForm;
+    GuestsInfoValidator guestValidator = new GuestsInfoValidator();
+    private GuestsInfo tempGuestInfo = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            // Call the decryptData function in cryptoHelper.js
+            string decryptedData = await JSRuntime.InvokeAsync<string>("cryptoHelper.decryptData", EncryptedParams, encryptionKey);
+
+            // Split the decrypted data into parameters
+            var splitParams = decryptedData.Split('|');
+
+            if (splitParams.Length == 9)
+            {
+                dateFrom = DateTime.Parse(splitParams[0]);
+                dateTo = DateTime.Parse(splitParams[1]);
+                rooms = int.Parse(splitParams[2]);
+                adults = int.Parse(splitParams[3]);
+                children = int.Parse(splitParams[4]);
+                roomType = (RoomType)Enum.Parse(typeof(RoomType), splitParams[5]);
+                Image = splitParams[6];
+                Price = decimal.Parse(splitParams[7]);
+                RoomId = int.Parse(splitParams[8]);
+                roomTypeDisplay = roomType.ToString().Replace("_", " ");
+                tempGuestInfo.CheckInDate = dateFrom;
+                tempGuestInfo.CheckOutDate = dateTo;
+                tempGuestInfo.Rooms = rooms ?? 1;
+                tempGuestInfo.Adults = adults ?? 1;
+                tempGuestInfo.Children = children ?? 0;
+            }
+            else
+            {
+                Snackbar.Add("Invalid number of parameters.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Decryption failed: {ex.Message}", Severity.Error);
+        }
+
+    }
+
+    private async Task OnSubmit()
+    {
+
+        try
+        {
+            _loading = true;
+
+            var room_info = new RoomInfo
+                {
+                    RoomId = RoomId
+                };
+            bookingInfo.Room.Add(room_info);
+            tempGuestInfo.BookingType = BookingType.Reservation;
+            bookingInfo.Guests = tempGuestInfo;
+            bookingInfo.Guests.CheckInDate = new DateTime(dateFrom.Year, dateFrom.Month, dateFrom.Day, 14, 0, 0);
+            bookingInfo.Guests.CheckOutDate = new DateTime(dateTo.Year, dateTo.Month, dateTo.Day, 11, 0, 0);
+            var httpClient = httpClientFactory.CreateClient("Anonymous");
+            var response = await httpClient.PostAsJsonAsync("HotelManagement/AddReservation", bookingInfo);
+            response.EnsureSuccessStatusCode();
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Reservation has been created. Please check your email for your booking number", Severity.Success);
+
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to save reservation info: {response.StatusCode} - {errorMessage}", Severity.Error);
+                Console.WriteLine($"Failed to save reservation info: {response.StatusCode} - {errorMessage}");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loading = true;
+            Task.Delay(2000);
+            Navigation.NavigateTo("/Home");
+        }
+    }
+
+}

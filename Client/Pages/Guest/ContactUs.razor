@@ -1,0 +1,127 @@
+﻿@page "/ContactUs"
+@layout NoLayout
+@using MudExtensions
+@using MudBlazor.Services
+@using NCMS_wasm.Shared
+<PageTitle>Contact Us - Mid Point Hotel</PageTitle>
+<MudTypographyProvider />
+<MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="w-100 pt-10 vh-100" StretchItems="StretchItems.All">
+
+    <MudBreakpointProvider>
+        @* DESKTOP VIEW *@
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+            <MudItem xs="12">
+                <MudStack Row Class="px-2 py-2">
+                    <MudItem xs="4">
+                        <MudStack Spacing="2">
+                            <MudText Typo="Typo.h3">Contact Info</MudText>
+                            <MudText Typo="Typo.subtitle1">
+                                Ready to book with us? Have a question about our rooms or services? We'll be happy to help!
+                            </MudText>
+                            <MudText Typo="Typo.body1">Address: <strong>Camp One, Rosario, La Union</strong></MudText>
+                            <MudText Typo="Typo.body1">Phone: <strong>+639603355693</strong></MudText>
+                            <MudText Typo="Typo.body1">Email: <strong>support@ncmslu.com</strong></MudText>
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="8">
+                        <MudStack Row>
+                            <MudTextField @bind-Value="inquiries.Name" Variant="Variant.Outlined" Required Label="Name" />
+                            <MudTextField @bind-Value="inquiries.Email" InputType="InputType.Email" Variant="Variant.Outlined" Required Label="Email" />
+                        </MudStack>
+                        <MudTextField @bind-Value="inquiries.Message" Required Label="Message" Variant="Variant.Outlined" Lines="5" MaxLength="255" />
+                      @*   <MudButton StartIcon="@Icons.Material.Filled.Send" Variant="Variant.Filled" Color="Color.Secondary" Class="my-1 mx-1 float-end">Send</MudButton> *@
+                        <MudLoadingButton Variant="Variant.Filled"
+                                          Color="Color.Success"
+                                          Size="Size.Large"
+                                          Class="my-1 mx-1 float-end"
+                                          Loading="@(isLoading)"
+                                          OnClick="OnSubmit"
+                                          ButtonType="ButtonType.Button">
+                            <LoadingContent>Sending...</LoadingContent>
+                            <ChildContent>Send</ChildContent>
+                        </MudLoadingButton>
+                  </MudItem>
+                </MudStack>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1138.9715094648236!2d120.50110116666183!3d16.218987968412907!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x339173d5a0d770b9%3A0xfecd6972116bf21e!2sNORLU%20CEDEC%20Midpoint%20Hotel!5e0!3m2!1sen!2sph!4v1727888108357!5m2!1sen!2sph"
+                        style="border:0; height: 300px" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </MudItem>
+        </MudHidden>
+        @* MOBILE VIEW *@
+        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+            <MudItem xs="12" Class="py-2 px-5">
+                <MudStack Spacing="1">
+                    <MudText Typo="Typo.h3">Contact Info</MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        Ready to book with us? Have a question about our rooms or services? We'll be happy to help!
+                    </MudText>
+                    <MudText Typo="Typo.body1">Address: <strong>Camp One, Rosario, La Union</strong></MudText>
+                    <MudText Typo="Typo.body1">Phone: <strong>+639603355693</strong></MudText>
+                    <MudText Typo="Typo.body1">Email: <strong>support@ncmslu.com</strong></MudText>
+                </MudStack>
+                <MudStack>
+                    <MudStack Row>
+                        <MudTextField @bind-Value="inquiries.Name" Variant="Variant.Outlined" Required Label="Name" />
+                        <MudTextField @bind-Value="inquiries.Email" InputType="InputType.Email" Variant="Variant.Outlined" Required Label="Email" />
+                    </MudStack>
+                    <MudTextField @bind-Value="inquiries.Message" Required Label="Message" Variant="Variant.Outlined" Lines="5" MaxLength="255"/>
+                    @* <MudButton StartIcon="@Icons.Material.Filled.Send" Variant="Variant.Filled" Color="Color.Secondary" Class="my-1 mx-1 float-end">Send</MudButton> *@
+                    <MudLoadingButton Variant="Variant.Filled"
+                                      Color="Color.Success"
+                                      Size="Size.Large"
+                                      Class="my-1 mx-1 float-end"
+                                      Loading="@(isLoading)"
+                                      OnClick="OnSubmit"
+                                      ButtonType="ButtonType.Button">
+                        <LoadingContent>Sending...</LoadingContent>
+                        <ChildContent>Send</ChildContent>
+                    </MudLoadingButton>
+                </MudStack>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1138.9715094648236!2d120.50110116666183!3d16.218987968412907!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x339173d5a0d770b9%3A0xfecd6972116bf21e!2sNORLU%20CEDEC%20Midpoint%20Hotel!5e0!3m2!1sen!2sph!4v1727888108357!5m2!1sen!2sph"
+                        style="border:0; height: 300px" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </MudItem>
+        </MudHidden>
+    </MudBreakpointProvider>
+</MudStack>
+
+@code {
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IHttpClientFactory httpClientFactory { get; set; }
+    private bool isLoading = false;
+    private string name = String.Empty;
+    private string message = String.Empty;
+    private string email = String.Empty;
+    private Inquiries inquiries { get; set; } = new();
+
+    private async Task OnSubmit()
+    {
+        try
+        {
+            isLoading = true;
+            var httpClient = httpClientFactory.CreateClient("Anonymous");
+            var response = await httpClient.PostAsJsonAsync("Guest/AddInquiries", inquiries);
+             //response.EnsureSuccessStatusCode();
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                Snackbar.Add("Inquiry Sent!", MudBlazor.Severity.Success);
+                // inquiries = new();
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();               
+                    Snackbar.Add($"Unexpected error: {response.StatusCode} - {errorMessage}", Severity.Error);
+                    Console.WriteLine($"Unexpected error: {response.StatusCode} - {errorMessage}");                
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.StackTrace}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

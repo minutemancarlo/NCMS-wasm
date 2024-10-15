@@ -1,16 +1,330 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Security.Claims
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+@inject IJSRuntime JS
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+<MudTypographyProvider />
+
 <MudLayout>
-   
-   
-    <MudMainContent Class="pt-16 px-16">
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
-            <MudGrid Class="pt-6 align-items-center justify-content-center">
-                @Body
-            </MudGrid>
-        </MudContainer>
+    <MudAppBar Elevation="1" Color="Color.Info" Fixed>
+        <MudStack Row Spacing="0">
+            <MudImage Src="images/logo.png" Width="50" Height="50" />
+            <MudBreakpointProvider>
+                <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                    <MudText Typo="Typo.h6" Class="pt-2">NORLU CEDEC Mid Point Hotel</MudText>
+                </MudHidden>
+            </MudBreakpointProvider>
+        </MudStack>
+        <MudSpacer />
+        <MudBreakpointProvider>
+            @* DESKTOP VIEW *@
+            <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                <MudStack Row Spacing="2" Class="px-2">
+                    <MudButton StartIcon="fas fa-home" Class="rounded-pill" Variant="Variant.Filled" Color="Color.Secondary" Href="/Home">Home</MudButton>
+                    <MudButton StartIcon="fas fa-bed" Class="rounded-pill" Variant="Variant.Filled" Color="Color.Secondary" OnClick="ScrollToRooms">Rooms</MudButton>
+                    <MudButton StartIcon="fas fa-phone-square-alt" Class="rounded-pill" Variant="Variant.Filled" Href="/ContactUs" Color="Color.Secondary">Contact</MudButton>
+                    <MudButton StartIcon="fas fa-question-circle" Class="rounded-pill" Variant="Variant.Filled" Color="Color.Secondary" OnClick="ScrollToAbout">About Us</MudButton>
+                </MudStack>
+                <MudMenu Class="my-3" Dense AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
+                    <ActivatorContent>
+                        <MudAvatar>
+                            <ChildContent>
+                                <AuthorizeView>
+                                    <Authorized>
+                                        @if (profile.Contains("http"))
+                                        {
+                                            <MudAvatar Color="Color.Tertiary">
+                                           
+                                                <MudImage Src="@profile"></MudImage>
+                                            </MudAvatar>
+
+                                        }
+                                        else
+                                        {
+                                            <MudAvatar Color="Color.Tertiary">@profile.Substring(0, 2)</MudAvatar>
+
+                                        }
+                                    </Authorized>
+                                    <NotAuthorized>
+                                        <MudImage Src="user.png" ObjectFit="ObjectFit.Fill"/>
+                                        @* <MudIcon Icon="fas fa-user-circle" Size Color="Color.Secondary" /> *@
+                                    </NotAuthorized>
+                                </AuthorizeView>
+                            </ChildContent>
+                        </MudAvatar>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <AuthorizeView>
+                            <Authorized>
+                                <MudMenuItem Icon="fas fa-users-cog">Account</MudMenuItem>
+                                <MudMenuItem Icon="fas fa-sign-out-alt" OnClick="BeginSignOut">Log Out</MudMenuItem>
+                            </Authorized>
+                            <NotAuthorized>
+                                <MudMenuItem Href="authentication/register" Icon="fas fa-users-cog">Sign Up</MudMenuItem>
+                                <MudMenuItem Href="authentication/login" Icon="fas fa-sign-in-alt">Log In</MudMenuItem>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </ChildContent>
+                </MudMenu>
+            </MudHidden>
+            @* MOBILE VIEW *@
+            <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                <MudIconButton Icon="fas fa-bars" OnClick="ToggleDrawer" Color="Color.Inherit" Edge="Edge.End" />
+            </MudHidden>
+        </MudBreakpointProvider>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_open" Breakpoint="Breakpoint.SmAndDown" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
+        <MudDrawerHeader>
+            <AuthorizeView>
+                <Authorized>
+                    <MudText Typo="Typo.subtitle1">
+                        @if(profile.Contains("http")){
+                        <MudAvatar Color="Color.Tertiary">
+                        
+                        <MudImage Src="@profile"></MudImage>    
+                        </MudAvatar> @name
+
+                        }
+                        else
+                        {
+                        <MudAvatar Color="Color.Tertiary">@profile.Substring(0,2)</MudAvatar> @name
+                            
+                        }
+                    </MudText>
+                </Authorized>
+                <NotAuthorized>
+                    <MudText Typo="Typo.subtitle1">Book a room Now!!</MudText>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Icon="fas fa-home" IconColor="Color.Inherit" Href="/Home">Home</MudNavLink>
+            <MudNavLink Icon="fas fa-bed" IconColor="Color.Inherit" OnClick="ScrollToRooms">Rooms</MudNavLink>
+            <MudNavLink Icon="fas fa-phone-square-alt" IconColor="Color.Inherit" Href="/ContactUs">Contact</MudNavLink>
+            <MudNavLink Icon="fas fa-question-circle" IconColor="Color.Inherit" OnClick="ScrollToAbout">About Us</MudNavLink>
+            <AuthorizeView>
+                <Authorized>
+                    <MudNavLink Icon="fas fa-users-cog" IconColor="Color.Inherit" Match="NavLinkMatch.All">Account</MudNavLink>
+                    <MudNavLink Icon="fas fa-sign-out-alt" IconColor="Color.Inherit" OnClick="BeginSignOut">Logout</MudNavLink>
+                </Authorized>
+                <NotAuthorized>
+                    <MudNavLink Href="authentication/register" Icon="fas fa-users-cog" IconColor="Color.Inherit">Sign Up</MudNavLink>
+                    <MudNavLink Href="authentication/login" Icon="fas fa-sign-in-alt" IconColor="Color.Inherit">Login</MudNavLink>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        <MudPaper Width="100%" Height="100%" Elevation="0">
+            <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+                <MudGrid Class="pt-6 py-2 vh-100">
+                    @Body
+                    <MudBreakpointProvider>
+                        @* DESKTOP VIEW *@
+                        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">                            
+                            <MudAppBar Bottom="true" Fixed="false" Style="background-color: #34495e; color: white;height:150px;" Class="mt-auto mb-auto" Elevation="0">
+                                <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Baseline" Class="mt-auto flex-grow-1">
+                                    <MudStack Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
+                                        <MudText Typo="Typo.h6">NORLU CEDEC Mid Point Hotel</MudText>
+                                        <MudText Typo="Typo.body1">Experience Luxury in the Biggest Hotel in town</MudText>
+                                        <MudTextM3 Typo="TypoM3.Body" Size="Size.Large">
+                                            Discover Norlu Cedec Midpoint Hotel, the biggest hotel in Rosario, La Union. Book your stay today!
+                                        </MudTextM3>
+                                    </MudStack>
+                                    <MudStack Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
+                                        <MudText Typo="Typo.h6">Contact</MudText>
+                                        <MudText Typo="Typo.body1">
+                                            <MudIcon Icon="fas fa-home me-3" Size="Size.Small" /> Brgy. Camp One, Udiao, Rosario, La Union
+                                        </MudText>
+                                        <MudText Typo="Typo.body1">
+                                            <MudIcon Icon="fas fa-envelope me-3" Size="Size.Small" /> support@ncmslu.com
+                                        </MudText>
+                                        <MudText Typo="Typo.body1">
+                                            <MudIcon Icon="fas fa-phone me-3" Size="Size.Small" /> +6399603355693
+                                        </MudText>
+                                    </MudStack>
+                                    <MudStack Class="pa-3" AlignItems="AlignItems.Start">
+                                        <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0">
+                                            <MudText Typo="Typo.h6">Get connected with us</MudText>
+                                            <MudSpacer />
+                                            <MudIconButton Icon="fab fa-facebook-f" Class="me-4 text-white" Size="Size.Small" />
+                                            <MudIconButton Icon="fab fa-twitter" Class="me-4 text-white" Size="Size.Small" />
+                                            <MudIconButton Icon="fab fa-google" Class="me-4 text-white" Size="Size.Small" />
+                                            <MudIconButton Icon="fab fa-instagram" Class="me-4 text-white" Size="Size.Small" />
+                                        </MudStack>
+                                    </MudStack>
+                                </MudStack>
+                            </MudAppBar>
+                            <MudAppBar Bottom="true" Fixed="false" Style="background-color: #2c3e50; color: white;" Elevation="0">
+                                <MudStack Row AlignItems="AlignItems.Baseline" Class="w-100" Justify="Justify.Center" StretchItems="StretchItems.Middle">
+                                    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small" Class="fw-bold pt-3 pb-3">NORLU CEDEC Mid Point Hotel</MudTextM3>
+
+                                    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small" Class="fw-bold pt-3 pb-3 float-end">All Rights Reserved. &copy; @DateTime.Now.Year</MudTextM3>
+                                </MudStack>
+                            </MudAppBar>
+                        </MudHidden>
+                        @* MOBILE VIEW *@
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                            <MudAppBar Bottom="true" Fixed="false" Style="background-color: #34495e; color: white;height:400px;" Elevation="0">
+                                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Baseline" Class="mt-auto">
+                                    <MudStack Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
+                                        <MudText Typo="Typo.h6">NORLU CEDEC Mid Point Hotel</MudText>
+                                        <MudText Typo="Typo.body1">Experience Luxury in the Biggest Hotel in town</MudText>
+                                        <MudTextM3 Typo="TypoM3.Body" Size="Size.Large">
+                                            Discover Norlu Cedec Midpoint Hotel, the biggest hotel in Rosario, La Union. Book your stay today!
+                                        </MudTextM3>
+                                    </MudStack>
+                                    <MudStack Spacing="1" Class="pa-3" AlignItems="AlignItems.Start">
+                                        <MudText Typo="Typo.h6">Contact</MudText>
+                                        <MudText Typo="Typo.body1">
+                                            <MudIcon Icon="fas fa-home me-3" Size="Size.Small" /> Brgy. Camp One, Udiao, Rosario, La Union
+                                        </MudText>
+                                        <MudText Typo="Typo.body1">
+                                            <MudIcon Icon="fas fa-envelope me-3" Size="Size.Small" /> support@ncmslu.com
+                                        </MudText>
+                                        <MudText Typo="Typo.body1">
+                                            <MudIcon Icon="fas fa-phone me-3" Size="Size.Small" /> +639603355693
+                                        </MudText>
+                                    </MudStack>
+                                    <MudStack Row Class="pa-3" AlignItems="AlignItems.Baseline">
+                                        <MudStack Row Class="me-5 d-none d-lg-block" Spacing="0" Wrap="Wrap.Wrap">
+                                            <MudText GutterBottom Typo="Typo.h6" class="mx-0 px-0">Get connected with us</MudText>
+                                        </MudStack>
+                                        <MudIconButton Icon="fab fa-facebook-f" Class="me-4 text-white" Size="Size.Small" />
+                                        <MudIconButton Icon="fab fa-twitter" Class="me-4 text-white" Size="Size.Small" />
+                                        <MudIconButton Icon="fab fa-google" Class="me-4 text-white" Size="Size.Small" />
+                                        <MudIconButton Icon="fab fa-instagram" Class="me-4 text-white" Size="Size.Small" />
+                                    </MudStack>
+                                </MudStack>
+                            </MudAppBar>
+                            <MudAppBar Bottom="true" Fixed="false" Style="background-color: #2c3e50; color: white;" Elevation="0">
+                                <MudStack AlignItems="AlignItems.Baseline" Class="w-100" Justify="Justify.Center" Spacing="0">
+                                    <MudTextM3 Typo="TypoM3.Label" Size="Size.Small">NORLU CEDEC Mid Point Hotel. All Rights Reserved. &copy; @DateTime.Now.Year</MudTextM3>
+                                </MudStack>
+                            </MudAppBar>
+                        </MudHidden>
+                    </MudBreakpointProvider>
+                </MudGrid>
+            </MudContainer>
+        </MudPaper>
     </MudMainContent>
+ 
+    
+    
+    <MudScrollToTop Style="z-index: 2001;">
+        <MudFab Color="Color.Info" StartIcon="@Icons.Material.Filled.ArrowCircleUp" />
+    </MudScrollToTop>
 </MudLayout>
 
 @code {
+    private bool _open = false;
+    [Inject] ISnackbar Snackbar { get; set; }
+    private string baseUrl;
+    private string relativePath;
+    private string scrollTo;
 
+    public string profile = "";
+    public string name = "";
+    public bool isLoggedin = false;
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+    public List<Claim> UserClaims { get; set; } = new List<Claim>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+        await UpdatePath();
+        if (authenticationState is not null)
+        {
+            var state = await authenticationState;
+
+            if (state.User.Identity.IsAuthenticated)
+            {
+                var user = authenticationState.Result.User;
+                name = user.Identity.Name;
+                profile = state?.User.Claims
+                            .Where(c => c.Type.Equals("picture"))
+                            .Select(c => c.Value)
+                            .FirstOrDefault() ?? string.Empty;
+                // navigationManager.NavigateTo("login?redirectUri=/");
+                if (string.IsNullOrEmpty(profile))
+                {
+                    profile = user.Identity.Name;
+                }
+            }
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private async Task UpdatePath()
+    {
+        relativePath = Navigation.ToBaseRelativePath(Navigation.Uri);
+        baseUrl = Navigation.BaseUri;        
+        if (!string.IsNullOrEmpty(scrollTo))
+        {
+            switch (scrollTo)
+            {
+                case "about":
+                    scrollTo = string.Empty;
+                    await ScrollToAbout();
+                    break;
+
+                case "rooms":
+                    scrollTo = string.Empty;
+                        await ScrollToRooms();
+                    break;
+            }
+        }
+        // Snackbar.Add($"Relative Path: {relativePath}", Severity.Normal);
+        // Snackbar.Add($"Base URL: {baseUrl}", Severity.Normal);
+    }
+
+    private void OnLocationChanged(object sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        UpdatePath();
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
+
+
+
+    private async Task ScrollToAbout()
+    {
+            if (relativePath != "Home")
+        {
+            Navigation.NavigateTo($"{baseUrl}Home");
+            scrollTo = "about";
+        }
+        await JS.InvokeVoidAsync("scrollToElement", "about");
+    }
+
+    private async Task ScrollToRooms()
+    {
+        if (relativePath != "Home")
+        {
+            Navigation.NavigateTo($"{baseUrl}Home");
+            scrollTo = "rooms";
+        }
+        await JS.InvokeVoidAsync("scrollToElement", "rooms");
+    }
+
+    private async Task BeginSignOut()
+    {
+        await SignOutManager.SetSignOutState();
+        Navigation.NavigateTo("authentication/logout");
+    }
 }

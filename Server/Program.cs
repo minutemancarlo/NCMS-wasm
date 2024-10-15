@@ -5,8 +5,23 @@ using System.Data;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Client.Pages.Hotel;
 using NCMS_wasm.Server.Services;
+using Microsoft.AspNetCore.Authorization;
+using NCMS_wasm.Server.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var environment = builder.Environment;
+if (!string.IsNullOrWhiteSpace(environment.EnvironmentName))
+{
+    builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+        .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", false, true);
+}
+else
+{
+    builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+       .AddJsonFile($"appsettings.Production.json", false, true);
+}
+
 // Register your database connection
 builder.Services.AddTransient<IDbConnection>(sp =>
 {
@@ -15,6 +30,7 @@ builder.Services.AddTransient<IDbConnection>(sp =>
     return new SqlConnection(connectionString);
 });
 
+
 // Add Dapper Repositories
 builder.Services.AddTransient<DeviceRepository>();
 builder.Services.AddTransient<CardRepository>();
@@ -22,13 +38,18 @@ builder.Services.AddTransient<HotelRepository>();
 builder.Services.AddTransient<EventsRepository>();
 builder.Services.AddTransient<EmployeeRepository>();
 builder.Services.AddTransient<PayslipRepository>();
+builder.Services.AddTransient<GasRepository>();
+builder.Services.AddTransient<GuestRepository>();
+builder.Services.AddTransient<EmailRepository>();
 
 //Add Services
 builder.Services.AddScoped<LeaveRequestService>();
 builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddScoped<ReceiptService>();
 
 //Add Background Services
 builder.Services.AddHostedService<PayslipProcessor>();
+builder.Services.AddHostedService<EmailSenderProcessor>();
 
 
 // Add services to the container.
@@ -60,6 +81,18 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
 });
+//var allowedOrigin = builder.Configuration["AllowedOrigin:url"];
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowSpecificOrigin", builder =>
+//    {
+//        builder.WithOrigins(allowedOrigin) 
+//               .AllowAnyMethod()
+//               .AllowAnyHeader();
+//    });
+//});
+
+
 
 builder.Services.AddAuth0ManagementClient().AddManagementAccessToken();
 builder.Services.AddControllersWithViews();
@@ -67,6 +100,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -98,6 +132,7 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();
+//app.MapHub<NotificationHub>("/notificationhub");
 app.MapFallbackToFile("index.html");
 
 app.Run();

@@ -3,6 +3,7 @@ using Auth0.ManagementApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using NCMS_wasm.Shared;
 using NCMS_wasm.Server.Repository;
+using NCMS_wasm.Server.Logger;
 
 namespace NCMS_wasm.Server.Controllers
 {
@@ -12,11 +13,14 @@ namespace NCMS_wasm.Server.Controllers
     {        
         private readonly ILogger<DevicesController> _logger;
         private readonly DeviceRepository _deviceRepository;
+        private readonly FileLogger _fileLogger;
 
-        public DevicesController(ILogger<DevicesController> logger, DeviceRepository deviceRepository)
+        public DevicesController(ILogger<DevicesController> logger, DeviceRepository deviceRepository, IConfiguration configuration)
         {
             _logger = logger;
             _deviceRepository = deviceRepository;
+            _fileLogger = new FileLogger(configuration);
+
         }
 
         [HttpGet("GetNetworkDevices")]
@@ -30,6 +34,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetNetworkDevices]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "DevicesController");
+
                 _logger.LogError($"Exception occurred while retrieving network devices: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving network devices: {ex.Message}");
             }
@@ -46,8 +52,25 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [AddUpdateDevice]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "DevicesController");
                 _logger.LogError($"Exception occurred while adding/updating device: {ex.Message}");
                 return BadRequest($"Exception occurred while adding/updating device: {ex.Message}");
+            }
+        }
+
+        [HttpPost("UpdateDeviceRoom")]
+        public async Task<ActionResult<int>> UpdateDeviceRoom(Device device)
+        {
+            try
+            {
+                int deviceId = await _deviceRepository.UpdateDeviceRoom(device);                
+                return Ok(deviceId);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [UpdateDeviceRoom]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "DevicesController");
+                _logger.LogError($"Exception occurred while updating device: {ex.Message}");
+                return BadRequest($"Exception occurred while updating device: {ex.Message}");
             }
         }
 

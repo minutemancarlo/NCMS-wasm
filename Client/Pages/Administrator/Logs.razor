@@ -1,0 +1,48 @@
+﻿@page "/admin-logs"
+@using System.Collections.ObjectModel
+@inject HttpClient HttpClient
+
+<MudPaper Width="300px" Elevation="0">
+    <MudTreeView ServerData="@LoadServerData" Items="@InitialTreeItems">
+        <ItemTemplate>
+            <MudTreeViewItem Value="@context.Value" Icon="@context.Icon" LoadingIconColor="Color.Info" CanExpand="@context.Expandable" OnDoubleClick="@(() => OnDoubleClickItem(@context.Value))" />
+        </ItemTemplate>
+    </MudTreeView>
+</MudPaper>
+
+@code {
+    private List<TreeItemData<string>> InitialTreeItems { get; set; } = new();
+    private List<TreeItemData<string>> ServerTreeItems { get; set; } = new();
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        // Initialize with a top-level item (can be empty or represent the root)
+        // InitialTreeItems.Add(new TreeItemData<string>());
+        InitialTreeItems.Add(new TreeItemData<string> { Value = "", Icon = "folder" });
+    }
+
+    public async Task<IReadOnlyCollection<TreeItemData<string>>> LoadServerData(string? parentValue)
+    {
+        var response = await HttpClient.GetAsync($"FileExplorer/folders?path={parentValue}");
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<IReadOnlyCollection<TreeItemData<string>>>();
+    }
+
+    private async Task OnDoubleClickItem(string itemValue)
+    {
+        var response = await HttpClient.GetAsync($"FileExplorer/download?filePath={itemValue}");
+        if (response.IsSuccessStatusCode)
+        {
+            var fileStream = await response.Content.ReadAsStreamAsync();
+            var fileName = itemValue; // Use the item value as filename
+
+            // Use a JavaScript interop method to trigger download
+            await JSRuntime.InvokeVoidAsync("downloadFile", fileName, fileStream);
+        }
+        else
+        {
+            // Handle error
+        }
+    }
+}

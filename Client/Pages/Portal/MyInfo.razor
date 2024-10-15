@@ -3,104 +3,208 @@
 @using System.Globalization
 @layout MainLayout
 @attribute [Authorize(Roles = "Gas Employee,Front Desk,Human Resource")]
-<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-    <MudOverlay @bind-Visible="_overlayVisible" DarkBackground AutoClose="false">
-        <MudLoading @bind-Loading="_overlayVisible" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
-                    Color="Color.Primary" />
-    </MudOverlay>
-    <MudGrid>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;background-color: #1abc9c; ">
-                <MudCard Elevation="0" Style="background-color: inherit; color: white;" >
-                    <MudCardHeader>
-                        <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-calendar-alt" Size="Size.Medium"></MudIcon> Leave Credits</MudText>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudText Typo="Typo.body1"><strong>Vacation Leave: </strong>0</MudText>
-                        <MudText Typo="Typo.body1"><strong>Sick Leave: </strong>0</MudText>                        
-                    </MudCardContent>                    
-                </MudCard>                
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px; background-color: #2ecc71">
-                <MudCard Elevation="0" Style="background-color: inherit; color: white;">
-                    <MudCardHeader>
-                        <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-calendar-check" Size="Size.Medium"></MudIcon> For Approval Leaves</MudText>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudText Typo="Typo.body1"><strong>Vacation Leave: </strong>0</MudText>
-                        <MudText Typo="Typo.body1"><strong>Sick Leave: </strong>0</MudText>
-                    </MudCardContent>
-                </MudCard>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;background-color: #3498db"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6">
+@if (employee is not null)
+{
+    <MudBreakpointProvider>
+    @* DESKTOP VIEW *@
+    <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+        <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+            <MudOverlay @bind-Visible="_overlayVisible" DarkBackground AutoClose="false">
+                <MudLoading @bind-Loading="_overlayVisible" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+                            Color="Color.Primary" />
+            </MudOverlay>
             <MudGrid>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
-                  
-                        <MudText Typo="Typo.h6">Personal Details</MudText>
-                        <br/>
-                        <MudText Typo="Typo.body1"><strong>Employee ID: </strong>@employee.IDNumber</MudText>
-                        <MudText Typo="Typo.body1"><strong>Full Name: </strong>@employee.Name</MudText>
-                        <MudText Typo="Typo.body1"><strong>Email: </strong>@employee.Email</MudText>
-                        <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.Phone</MudText>
-                        <MudText Typo="Typo.body1"><strong>Address: </strong>@employee.Address</MudText>
-                        <MudText Typo="Typo.body1"><strong>Gender: </strong>@employee.Gender</MudText>
-                        <MudText Typo="Typo.body1"><strong>Civil Status: </strong>@employee.CivilStatus</MudText>
-                        <MudText Typo="Typo.body1"><strong>Place of Birth: </strong>@employee.PlaceOfBirth</MudText>
-                        <MudText Typo="Typo.body1"><strong>Date of Birth: </strong>@($"{employee.DateOfBirth:MMMM d, yyyy}")</MudText>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;background-color: #1abc9c; ">
+                        <MudCard Elevation="0" Style="background-color: inherit; color: white;">
+                            <MudCardHeader>
+                                <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-calendar-alt" Size="Size.Medium"></MudIcon> Leave Credits</MudText>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText Typo="Typo.body1"><strong>Vacation Leave: </strong>0</MudText>
+                                <MudText Typo="Typo.body1"><strong>Sick Leave: </strong>0</MudText>
+                            </MudCardContent>
+                        </MudCard>
                     </MudPaper>
-                </MudItem>               
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px; background-color: #2ecc71">
+                        <MudCard Elevation="0" Style="background-color: inherit; color: white;">
+                            <MudCardHeader>
+                                <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-calendar-check" Size="Size.Medium"></MudIcon> For Approval Leaves</MudText>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText Typo="Typo.body1"><strong>Vacation Leave: </strong>0</MudText>
+                                <MudText Typo="Typo.body1"><strong>Sick Leave: </strong>0</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="4">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;background-color: #3498db"></MudPaper>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+
+                                <MudText Typo="Typo.h6">Personal Details</MudText>
+                                <br />
+                                <MudText Typo="Typo.body1"><strong>Employee ID: </strong>@employee.IDNumber</MudText>
+                                <MudText Typo="Typo.body1"><strong>Full Name: </strong>@employee.Name</MudText>
+                                <MudText Typo="Typo.body1"><strong>Email: </strong>@employee.Email</MudText>
+                                <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.Phone</MudText>
+                                <MudText Typo="Typo.body1"><strong>Address: </strong>@employee.Address</MudText>
+                                <MudText Typo="Typo.body1"><strong>Gender: </strong>@employee.Gender</MudText>
+                                <MudText Typo="Typo.body1"><strong>Civil Status: </strong>@employee.CivilStatus</MudText>
+                                <MudText Typo="Typo.body1"><strong>Place of Birth: </strong>@employee.PlaceOfBirth</MudText>
+                                <MudText Typo="Typo.body1"><strong>Date of Birth: </strong>@($"{employee.DateOfBirth:MMMM d, yyyy}")</MudText>
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+                        <MudText Typo="Typo.h6">Employment Details</MudText>
+                        <br />
+                        <MudText Typo="Typo.body1"><strong>Position: </strong>@employee.Position</MudText>
+                        <MudText Typo="Typo.body1"><strong>Department: </strong>@employee.Department.ToString()</MudText>
+                        <MudText Typo="Typo.body1"><strong>Employment Status: </strong>@employee.EmploymentStatus.ToString()</MudText>
+                        <MudText Typo="Typo.body1"><strong>Employment Date: </strong>@($"{employee.DateHired:MMMM d, yyyy}")</MudText>
+                        <MudText Typo="Typo.body1"><strong>Salary: </strong>@string.Format(new CultureInfo("en-PH"), "{0:C}", employee.Salary)</MudText>
+                        <MudText Typo="Typo.body1"><strong>SSS Number: </strong>@employee.SSS</MudText>
+                        <MudText Typo="Typo.body1"><strong>PHIC Number: </strong>@employee.PHIC</MudText>
+                        <MudText Typo="Typo.body1"><strong>Pag-Ibig Number: </strong>@employee.PagIbig</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                        <MudText Typo="Typo.h6">Emergency Contact Details</MudText>
+                        <br />
+                        <MudText Typo="Typo.body1"><strong>Name: </strong>@employee.EmergencyContactName</MudText>
+                        <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.EmergencyContactPhone</MudText>
+                        <MudText Typo="Typo.body1"><strong>Address: </strong>@employee.EmergencyContactAddress</MudText>
+                        <MudText Typo="Typo.body1"><strong>Relationship: </strong>@employee.EmergencyContactRelationship</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                        <MudText Typo="Typo.h6">Beneficiary Details</MudText>
+                        <br />
+                        <MudText Typo="Typo.body1"><strong>Name: </strong>@employee.BeneficiaryName</MudText>
+                        <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.BeneficiaryContactInfo</MudText>
+                        <MudText Typo="Typo.body1"><strong>Relationship: </strong>@employee.BeneficiaryRelationship</MudText>
+                    </MudPaper>
+                </MudItem>
             </MudGrid>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">           
-                <MudText Typo="Typo.h6">Employment Details</MudText>
-                <br />
-                <MudText Typo="Typo.body1"><strong>Position: </strong>@employee.Position</MudText>
-                <MudText Typo="Typo.body1"><strong>Department: </strong>@employee.Department.ToString()</MudText>
-                <MudText Typo="Typo.body1"><strong>Employment Status: </strong>@employee.EmploymentStatus.ToString()</MudText>
-                <MudText Typo="Typo.body1"><strong>Employment Date: </strong>@($"{employee.DateHired:MMMM d, yyyy}")</MudText>
-                <MudText Typo="Typo.body1"><strong>Salary: </strong>@string.Format(new CultureInfo("en-PH"), "{0:C}", employee.Salary)</MudText>
-                <MudText Typo="Typo.body1"><strong>SSS Number: </strong>@employee.SSS</MudText>
-                <MudText Typo="Typo.body1"><strong>PHIC Number: </strong>@employee.PHIC</MudText>
-                <MudText Typo="Typo.body1"><strong>Pag-Ibig Number: </strong>@employee.PagIbig</MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">            
-                <MudText Typo="Typo.h6">Emergency Contact Details</MudText>
-                <br />
-                <MudText Typo="Typo.body1"><strong>Name: </strong>@employee.EmergencyContactName</MudText>
-                <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.EmergencyContactPhone</MudText>
-                <MudText Typo="Typo.body1"><strong>Address: </strong>@employee.EmergencyContactAddress</MudText>
-                <MudText Typo="Typo.body1"><strong>Relationship: </strong>@employee.EmergencyContactRelationship</MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">               
-                <MudText Typo="Typo.h6">Beneficiary Details</MudText>
-                <br />
-                <MudText Typo="Typo.body1"><strong>Name: </strong>@employee.BeneficiaryName</MudText>
-                <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.BeneficiaryContactInfo</MudText>
-                <MudText Typo="Typo.body1"><strong>Relationship: </strong>@employee.BeneficiaryRelationship</MudText>
-            </MudPaper>
-        </MudItem>        
-    </MudGrid>
-</MudContainer>
+        </MudContainer>
+    </MudHidden>
+
+    @* MOBILE VIEW *@
+    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+        <MudGrid Justify="Justify.Center" Class="pt-5 w-100">
+            <MudOverlay @bind-Visible="_overlayVisible" DarkBackground AutoClose="false">
+            <MudLoading @bind-Loading="_overlayVisible" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+                            Color="Color.Primary" />
+            </MudOverlay>
+            <MudStack AlignItems="AlignItems.Center" Spacing="3" Class="w-100">
+                <MudItem  sm="12" Class="w-100">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;background-color: #1abc9c; ">
+                        <MudCard Elevation="0" Style="background-color: inherit; color: white;">
+                            <MudCardHeader>
+                                <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-calendar-alt" Size="Size.Medium"></MudIcon> Leave Credits</MudText>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText Typo="Typo.body1"><strong>Vacation Leave: </strong>0</MudText>
+                                <MudText Typo="Typo.body1"><strong>Sick Leave: </strong>0</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudPaper>
+                </MudItem>
+                <MudItem sm="12" Class="w-100">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px; background-color: #2ecc71">
+                        <MudCard Elevation="0" Style="background-color: inherit; color: white;">
+                            <MudCardHeader>
+                                <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-calendar-check" Size="Size.Medium"></MudIcon> For Approval Leaves</MudText>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText Typo="Typo.body1"><strong>Vacation Leave: </strong>0</MudText>
+                                <MudText Typo="Typo.body1"><strong>Sick Leave: </strong>0</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudPaper>
+                </MudItem>
+                <MudItem sm="12" Class="w-100">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;background-color: #3498db"></MudPaper>
+                </MudItem>
+                <MudItem sm="12" Class="w-100">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+
+                                <MudText Typo="Typo.h6">Personal Details</MudText>
+                                <br />
+                                <MudText Typo="Typo.body1"><strong>Employee ID: </strong>@employee.IDNumber</MudText>
+                                <MudText Typo="Typo.body1"><strong>Full Name: </strong>@employee.Name</MudText>
+                                <MudText Typo="Typo.body1"><strong>Email: </strong>@employee.Email</MudText>
+                                <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.Phone</MudText>
+                                <MudText Typo="Typo.body1"><strong>Address: </strong>@employee.Address</MudText>
+                                <MudText Typo="Typo.body1"><strong>Gender: </strong>@employee.Gender</MudText>
+                                <MudText Typo="Typo.body1"><strong>Civil Status: </strong>@employee.CivilStatus</MudText>
+                                <MudText Typo="Typo.body1"><strong>Place of Birth: </strong>@employee.PlaceOfBirth</MudText>
+                                <MudText Typo="Typo.body1"><strong>Date of Birth: </strong>@($"{employee.DateOfBirth:MMMM d, yyyy}")</MudText>
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+                <MudItem sm="12" Class="w-100">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+                        <MudText Typo="Typo.h6">Employment Details</MudText>
+                        <br />
+                        <MudText Typo="Typo.body1"><strong>Position: </strong>@employee.Position</MudText>
+                        <MudText Typo="Typo.body1"><strong>Department: </strong>@employee.Department.ToString()</MudText>
+                        <MudText Typo="Typo.body1"><strong>Employment Status: </strong>@employee.EmploymentStatus.ToString()</MudText>
+                        <MudText Typo="Typo.body1"><strong>Employment Date: </strong>@($"{employee.DateHired:MMMM d, yyyy}")</MudText>
+                        <MudText Typo="Typo.body1"><strong>Salary: </strong>@string.Format(new CultureInfo("en-PH"), "{0:C}", employee.Salary)</MudText>
+                        <MudText Typo="Typo.body1"><strong>SSS Number: </strong>@employee.SSS</MudText>
+                        <MudText Typo="Typo.body1"><strong>PHIC Number: </strong>@employee.PHIC</MudText>
+                        <MudText Typo="Typo.body1"><strong>Pag-Ibig Number: </strong>@employee.PagIbig</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem sm="12" Class="w-100">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                        <MudText Typo="Typo.h6">Emergency Contact Details</MudText>
+                        <br />
+                        <MudText Typo="Typo.body1"><strong>Name: </strong>@employee.EmergencyContactName</MudText>
+                        <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.EmergencyContactPhone</MudText>
+                        <MudText Typo="Typo.body1"><strong>Address: </strong>@employee.EmergencyContactAddress</MudText>
+                        <MudText Typo="Typo.body1"><strong>Relationship: </strong>@employee.EmergencyContactRelationship</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem sm="12" Class="w-100">
+
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                        <MudText Typo="Typo.h6">Beneficiary Details</MudText>
+                        <br />
+                        <MudText Typo="Typo.body1"><strong>Name: </strong>@employee.BeneficiaryName</MudText>
+                        <MudText Typo="Typo.body1"><strong>Phone: </strong>@employee.BeneficiaryContactInfo</MudText>
+                        <MudText Typo="Typo.body1"><strong>Relationship: </strong>@employee.BeneficiaryRelationship</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudStack>
+        </MudGrid>
+    </MudHidden>
+</MudBreakpointProvider>
+}
 
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
     [Inject] HttpClient? httpClient { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
-    private Employee? employee = new();
+    [Inject] NavigationManager Navigation { get; set; }
+    private Employee? employee;
     private bool _overlayVisible = false;
     private string? currentUserId;
     protected override async Task OnInitializedAsync()
@@ -108,6 +212,7 @@
         currentUserId = MainLayout.CurrentUserId;
         MainLayout.SubTitle = "Employee Portal Module";
         employee = await GetEmployeeInfoAsync(currentUserId);
+
         await base.OnInitializedAsync();
     }
 
@@ -130,7 +235,9 @@
             {
 
                 var errorMessage = await response.Content.ReadAsStringAsync();
-                throw new HttpRequestException($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
+               Navigation.NavigateTo("/Error");
+                return new Employee();
+                // throw new HttpRequestException($"Error fetching employee info: {response.StatusCode} - {errorMessage}");
             }
         }
         catch (Exception ex)

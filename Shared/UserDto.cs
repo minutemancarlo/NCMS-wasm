@@ -17,5 +17,6 @@ namespace NCMS_wasm.Shared
         public DateTime? Last_Login { get; set; }
         public string Provider { get; set; }
         public string Picture { get; set; }
+        public bool isBinded { get; set; } = false;
     }
 }

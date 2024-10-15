@@ -1,0 +1,61 @@
+﻿@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Validations
+@using NCMS_wasm.Client.Pages.GeneralComponents
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.CardTravel"></MudIcon>
+             @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form">
+            <MudNumericField @bind-Value="Discount" @ref="discountField" Format="N2" AutoFocus Label="Discount Amount" Variant="Variant.Outlined" OnKeyUp="HandleKeyUp" HideSpinButtons Margin="Margin.Normal" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Disabled="_loading" OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"
+                          Loading="@(_loading)"
+                          OnClick="@(async => OnSubmit())"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Submitting...</LoadingContent>
+            <ChildContent>Submit</ChildContent>
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    MudForm form;
+    [Parameter] public string Title { get; set; }
+    [Parameter] public decimal Discount { get; set; }
+    MudNumericField<decimal> discountField;
+    private bool _loading = false;
+
+
+    void Cancel() => MudDialog.Cancel();
+    private void OnSubmit() => MudDialog.Close(DialogResult.Ok(Math.Round(Discount, 2)));
+    private void HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            OnSubmit();
+        }
+        else if (e.Key == "Escape")
+        {
+            Cancel();
+        }
+
+    }
+
+    private async Task OnfocusValue()
+    {
+        await discountField.SelectRangeAsync(0, discountField.Value.ToString().Length);
+    }
+}

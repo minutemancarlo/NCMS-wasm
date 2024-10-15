@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NCMS_wasm.Client.Pages.Administrator;
+using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Shared;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 
@@ -20,10 +21,14 @@ namespace NCMS_wasm.Server.Controllers
 
         private readonly IManagementApiClient _managementApiClient;
         private readonly ILogger<UserManagementController> _logger;
-        public UserManagementController(IManagementApiClient managementApiClient, ILogger<UserManagementController> logger)
+        private readonly FileLogger _fileLogger;
+        private readonly string ModuleName;
+        public UserManagementController(IManagementApiClient managementApiClient, ILogger<UserManagementController> logger, IConfiguration configuration)
         {
             _managementApiClient = managementApiClient;
             _logger = logger;
+            _fileLogger = new FileLogger(configuration);
+            ModuleName = "UserManagementController";
         }
 
         [HttpGet("UsersList")]
@@ -54,6 +59,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [UsersList]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception Occured: {ex.Message}");
                 return BadRequest($"Exception Occured: {ex.Message}");
             }
@@ -78,6 +85,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetAllRoles]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception Occured: {ex.Message}");
                 return BadRequest($"Exception Occured: {ex.Message}");
             }
@@ -94,6 +103,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetUserRole]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception Occured: {ex.Message}");
                 return BadRequest($"Exception Occured: {ex.Message}");
             }
@@ -126,6 +137,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [SetUserRole]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception Occured: {ex.Message}");
                 return BadRequest($"Exception Occured: {ex.Message}");
             }
@@ -160,6 +173,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [CreateUser]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception Occured: {ex.Message}");
                 return BadRequest($"Exception Occured: {ex.Message}");
             }
@@ -190,6 +205,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetUserByEmail]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception Occured: {ex.Message}");
                 return BadRequest($"Exception Occured: {ex.Message}");
             }

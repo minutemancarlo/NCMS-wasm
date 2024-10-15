@@ -43,7 +43,7 @@
                                     <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
                                         <MudItem xs="3">
                                             <MudPaper Style="width: 192px; height: 192px;" Class="text-center" Elevation="0">
-                                                <MudImage Src="@context.Item.Profile" Height="192" Width="192" />                                                
+                                                <MudImage Src="@context.Item.imageUrl" Height="192" Width="192" />                                                
                                             </MudPaper>
                                         </MudItem>
                                         <MudItem xs="9">
@@ -221,35 +221,7 @@
         var parameters = new DialogParameters<AddEmployeeDialog>
             {
                 { x => x.currentUserId, MainLayout.CurrentUserId },
-             {x => x.employeeInfo,
-                     new Employee
-    {        
-        Profile = "images/user-alt-solid.svg",
-        Name = "Maria Santos",
-        Address = "789 Green Ave, Quezon City, Metro Manila",
-        Phone = "09182345678",
-        SSS = "987-654-3210",
-        PagIbig = "9101-1234-5678",
-        PHIC = "1234567890",
-        DateOfBirth = new DateTime(1985, 8, 25),
-        PlaceOfBirth = "Cebu City",
-        Gender = "Female",
-        CivilStatus = "Married",
-        Email = "cboado@teligent.ph",
-        Position = "HR Manager",
-        Department = Department.Gas,
-        EmploymentStatus = EmploymentStatus.Regular,
-        DateHired = new DateTime(2015, 3, 20),
-        DateResigned = null, 
-        Salary = 70000.00m,
-        EmergencyContactName = "Carlos Santos",
-        EmergencyContactRelationship = "Husband",
-        EmergencyContactPhone = "09171234567",
-        EmergencyContactAddress = "789 Green Ave, Quezon City, Metro Manila",
-        BeneficiaryName = "Carlos Santos",
-        BeneficiaryRelationship = "Husband",
-        BeneficiaryContactInfo = "09171234567"
-    }}
+             {x => x.employeeInfo,new Employee() } 
             };
 
         var dialog = await DialogService.ShowAsync<AddEmployeeDialog>("Simple Dialog", parameters, options);

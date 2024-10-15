@@ -9,6 +9,7 @@
             <MudDivider Class="my-2" />
             <MudNavLink Href="/admin-dashboard" IconColor="Color.Primary" Icon="fas fa-chart-line">Dashboard</MudNavLink>
             <MudNavLink Href="/admin-usersmanagement" IconColor="Color.Success" Icon="fas fa-users">User Management</MudNavLink>
+            <MudNavLink Href="/admin-logs" IconColor="Color.Error" Icon="fas fa-scroll">Logs</MudNavLink>
         </Authorized>
     </AuthorizeView>
     <AuthorizeView Roles="Human Resource">
@@ -44,7 +45,7 @@
         {
             <MudNavLink Href="/hotel-dashboard" Icon="fas fa-chart-line" IconColor="Color.Primary">Dashboard</MudNavLink>
             <MudNavLink Href="/hotel-roomsmanagement" Icon="fas fa-hotel">Room Management</MudNavLink>
-            <MudNavLink Href="/hotel-guests" IconColor="Color.Secondary" Icon="fas fa-users">Guest Management</MudNavLink>
+            <MudNavLink Href="/hotel-booking" IconColor="Color.Error" Icon="fas fa-users">Booking Management</MudNavLink>
             <MudNavLink Href="/hotel-devices" Icon="fas fa-cogs" IconColor="Color.Success">Device Settings</MudNavLink>
         }
 
@@ -62,7 +63,7 @@
         else
         {
             <MudNavLink Href="/gas-dashboard" Icon="fas fa-chart-line" IconColor="Color.Primary">Dashboard</MudNavLink>
-            <MudNavLink Href="/gas-cards" IconColor="Color.Dark" Icon="fas fa-credit-card">Card Management</MudNavLink>
+            <MudNavLink Href="/gas-cards" IconColor="Color.Dark" Icon="fas fa-credit-card">Loyalty Card Management</MudNavLink>
             <MudNavLink Href="/gas-pos" Icon="fas fa-cash-register" IconColor="Color.Error">Point of Sales</MudNavLink>
             <MudNavLink Href="/gas-tanks" Icon="fas fa-gas-pump" IconColor="Color.Success">Tank Management</MudNavLink>
         }

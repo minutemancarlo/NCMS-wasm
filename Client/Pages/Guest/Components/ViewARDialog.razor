@@ -1,0 +1,20 @@
+﻿
+<MudDialog>
+    <TitleContent>
+
+    </TitleContent>
+    <DialogContent>
+        <MudStack Class="w-100 vh-100">
+            <a-scene vr-mode-ui="enabled: false">
+                <a-sky src="images/@Image"></a-sky>
+                <a-entity camera look-controls></a-entity>
+            </a-scene>
+        </MudStack>
+
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public string Image { get; set; }
+}

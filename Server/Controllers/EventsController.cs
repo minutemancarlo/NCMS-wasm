@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
 
@@ -10,11 +11,14 @@ namespace NCMS_wasm.Server.Controllers
     {
         private readonly ILogger<EventsController> _logger;
         private readonly EventsRepository _eventsRepository;
-
-        public EventsController(ILogger<EventsController> logger, EventsRepository eventsRepository)
+        private readonly FileLogger _fileLogger;
+        private readonly string ModuleName;
+        public EventsController(ILogger<EventsController> logger, EventsRepository eventsRepository, IConfiguration configuration)
         {
             _logger = logger;
             _eventsRepository = eventsRepository;
+            _fileLogger = new FileLogger(configuration);
+            ModuleName = "EventsController";
         }
 
 
@@ -29,6 +33,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [AddUpdateEvent]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while adding/updating event: {ex.Message}");
                 return BadRequest($"Exception occurred while adding/updating event: {ex.Message}");
             }
@@ -45,6 +51,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [ApprovalRequest]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while updating leave request: {ex.Message}");
                 return BadRequest($"Exception occurred while updating leave request: {ex.Message}");
             }
@@ -61,6 +69,7 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [DeleteEvent]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
                 _logger.LogError($"Exception occurred while deleting event: {ex.Message}");
                 return BadRequest($"Exception occurred while deleting event: {ex.Message}");
             }
@@ -77,6 +86,8 @@ namespace NCMS_wasm.Server.Controllers
             }
             catch (Exception ex)
             {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetEvents]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
                 _logger.LogError($"Exception occurred while retrieving events: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving events: {ex.Message}");
             }

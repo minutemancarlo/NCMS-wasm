@@ -17,6 +17,9 @@
     <link id="mudex-styles" href="_content/MudBlazor.Extensions/mudBlazorExtensions.min.css" rel="stylesheet">
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <link href="_content/Heron.MudCalendar/Heron.MudCalendar.min.css" rel="stylesheet" />
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="cryptoHelper.js"></script>
+
 </head>
 
 <body>
@@ -47,6 +50,32 @@
             document.body.removeChild(link);
         }
 
+        window.startKeyboardListener = (dotNetHelper) => {
+            let rfidBuffer = '';
+            const RFID_END_KEY = 'Enter'; // Change this if your RFID reader uses a different key to finish input
+
+            document.addEventListener('keydown', function (event) {
+                // Check if the key is not a control key and is a character
+                if (event.key !== RFID_END_KEY) {
+                    rfidBuffer += event.key; // Append the key to the buffer
+                } else {
+                    // When the RFID reader sends the end key (like Enter)
+                    if (rfidBuffer) {
+                        dotNetHelper.invokeMethodAsync('ReceiveRfidData', rfidBuffer);
+                        rfidBuffer = ''; // Clear buffer for next scan
+                    }
+                }
+            });
+        };
+
+    
+            function scrollToElement(id) {
+            var element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    
     </script>
 </body>
 

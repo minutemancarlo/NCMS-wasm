@@ -1,16 +1,132 @@
 ﻿@page "/gas-dashboard"
+@using NCMS_wasm.Shared
 @attribute [Authorize(Roles = "Gas Employee")]
 <PageTitle>Dashboard | NCMS</PageTitle>
-<MudStack>
+<MudStack Class="w-100">
     <MudText Typo="Typo.h5">Dashboard</MudText>
+    <MudGrid Class="w-100">
+        <MudItem xs="12">
+            <MudPaper Elevation="4" Class="align-content-center">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Value Sales per Liter for @_yearDay</MudText>
+                        </CardHeaderContent>
+                        @* <CardHeaderActions>
+                            <MudDatePicker Variant="Variant.Text" Color="Color.Primary"
+                                           @bind-Date="_yearDay"
+                                           OpenTo="OpenTo.Year"
+                                           FixMonth="@DateTime.Today.Month"
+                                           FixDay="@DateTime.Today.Day"
+                                           Margin="Margin.Dense"
+                                           DateFormat="yyyy"
+                                           Class="pt-2"
+                                           @ref="_datePicker" 
+                                           Style="display:none"/>
+                            <MudIconButton Icon="@Icons.Material.Filled.Event" OnClick="@(async () => await _datePicker.OpenAsync())" />
+                        </CardHeaderActions> *@
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudOverlay @bind-Visible="isLoadingValueSales" DarkBackground AutoClose="false">
+                            <MudLoading @bind-Loading="isLoadingValueSales" Overlap="false" LoaderType="LoaderType.Circular" Darken="true"
+                                        Color="Color.Primary" />
+                        </MudOverlay>
+                        <div>
+                            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+                        </div>
+                    </MudCardContent>
+                </MudCard>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 </MudStack>
 @code {
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
-
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    private List<DashboardValuePerSales> dashboardValuePerSales = new();
+    private List<DashboardValuePerSales> premium = new();
+    private List<DashboardValuePerSales> unleaded = new();
+    private List<DashboardValuePerSales> diesel = new();
+    private List<DashboardValuePerSales> regular = new();
+    double[] premiumTotal;
+    double[] unleadedTotal;
+    double[] dieselTotal;
+    double[] regularTotal;
+    private bool isLoadingValueSales = false;
+    private int Index = -1; 
+    private int _yearDay;
+    // private MudDatePicker? _datePicker;
+    public List<ChartSeries> Series = new List<ChartSeries>();
+    
+    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
     protected override async Task OnInitializedAsync()
     {
+       
+
+        _yearDay = DateTime.Now.Year;
         MainLayout.SubTitle = "Gas Station Management Module";
+        await OnGetDashboardValuePerSales();
         await base.OnInitializedAsync();
     }
+
+    public async Task OnGetDashboardValuePerSales()
+    {
+        try
+        {
+            isLoadingValueSales = true;
+            dashboardValuePerSales = await httpClient.GetFromJsonAsync<List<DashboardValuePerSales>>($"Gas/GetDashboardValuePerSales?year={_yearDay}");
+            unleaded.AddRange(GetValues(dashboardValuePerSales,GasType.Unleaded));
+            premium.AddRange(GetValues(dashboardValuePerSales,GasType.Premium));
+            diesel.AddRange(GetValues(dashboardValuePerSales,GasType.Diesel));
+            regular.AddRange(GetValues(dashboardValuePerSales, GasType.Regular));
+            premiumTotal = premium.Select(x => (double)x.TotalSubTotal).ToArray();
+            unleadedTotal = unleaded.Select(x => (double)x.TotalSubTotal).ToArray();
+            dieselTotal = diesel.Select(x => (double)x.TotalSubTotal).ToArray();
+            regularTotal = regular.Select(x => (double)x.TotalSubTotal).ToArray();
+            Series.Add(new ChartSeries { Name = "Premium", Data = premiumTotal });
+            Series.Add(new ChartSeries { Name = "Unleaded", Data = unleadedTotal });
+            Series.Add(new ChartSeries { Name = "Diesel", Data = dieselTotal });
+            Series.Add(new ChartSeries { Name = "Regular", Data = regularTotal });
+        }catch(Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}",Severity.Error);
+        }
+        finally
+        {
+            isLoadingValueSales = false;
+        }
+    }
+
+    private List<DashboardValuePerSales> GetValues(List<DashboardValuePerSales> salesData, GasType gasType)
+    {
+        var unleadedData = salesData.Where(x => x.GasType == gasType).ToList();
+        var result = new List<DashboardValuePerSales>();
+
+        for (int month = 1; month <= 12; month++)
+        {
+            var monthData = unleadedData.FirstOrDefault(x => x.Month == month);
+
+            if (monthData != null)
+            {
+                result.Add(monthData);
+            }
+            else
+            {
+                result.Add(new DashboardValuePerSales
+                    {
+                        GasType = GasType.Unleaded,
+                        Year = DateTime.Now.Year,
+                        Month = month,
+                        TotalSubTotal = 0.00m
+                    });
+            }
+        }
+
+        return result;
+    }
+
+
+
 }

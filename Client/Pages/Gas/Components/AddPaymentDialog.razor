@@ -1,0 +1,134 @@
+﻿@using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Validations
+@using NCMS_wasm.Client.Pages.GeneralComponents
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.CardTravel"></MudIcon>
+            Add @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form">
+            @if (Title == "Card")
+            {
+                <MudTextField AutoFocus Disabled="@_loading" Immediate @bind-Value="payment.CardTransactionId" ShrinkLabel Label="Card Transaction Id" Variant="Variant.Outlined" Margin="Margin.Normal" OnKeyUp="HandleKeyUp" />
+            }
+            else
+            {
+                <MudText Typo="Typo.h6">Total: @Total</MudText>
+                <MudNumericField Disabled="@_loading" @ref="numericField" @bind-Value="payment.CashReceived" AutoFocus Immediate OnKeyUp="HandleKeyUp" Label="Cash Received" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" />
+                <MudText Typo="Typo.h6">Change: <strong> @payment.Change</strong></MudText>
+                @* <MudNumericField @bind-Value="payment.Change" ReadOnly Immediate OnKeyUp="HandleKeyUp" Label="Change" Variant="Variant.Outlined" HideSpinButtons Margin="Margin.Normal" /> *@
+            }
+
+
+            <MudText Typo="Typo.caption"></MudText>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Disabled="_loading" OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"
+                          Loading="@(_loading)"
+                          OnClick="@(async => OnSubmit())"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Submitting...</LoadingContent>
+            <ChildContent>Submit</ChildContent>
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public decimal Total { get; set; }
+    [Parameter] public string Title { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IDialogService? DialogService { get; set; }
+
+
+    MudForm form;
+    private Payment payment { get; set; } = new()!;
+    private bool _loading = false;
+    private MudTextField<string> textField;
+    private MudNumericField<decimal> numericField;
+
+    void Cancel() => MudDialog.Cancel();
+
+    private async Task OnSubmit()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = false,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = false,
+                CloseButton = false
+
+            };
+
+        var confirmationParameters = new DialogParameters<ConfirmationDialog>
+                {
+                    { x => x.Action, "Confirm Payment."}
+                };
+
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("", confirmationParameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var confirmed = (bool)result.Data;
+            if (confirmed == true)
+            {
+                
+                Snackbar.Add("Transaction Tendered.", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(payment));
+            }
+        }
+
+
+
+    }
+
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await OnSubmit();
+        }
+        else
+        {
+            if (Title == "Cash")
+            {
+                payment.Change = payment.CashReceived - Total;
+            }
+            
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if(Title == "Cash")
+            {
+                await numericField.SelectRangeAsync(0, numericField.Value.ToString().Length);
+            }
+            
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+
+
+}
