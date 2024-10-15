@@ -1,0 +1,54 @@
+﻿<MudTypographyProvider />
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="fas fa-door-open"></MudIcon>
+            Update Device Room Number
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Class="w-100">
+            <MudNumericField Variant="Variant.Outlined" @bind-Value="roomNumber" Required Label="Room Number" HideSpinButtons></MudNumericField>
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"                          
+                          OnClick="OnSubmit"                          
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Submitting...</LoadingContent>
+            <ChildContent>Submit</ChildContent>
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code{
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public int? roomNumber { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(roomNumber == 0 || !roomNumber.HasValue)
+        {
+            roomNumber = null;
+        }
+        await base.OnParametersSetAsync();
+    }
+
+
+    private void OnSubmit()
+    {
+        if (!roomNumber.HasValue || roomNumber == 0)
+        {
+        Snackbar.Add("Please enter room number",Severity.Error);           
+        return;
+        }
+        MudDialog.Close(DialogResult.Ok(roomNumber));
+    }
+
+    void Cancel() => MudDialog.Cancel();
+
+}

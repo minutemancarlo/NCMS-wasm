@@ -58,6 +58,22 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("UpdateDeviceRoom")]
+        public async Task<ActionResult<int>> UpdateDeviceRoom(Device device)
+        {
+            try
+            {
+                int deviceId = await _deviceRepository.UpdateDeviceRoom(device);                
+                return Ok(deviceId);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [UpdateDeviceRoom]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "DevicesController");
+                _logger.LogError($"Exception occurred while updating device: {ex.Message}");
+                return BadRequest($"Exception occurred while updating device: {ex.Message}");
+            }
+        }
+
 
     }
 }

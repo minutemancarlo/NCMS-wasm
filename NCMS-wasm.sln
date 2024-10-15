@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCMS-wasm.Shared", "Shared\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsForRDLCDesign", "WindowsFormsForRDLCDesign\WindowsFormsForRDLCDesign.csproj", "{03FC889A-07E0-4113-99D3-A7BBE088708D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoWebAPI", "ArduinoWebAPI\ArduinoWebAPI.csproj", "{75707C80-DA7F-4149-945B-9E1F0664D426}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArduinoWebAPI", "ArduinoWebAPI\ArduinoWebAPI.csproj", "{75707C80-DA7F-4149-945B-9E1F0664D426}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

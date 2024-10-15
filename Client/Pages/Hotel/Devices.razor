@@ -1,6 +1,7 @@
 ﻿@page "/hotel-devices"
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Hotel.Components
 <PageTitle>Devices | NCMS</PageTitle>
 <MudStack>
     <MudText Typo="Typo.h5">Device Settings</MudText>
@@ -12,10 +13,25 @@
             <MudSpacer />
         </ToolBarContent>
         <Columns>
-            <PropertyColumn Property="x => x.DeviceName" Title="Device Name" Filterable="true" />
-            <PropertyColumn Property="x => x.LocalIP" Title="Local IP" Filterable="true" />
-            <PropertyColumn Property="x => x.MacAddress" Title="Mac Address" Filterable="true" />            
-            <TemplateColumn Title="Last Server Handshake">
+            <PropertyColumn Property="x => x.DeviceName" Title="Device Name" Filterable="true" HeaderStyle="background-color: #1abc9c; color: white;" >
+            <CellTemplate>
+                <MudLink Class="cursor-pointer" OnClick="@(() => OnUpdate(context.Item))" Typo="Typo.body2" Underline="Underline.Hover">@context.Item.DeviceName</MudLink>
+            </CellTemplate>            
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.IsConnected" Title="Status" HeaderClass="text-center" HeaderStyle="background-color: #1abc9c; color: white;" CellClass="text-center">
+                <CellTemplate>
+                    <MudChip Size="Size.Small" Color="@(context.Item.IsConnected?Color.Success:Color.Error)">@(context.Item.IsConnected ? "Connected" : "Idle")</MudChip>
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.RoomNumber" Title="Room Number" Filterable="true" HeaderStyle="background-color: #1abc9c; color: white;" CellClass="text-center" >
+            <CellTemplate>                
+                    <MudText Typo="Typo.body2">@(context.Item.RoomNumber == 0?"N/A":context.Item.RoomNumber)</MudText>
+                </CellTemplate>    
+            </PropertyColumn>
+
+            <PropertyColumn Property="x => x.LocalIp" Title="Local IP" Filterable="true" HeaderStyle="background-color: #1abc9c; color: white;" />
+            <PropertyColumn Property="x => x.MacAddress" Title="Mac Address" Filterable="true" HeaderStyle="background-color: #1abc9c; color: white;" />
+            <TemplateColumn Title="Last Handshake" HeaderStyle="background-color: #1abc9c; color: white;">
                 <CellTemplate>
                     <MudStack Spacing="0">
                         <MudText Typo="Typo.subtitle2">@context.Item.UpdatedOn</MudText>
@@ -32,47 +48,83 @@
         <PagerContent>
             <MudDataGridPager T="Device" />
         </PagerContent>
-    </MudDataGrid>
-    @* <MudStack AlignItems="AlignItems.Stretch">
-        <MudTabs Outlined="true" Position="Position.Start" Rounded="true" Border="true"
-                 ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6 w-100">
-            <MudTabPanel Text="USB RFID Reader" Icon="fab fa-usb">
-                <MudItem xs="12" Class="w-100">
-                    <MudStack>
-                        <MudSelect T="string" Label="USB Devices" AnchorOrigin="Origin.BottomCenter">
-                            <MudSelectItem Value="@("Cappuccino")" />
-                            <MudSelectItem Value="@("Cafe Latte")" />
-                            <MudSelectItem Value="@("Espresso")" />
-                        </MudSelect>
-                    </MudStack>
-                </MudItem>
-            </MudTabPanel>
-            <MudTabPanel Text="Network RFID" Icon="fas fa-network-wired">
-                <MudItem xs="12" Class="w-100">
-                    <MudSelect T="string" Label="Devices" AnchorOrigin="Origin.BottomCenter">
-                        <MudSelectItem Value="@("Cappuccino")" />
-                        <MudSelectItem Value="@("Cafe Latte")" />
-                        <MudSelectItem Value="@("Espresso")" />
-                    </MudSelect>
-                </MudItem>
-            </MudTabPanel>
-        </MudTabs>
-    </MudStack> *@
+    </MudDataGrid>  
 </MudStack>
 
 @code {
     private List<Device> deviceList = new List<Device>();
     private bool isLoading = false;
     [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IDialogService? DialogService { get; set; }
+
     [CascadingParameter]
     public MainLayout MainLayout { get; private set; }
+    private System.Threading.Timer? _timer;
 
-    
     protected override async Task OnInitializedAsync()
     {
         MainLayout.SubTitle = "Hotel Management Module";
         await LoadDeviceList();
+        _timer = new System.Threading.Timer(async _ => await InvokeAsync(LoadDeviceList), null, 0, 5000);
         await base.OnInitializedAsync();
+    }
+
+    private async Task OnUpdate(Device device)
+    {
+        try
+        {
+            var options = new DialogOptions
+                {
+                    CloseOnEscapeKey = false,
+                    FullWidth = true,
+                    MaxWidth = MaxWidth.Small,
+                    BackdropClick = true,
+                    CloseButton = true
+                };
+
+            var parameter = new DialogParameters<UpdateDeviceRoom>
+            {
+                {x => x.roomNumber, device.RoomNumber}
+            };
+
+            var dialog = await DialogService.ShowAsync<UpdateDeviceRoom>("Simple Dialog",parameter ,options);
+            var result = await dialog.Result;
+            if (!result.Canceled)
+            {
+                var room = (int)result.Data;
+                await OnSubmit(room, device);
+                await LoadDeviceList();
+                StateHasChanged();
+            }
+
+
+        }catch(Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}",Severity.Error);
+        }
+    }
+
+    private async Task OnSubmit(int room, Device device)
+    {
+        var payload = new Device
+            {
+                RoomNumber = room,
+                DeviceName = device.DeviceName,
+                MacAddress = device.MacAddress
+            };
+
+        var response = await httpClient.PostAsJsonAsync("Devices/UpdateDeviceRoom", payload);        
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorMessage = await response.Content.ReadAsStringAsync();
+            Snackbar.Add($"Failed to update device room: {response.StatusCode} - {errorMessage}", Severity.Error);
+        }
+        else
+        {
+            Snackbar.Add("Device room updated",Severity.Success);
+        }
+
     }
 
 
@@ -82,15 +134,41 @@
         try
         {
             deviceList = await httpClient.GetFromJsonAsync<List<Device>>($"Devices/GetNetworkDevices");
+            if (deviceList is not null)
+            {
+                deviceList.ForEach(x =>
+      {
+          if (x.UpdatedOn < DateTime.Now.AddMinutes(-1))
+          {
+              x.IsConnected = false;
+          }
+          else
+          {
+              x.IsConnected = true;
+          }
+      });
+
+            }
+
+
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Exception Occured: {ex.Message}");
+            _timer?.Dispose();
         }
         finally
         {
             isLoading = false;
+            StateHasChanged();
+           
         }
+    }
+
+    public void Dispose()
+    {
+
+        _timer?.Dispose();
     }
 
 }

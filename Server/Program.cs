@@ -132,6 +132,7 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();
+//app.MapHub<NotificationHub>("/notificationhub");
 app.MapFallbackToFile("index.html");
 
 app.Run();
