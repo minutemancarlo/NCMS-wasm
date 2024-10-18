@@ -34,14 +34,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configure CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAllOrigins", builder =>
-    {
-        builder.AllowAnyOrigin()  // Allow any origin
-               .AllowAnyMethod()  // Allow any HTTP method (GET, POST, etc.)
-               .AllowAnyHeader(); // Allow any header
-    });
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAllOrigins", builder =>
+//    {
+//        builder.AllowAnyOrigin()  // Allow any origin
+//               .AllowAnyMethod()  // Allow any HTTP method (GET, POST, etc.)
+//               .AllowAnyHeader(); // Allow any header
+  //  });
 
     // You can also define specific origins like this:
     /*
@@ -52,19 +52,19 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
     */
-});
+//});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 // Enable CORS
-app.UseCors("AllowAllOrigins"); // Use the CORS policy here
+//app.UseCors("AllowAllOrigins"); // Use the CORS policy here
 
 app.UseAuthorization();
 

@@ -60,7 +60,7 @@ namespace NCMS_wasm.Server.Repository
             parameters.Add("@FileName", filename);
 
 
-            string query = "INSERT into PayslipUpload (UploadId, FileName, PayslipFileStatus, UploadedOn) Values (@UploadId,@FileName,0,GETDATE());";
+            string query = "INSERT into PayslipUpload (UploadId, FileName, PayslipFileStatus, UploadedOn) Values (@UploadId,@FileName,0,CAST(GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Central Asia Standard Time' AS datetime));";
 
             return await _dbConnection.ExecuteScalarAsync<int>(query, parameters);
         }

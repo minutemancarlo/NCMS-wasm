@@ -517,7 +517,7 @@
                 {
                     TimeSpan? difference = tempGuestInfo.CheckOutDate.Value - tempGuestInfo.CheckInDate.Value;
                     Days = (int)difference.Value.TotalDays + 1;
-                    Snackbar.Add($"{Days}");
+          
                 }
             }
             return !guestForm.IsValid;

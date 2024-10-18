@@ -21,7 +21,7 @@ namespace NCMS_wasm.Server.Repository
             parameters.Add("@Message", inquiries.Message);
 
 
-            string query = "INSERT INTO Inquiries (Name,Email,Message,CreatedOn,isRead) VALUES (@Name,@Email,@Message,GETDATE(),0)";
+            string query = "INSERT INTO Inquiries (Name,Email,Message,CreatedOn,isRead) VALUES (@Name,@Email,@Message,CAST(GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Central Asia Standard Time' AS datetime),0)";
 
             return await _dbConnection.ExecuteAsync(query, parameters);
         }
