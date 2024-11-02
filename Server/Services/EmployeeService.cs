@@ -108,6 +108,7 @@ namespace NCMS_wasm.Server.Services
             dt.Columns.Add("Tax", typeof(decimal));
             dt.Columns.Add("TotalDeductions", typeof(decimal));
             dt.Columns.Add("TotalNetPay", typeof(decimal));
+            dt.Columns.Add("TotalSalary", typeof(decimal));
 
             if (payslipInfo != null)
             {                
@@ -124,7 +125,8 @@ namespace NCMS_wasm.Server.Services
                 row["Tax"] = payslipInfo.Tax;
                 row["TotalDeductions"] = payslipInfo.SSS + payslipInfo.PagIbig + payslipInfo.PHIC + payslipInfo.Tax;
                 row["TotalNetPay"] = payslipInfo.TotalNetPay;
-                
+                row["TotalSalary"] = payslipInfo.TotalNetPay - (payslipInfo.SSS + payslipInfo.PagIbig + payslipInfo.PHIC + payslipInfo.Tax);
+
                 dt.Rows.Add(row);
             }
 

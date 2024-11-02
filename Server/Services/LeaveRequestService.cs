@@ -52,7 +52,7 @@ namespace NCMS_wasm.Server.Services
 
             if (!string.IsNullOrEmpty(filter.EmployeeName))
             {
-                filteredLeaveRequests = filteredLeaveRequests.Where(lr => lr.EmployeeId == filter.EmployeeName);
+                filteredLeaveRequests = filteredLeaveRequests.Where(lr => lr.EventName.ToLower().Contains(filter.EmployeeName.ToLower()));
             }
 
             if (filter.StartDate.HasValue && filter.EndDate.HasValue)
