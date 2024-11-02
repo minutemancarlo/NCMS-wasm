@@ -26,8 +26,8 @@
                     <MudSelectItem Value="type">@type.ToString().Replace("_", " ")</MudSelectItem>
                 }
             </MudSelect>          
-            <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Medium" >Search</MudButton>
-            <MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Medium" >Clear Search</MudButton>
+            <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Medium" OnClick="FilterItems">Search</MudButton>
+            <MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Medium" OnClick="ClearSearch" >Clear Search</MudButton>
         </MudStack>
         <MudDataGrid T="InventoryItems" Items="@inventory" SortMode="SortMode.Multiple" Filterable="true" Loading="isLoading"
                      Hideable="true">
@@ -158,6 +158,28 @@
         {
             isLoading = false;
         }
+    }
+
+    private void FilterItems()
+    {
+
+        var filtered = inventory.AsEnumerable();
+
+
+        if (!string.IsNullOrEmpty(_searchString))
+        {
+            filtered = filtered.Where(x =>
+                (x.Name.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            );
+        }
+
+
+
+        if (inventoryType != HotelInventoryType.All)
+    {
+            filtered = filtered.Where(x => inventoryType == x.ItemType);
+        }
+        inventory = filtered.ToList();
     }
     
 }
