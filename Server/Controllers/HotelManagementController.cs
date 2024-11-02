@@ -208,6 +208,21 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("AddUpdateInventoryItems")]
+        public async Task<ActionResult<int>> AddUpdateInventoryItems(InventoryItems items)
+        {
+            try
+            {
+                int accId = await _hotelRepository.AddOrUpdateInventoryAsync(items);
+                return Ok(accId);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [AddUpdateInventoryItems]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+                return BadRequest($"Exception occurred while adding/updating inventory items: {ex.Message}");
+            }
+        }
+
         [AllowAnonymous]
         [HttpGet("GetRooms")]
         public async Task<ActionResult<List<RoomInfo>>> GetAllRooms()
@@ -258,6 +273,23 @@ namespace NCMS_wasm.Server.Controllers
                 _fileLogger.Log($"Exception Occured in Endpoint [GetDashboardSales]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
 
                 return BadRequest($"Exception occurred while retrieving rooms: {ex.Message}");
+            }
+        }
+
+        [HttpGet("GetInventoryItems")]
+        public async Task<ActionResult<InventoryItems>> GetInventoryItems()
+        {
+            try
+            {
+                var result = await _hotelRepository.GetInventoryItemsAsync();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetInventoryItems]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
+                return BadRequest($"Exception occurred while retrieving inventory items: {ex.Message}");
             }
         }
 

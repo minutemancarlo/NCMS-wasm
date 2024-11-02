@@ -39,8 +39,7 @@
             <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Medium" OnClick="FilterRooms">Search</MudButton>
             <MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Medium" OnClick="Clear">Clear Search</MudButton>
         </MudStack>
-        <MudDataGrid Items="@roomsList" T="RoomInfo" Loading="@isLoading" Dense HorizontalScrollbar="true"
-                     ColumnResizeMode="ResizeMode.Container">
+        <MudDataGrid Items="@roomsList" T="RoomInfo" Loading="@isLoading" Dense HorizontalScrollbar="true">
             <ToolBarContent>
                 
                 <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddRoomDialog">Add Room</MudButton>

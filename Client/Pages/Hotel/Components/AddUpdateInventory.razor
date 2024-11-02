@@ -1,0 +1,133 @@
+﻿@using NCMS_wasm.Shared
+@using FluentValidation
+@using NCMS_wasm.Client.Pages.Validations
+@using System.Text.Json
+@using System.Text.Json.Serialization
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">@Action Item</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="mudForm" Model="Items" Spacing="2" Validation="@itemValidator.ValidateValue" ValidationDelay="0">
+            <MudTextField @bind-Value="@Items.Name" For="@(() => Items.Name)" Margin="Margin.Dense" Variant="Variant.Outlined" Label="Item Name" />
+            <MudTextField @bind-Value="@Items.Description" Margin="Margin.Dense" Variant="Variant.Outlined" Label="Item Description" Lines="3" />
+            <MudSelect T="HotelInventoryType" Label="Item Type" @bind-Value="Items.ItemType" For="@(() => Items.ItemType)"
+                       ShrinkLabel Placeholder="Filter Item Type.."
+                       Variant="Variant.Outlined"
+                       MultiSelection="false"
+                       AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" Adornment="Adornment.Start"
+                       AdornmentIcon="@Icons.Material.Filled.FilterAlt">
+                @foreach (var type in Enum.GetValues(typeof(HotelInventoryType)).Cast<HotelInventoryType>())
+                {
+                    if (type != 0)
+                    {
+                        <MudSelectItem Value="type">@type.ToString().Replace("_", " ")</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+            <MudNumericField Margin="Margin.Dense" For="@(() => Items.Quantity)" Variant="Variant.Outlined" @bind-Value="Items.Quantity" Label="Quantity" Min="1" />
+            <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Value="@Items.Unit" Label="Unit" For="@(() => Items.Unit)" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"
+                          Loading="@(_loading)"
+                          OnClick="OnSubmit"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>@(Action=="Add"?"Adding Item...":"Updating Item...")</LoadingContent>
+            <ChildContent>Submit</ChildContent>
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    InventoryItemsValidator itemValidator = new InventoryItemsValidator();
+    private bool _loading = false;
+    [Parameter] public string? userId { get; set; }
+    [Parameter] public string? Action { get; set; }
+    [Parameter] public InventoryItems Items { get; set; }
+    MudForm? mudForm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(Action == "Add")
+        {
+            Items.ItemType = HotelInventoryType.Linens;
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private async Task OnSubmit()
+    {
+        try
+        {
+            _loading = true;
+            mudForm.Validate();
+            if (!mudForm.IsValid)
+            {
+                return;
+            }
+
+            if(Action == "Add")
+            {
+                Items.CreatedBy = userId;
+            }
+            else
+            {
+                Items.UpdatedBy = userId;
+            }
+
+            var options = new JsonSerializerOptions
+                {
+                    DefaultIgnoreCondition = JsonIgnoreCondition.Never  // This ensures that null properties are not ignored
+                };
+
+            var response = await httpClient.PostAsJsonAsync("HotelManagement/AddUpdateInventoryItems", Items, options);
+            // response.EnsureSuccessStatusCode();
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Item Successfully {(Action == "Add" ? "Added" : "Updated")}", MudBlazor.Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                {
+                    // Handle the specific case of a bad request, such as an "Email Already Exists" error
+                    Snackbar.Add($"An Error Occured {(Action == "Add" ? "Adding" : "Updating")} the Item. {errorMessage}", MudBlazor.Severity.Error);
+                }
+                else
+                {
+                    // Handle other potential errors
+                    Snackbar.Add($"Unexpected error: {response.StatusCode} - {errorMessage}", MudBlazor.Severity.Error);
+                    Console.WriteLine($"Unexpected error: {response.StatusCode} - {errorMessage}");
+                }
+            }
+
+            
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An Error Occured {(Action == "Add" ? "Adding" : "Updating")} the Item. {ex.Message}", MudBlazor.Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+
+    }
+    private void Cancel() => MudDialog.Cancel();
+
+
+
+
+
+}

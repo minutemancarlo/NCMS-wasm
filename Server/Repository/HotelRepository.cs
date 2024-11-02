@@ -89,6 +89,7 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteScalarAsync<int>("AddRooms", parameters, commandType: CommandType.StoredProcedure);
         }
 
+
         public async Task<int> UpdatePriceAndStatusAsync(RoomInfo room)
         {
             var parameters = new DynamicParameters();
@@ -151,6 +152,24 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.ExecuteScalarAsync<string>(sp, parameters, commandType: CommandType.StoredProcedure);
             
         }
+
+        public async Task<int> AddOrUpdateInventoryAsync(InventoryItems inventory)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@ItemId", inventory.ItemId);
+            parameters.Add("@Name", inventory.Name);
+            parameters.Add("@Description", inventory.Description);
+            parameters.Add("@Quantity", inventory.Quantity);
+            parameters.Add("@ItemType", (int)inventory.ItemType);
+            parameters.Add("@Unit", inventory.Unit);
+            parameters.Add("@CreatedBy", inventory.CreatedBy);
+            parameters.Add("@UpdatedBy", inventory.UpdatedBy);
+
+            string sp = "AddOrUpdateInventory";
+
+            return await _dbConnection.ExecuteScalarAsync<int>(sp, parameters, commandType: CommandType.StoredProcedure);
+        }
+
 
 
         public async Task<IEnumerable<RoomInfo>> GetAllRoomsAsync()
@@ -311,6 +330,13 @@ FROM Rooms a inner join roominfo b on a.roomId = b.roomId left join employee c o
 
             string sp = "GetAvailableRoomsForGuest";
             return await _dbConnection.QueryAsync<RoomInfo>(sp, parameter, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<IEnumerable<InventoryItems>> GetInventoryItemsAsync()
+        {
+            string query = @"SELECT [ItemId],a.[Name],[Description],a.[Unit],[Quantity],[ItemType],ISNULL(b.name,'N/A') AS CreatedBy,a.[CreatedOn]
+            ,ISNULL(c.name,'N/A') AS UpdatedBy,a.[UpdatedOn] from Inventory a left join Employee b on a.CreatedBy=b.Auth0_Id left join Employee c on a.UpdatedBy=c.Auth0_Id order by a.CreatedOn,a.UpdatedOn desc";
+            return await _dbConnection.QueryAsync<InventoryItems>(query);
         }
 
 
