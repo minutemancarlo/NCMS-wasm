@@ -36,7 +36,7 @@ namespace NCMS_wasm.Server.Controllers
             try
             {
                
-                employeeInfo.Profile = employeeInfo.Profile is not null && !employeeInfo.Profile.StartsWith("http") || !employeeInfo.Profile.StartsWith("images") ? SaveImageToDisk(employeeInfo.Profile) : employeeInfo.Profile;
+                employeeInfo.Profile = employeeInfo.Profile is not null && !employeeInfo.Profile.StartsWith("https") && !employeeInfo.Profile.StartsWith("images") ? SaveImageToDisk(employeeInfo.Profile) : employeeInfo.Profile;
 
 
                 if (employeeInfo.IDNumber != "0")
