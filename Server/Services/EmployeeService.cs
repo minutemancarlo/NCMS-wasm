@@ -106,6 +106,7 @@ namespace NCMS_wasm.Server.Services
             dt.Columns.Add("PagIbig", typeof(decimal));
             dt.Columns.Add("PHIC", typeof(decimal));
             dt.Columns.Add("Tax", typeof(decimal));
+            dt.Columns.Add("TotalDeductions", typeof(decimal));
             dt.Columns.Add("TotalNetPay", typeof(decimal));
 
             if (payslipInfo != null)
@@ -121,6 +122,7 @@ namespace NCMS_wasm.Server.Services
                 row["PagIbig"] = payslipInfo.PagIbig;
                 row["PHIC"] = payslipInfo.PHIC;
                 row["Tax"] = payslipInfo.Tax;
+                row["TotalDeductions"] = payslipInfo.SSS + payslipInfo.PagIbig + payslipInfo.PHIC + payslipInfo.Tax;
                 row["TotalNetPay"] = payslipInfo.TotalNetPay;
                 
                 dt.Rows.Add(row);
