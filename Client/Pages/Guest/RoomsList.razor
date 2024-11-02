@@ -23,12 +23,12 @@
                 <MudPaper Class="w-100" Style="height: auto;" Elevation="4">
                     <MudGrid Justify="Justify.Center" Class="pa-3" Spacing="122">
                         <MudItem lg="2" sm="12" Class="w-100">
-                            <MudDatePicker Label="Check In" @bind-Date="availability.dateFrom" Class="w-100" PickerVariant="PickerVariant.Dialog"
+                            <MudDatePicker Label="Check In" DateFormat="MM/dd/yyyy" @bind-Date="availability.dateFrom" Class="w-100" PickerVariant="PickerVariant.Dialog"
                                            AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
                                            IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         </MudItem>
                         <MudItem lg="2" md="12" sm="12" Class="w-100">
-                            <MudDatePicker Label="Check Out" @bind-Date="availability.dateTo" Class="w-100" PickerVariant="PickerVariant.Dialog"
+                            <MudDatePicker Label="Check Out" DateFormat="MM/dd/yyyy" @bind-Date="availability.dateTo" Class="w-100" PickerVariant="PickerVariant.Dialog"
                                            AdditionalDateClassesFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 ? "red-text text-accent-4" : ""))"
                                            IsDateDisabledFunc="@((DateTime dt) => dt.Date <= availability.dateFrom)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         </MudItem>
