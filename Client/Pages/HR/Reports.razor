@@ -33,15 +33,15 @@
                 <MudStack Row AlignItems="AlignItems.Baseline">
                     <MudText Typo="Typo.body1">Leave Duration</MudText>
                     <MudCheckBox @bind-Value="isChecked_Duration" Label="All Dates"></MudCheckBox>
-                    <MudDatePicker Label="From Date" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.StartDate" Disabled="isChecked_Duration" />
-                    <MudDatePicker Label="To Date" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.EndDate" Disabled="isChecked_Duration" />
+                    <MudDatePicker Label="From Date" PickerVariant="PickerVariant.Dialog" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.StartDate" Disabled="isChecked_Duration" />
+                    <MudDatePicker Label="To Date" PickerVariant="PickerVariant.Dialog" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.EndDate" Disabled="isChecked_Duration" />
                 </MudStack>
 
                 <MudStack Row AlignItems="AlignItems.Baseline">
                     <MudText Typo="Typo.body1" Class="">Filed Date</MudText>
                     <MudCheckBox @bind-Value="isChecked_Filed" Label="All Dates"></MudCheckBox>
-                    <MudDatePicker Label="From Date" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.FileDateFrom" Disabled="isChecked_Filed" />
-                    <MudDatePicker Label="To Date" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.FileDateTo" Disabled="isChecked_Filed" />
+                    <MudDatePicker Label="From Date" PickerVariant="PickerVariant.Dialog" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.FileDateFrom" Disabled="isChecked_Filed" />
+                    <MudDatePicker Label="To Date" PickerVariant="PickerVariant.Dialog" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="leaveReportFilter.FileDateTo" Disabled="isChecked_Filed" />
                 </MudStack>
                 
             </MudCardContent>
