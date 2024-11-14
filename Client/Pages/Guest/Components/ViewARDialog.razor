@@ -5,10 +5,12 @@
     </TitleContent>
     <DialogContent>
         <MudStack Class="w-100 vh-100">
-            <a-scene vr-mode-ui="enabled: false">
-                <a-sky src="images/@Image"></a-sky>
-                <a-entity camera look-controls></a-entity>
-            </a-scene>
+            
+            <model-viewer src="assets/@Image" style="height: 100%" class="w-100" camera-controls tone-mapping="neutral" shadow-intensity="1">
+                <div class="progress-bar hide" slot="progress-bar">
+                    <div class="update-bar"></div>
+                </div>
+            </model-viewer>
         </MudStack>
 
     </DialogContent>

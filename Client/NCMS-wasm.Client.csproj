@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\assets\" />
     <Folder Include="wwwroot\images\illustrations\" />
     <Folder Include="wwwroot\images\360images\" />
     <Folder Include="wwwroot\images\profiles\" />
