@@ -3,6 +3,7 @@
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Hotel.Components
 <PageTitle>Guest Management | NCMS</PageTitle>
+<MudFab Color="Color.Primary" StartIcon="fas fa-qrcode" Style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;" OnClick="OnOpenScanner" />
 <MudStack Spacing="2" Class="w-100 pt-5">
     <MudGrid Justify="Justify.Center" Class="w-100">
         <MudItem lg="12" xl="12" xs="12" sm="12" Class="w-100">
@@ -163,6 +164,87 @@
         {
             // await LoadCardsList();
             StateHasChanged();
+        }
+    }
+
+    private async Task OnOpenScanner()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = false,                
+                CloseButton = true                
+            };       
+        var dialog = await DialogService.ShowAsync<QRScanner>("Scan Qr Code", options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var data = result.Data;            
+            if(data is null)
+            {
+                Snackbar.Add($"Invalid Qr Code: {data}",Severity.Error);
+            }
+            else
+            {
+                
+                var isEnabled = true;
+                var customItem = _events.FirstOrDefault(x => x.BookingNo == data.ToString());
+                if(customItem is null)
+                {
+                    Snackbar.Add($"Invalid Booking No: {data}", Severity.Error);
+                    return;
+                }
+                if (customItem.Type == BookingType.Walkin_Booking || customItem.Type == BookingType.Booked || customItem.Type == BookingType.Reservation)
+                {
+                    isEnabled = false;
+                }
+                else
+                {
+                    isEnabled = true;
+                }
+
+                var options1 = new DialogOptions
+                    {
+                        CloseOnEscapeKey = false,
+                        FullWidth = true,
+                        MaxWidth = MaxWidth.Small,
+                        BackdropClick = true,
+                        CloseButton = true
+                    };
+                var guests = new GuestsInfo
+                    {
+                        Id = customItem.Id,
+                        RoomNumber = customItem.Text,
+                        CheckInDate = customItem.Start,
+                        CheckOutDate = customItem.End,
+                        BookingNo = customItem.BookingNo,
+                        FirstName = customItem.FirstName,
+                        MiddleName = customItem.MiddleName,
+                        LastName = customItem.LastName,
+                        Email = customItem.Email,
+                        Phone = customItem.Phone,
+                        BookingType = customItem.Type
+
+                    };
+                var parameters = new DialogParameters<ViewBooking>
+        {
+            {x=>x.isEnabled,isEnabled},
+            {x=>x.currentUserId,MainLayout.CurrentUserId},
+            {x=>x.guestsInfo,guests}
+        };
+                StateHasChanged();
+                var dialog1 = await DialogService.ShowAsync<ViewBooking>("Simple Dialog", parameters, options1);
+                var result1 = await dialog1.Result;
+                if (!result1.Canceled)
+                {
+                    await LoadGuestsList();
+                    StateHasChanged();
+                }
+
+            }
+            
         }
     }
 

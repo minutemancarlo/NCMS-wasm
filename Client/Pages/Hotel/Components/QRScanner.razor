@@ -1,0 +1,38 @@
+﻿@inject IJSRuntime JS
+@using ReactorBlazorQRCodeScanner
+<MudDialog>
+    <DialogContent>
+        <QRCodeScanner />
+    </DialogContent>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+
+    private QRCodeScannerJsInterop? _qrCodeScannerJsInterop;
+    private Action<string>? _onQrCodeScanAction;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _onQrCodeScanAction = async (code) => await OnQrCodeScan(code);
+
+        _qrCodeScannerJsInterop = new QRCodeScannerJsInterop(JS);
+        await _qrCodeScannerJsInterop.Init(_onQrCodeScanAction);
+    }
+
+    private async Task OnQrCodeScan(string code)
+    {
+       
+        if (code.StartsWith("BN"))
+        {            
+            await _qrCodeScannerJsInterop.StopRecording();
+            _qrCodeScannerJsInterop.DisposeAsync();
+            MudDialog.Close(DialogResult.Ok(code));
+        }
+    }
+ 
+
+
+    private void Cancel() => MudDialog.Cancel();
+}

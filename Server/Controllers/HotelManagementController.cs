@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Server.Repository;
 using NCMS_wasm.Shared;
+using QRCoder;
+using System.Drawing.Imaging;
+using System.Drawing;
+using Auth0.ManagementApi.Models;
 
 namespace NCMS_wasm.Server.Controllers
 {
@@ -19,12 +23,14 @@ namespace NCMS_wasm.Server.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly FileLogger _fileLogger;
         private readonly string ModuleName;
+        private readonly string BBKey;
         public HotelManagementController(ILogger<HotelManagementController> logger, HotelRepository hotelRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env, GuestRepository guestRepository, CardRepository cardRepository,EmailRepository emailRepository)
         {
             _logger = logger;
             _hotelRepository = hotelRepository;
             _httpContextAccessor = httpContextAccessor;
             _env = env;
+            BBKey = configuration["ImgBB:ApiKey"];
             _fileLogger = new FileLogger(configuration);
             ModuleName = "HotelManagementController";
             _guestRepository = guestRepository;
@@ -139,7 +145,19 @@ namespace NCMS_wasm.Server.Controllers
                     ? booking.Guests.CheckOutDate.Value.ToString("h:mm tt")
                     : "N/A";
                 string template = GetEmailtemplate(1);
-                string filledTemplate = template.Replace("{{Name}}", name).Replace("{{BookingNumber}}", bookingNumber).Replace("{{CheckInDate}}", checkInDate).Replace("{{CheckInTime}}", checkInTime).Replace("{{CheckOutDate}}", checkOutDate).Replace("{{CheckOutTime}}", checkOutTime);
+
+                using MemoryStream ms = new();
+                QRCodeGenerator qrCodeGenerate = new();
+                QRCodeData qrCodeData = qrCodeGenerate.CreateQrCode(bookingNo.Trim(), QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new(qrCodeData);
+                using Bitmap qrBitMap = qrCode.GetGraphic(20);
+                qrBitMap.Save(ms, ImageFormat.Png);
+                string base64 = Convert.ToBase64String(ms.ToArray());
+                string qrcodeImage = await UploadToImgBBAsync(base64);
+
+
+                string filledTemplate = template.Replace("{{Name}}", name).Replace("{{BookingNumber}}", bookingNumber).Replace("{{CheckInDate}}", checkInDate)
+                    .Replace("{{CheckInTime}}", checkInTime).Replace("{{CheckOutDate}}", checkOutDate).Replace("{{CheckOutTime}}", checkOutTime).Replace("{{qrcode}}", qrcodeImage);
 
 
                 var msg = new EmailModel
@@ -158,6 +176,59 @@ namespace NCMS_wasm.Server.Controllers
                 return BadRequest($"Exception occurred while adding reservation info: {ex.Message}");
             }
         }
+
+        private async Task<string> UploadToImgBBAsync(string base64Image)
+        {
+            
+            if (string.IsNullOrEmpty(BBKey))
+            {
+                throw new InvalidOperationException("ImgBB API key is not configured.");
+            }
+
+            string url = $"https://api.imgbb.com/1/upload?expiration=2592000key={BBKey}"; //image expires in 30 days.
+
+            using HttpClient client = new();
+            using MultipartFormDataContent content = new();
+            content.Add(new StringContent(base64Image), "image");
+
+            HttpResponseMessage response = await client.PostAsync(url, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Failed to upload image to ImgBB: {error}");
+            }
+
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            dynamic result = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonResponse);
+            return result.data.url;
+        }
+
+        [HttpPost("GetQrCode")]
+        public async Task<ActionResult<string>> GetQrCode(string bookingNo)
+        {
+            try
+            {
+                using MemoryStream ms = new();
+                QRCodeGenerator qrCodeGenerate = new();
+                QRCodeData qrCodeData = qrCodeGenerate.CreateQrCode(bookingNo.Trim(), QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new(qrCodeData);
+                using Bitmap qrBitMap = qrCode.GetGraphic(20);
+                qrBitMap.Save(ms, ImageFormat.Png);
+                string base64 = Convert.ToBase64String(ms.ToArray());
+                string qrcodeImage = string.Format("data:image/png;base64,{0}", base64);
+                var result = await UploadToImgBBAsync(base64);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetQrCode]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+                return BadRequest($"Exception occurred while adding reservation info: {ex.Message}");
+
+            }
+
+        }
+
 
         [HttpPost("UpdateBookingStatus")]
         public async Task<ActionResult<int>> UpdateBookingStatus(GuestsInfo guestsInfo)
@@ -439,6 +510,19 @@ namespace NCMS_wasm.Server.Controllers
             font-size: 12px;
             color: #888;
         }
+        
+        .container { 
+          display: flex; 
+          justify-content: center; 
+          align-items: center;           
+          height: 100%; /* Adjust as needed */ 
+          
+        } 
+        .container img { 
+          max-width: 100%; 
+          height: 200px; 
+          width: 200px; 
+        }
 
         @media only screen and (max-width: 600px) {
             .container {
@@ -485,7 +569,10 @@ namespace NCMS_wasm.Server.Controllers
                         <td>{{CheckOutDate}} at {{CheckOutTime}}</td>
                     </tr>
                 </table>
-
+                <p>Please present the QR Code below in front desk to check you in.</p>
+                <div class=""container"">
+                  <img src=""{{qrcode}}"" alt=""Booking Number""/>  
+                </div>
                 <p>We look forward to hosting you. If you have any questions, feel free to contact us.</p>
 
                 <p>Best regards,<br>The Booking Team</p>
@@ -498,8 +585,7 @@ namespace NCMS_wasm.Server.Controllers
         </tr>
     </table>
 </body>
-</html>
-";
+</html>";
                     break;
             }
             return templateContent;
