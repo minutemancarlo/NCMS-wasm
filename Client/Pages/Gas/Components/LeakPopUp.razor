@@ -1,0 +1,66 @@
+﻿@using MudBlazor.Extensions
+<MudPopup @ref="_popup"  Open="_open" Style="background-color: #e74c3c;z-index: 2001; color: white; font-size: large; font-weight: 700" Text="@_popupText" Icon="@_icon" PopupPosition="PopupPosition.Top" Padding="15" EnableAnimation="_enableAnimation">
+    
+    <ActionContent>
+        <div>
+            <MudButton Variant="Variant.Filled" Class="rounded-pill" Color="Color.Success" OnClick="@(() => _open = false)">Confirm</MudButton>            
+        </div>
+    </ActionContent>
+</MudPopup>
+
+@code {
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar {get; set; }
+    string _popupText = "WARNING! Tank leak detected.";
+    bool _open = false;
+    string _icon = "fas fa-exclamation-triangle";
+    bool _enableAnimation = true;
+    MudPopup? _popup;
+    private System.Threading.Timer? _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await Detect();
+        _timer = new System.Threading.Timer(async _ => await InvokeAsync(Detect), null, 0, 30000);
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Detect()
+    {
+
+        try
+        {
+            var response = await httpClient.GetAsync($"Devices/GetLeakResult");
+            if (response.IsSuccessStatusCode)
+            {
+                _open = await response.Content.ReadFromJsonAsync<bool>();
+
+
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to get leakage detection status. Status Code: {response.StatusCode}. Message: {errorMessage}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+
+            _timer?.Dispose();
+        }
+        finally
+        {
+   
+            StateHasChanged();
+
+        }
+    }
+
+    public void Dispose()
+    {
+
+        _timer?.Dispose();
+    }
+
+}

@@ -3,6 +3,8 @@
 @using NCMS_wasm.Client.Pages.Gas.Components
 @attribute [Authorize(Roles = "Gas Employee")]
 <PageTitle>Card Management | NCMS</PageTitle>
+<LeakPopUp />
+
 <MudStack>
     <MudText Typo="Typo.h5">Card Management</MudText>
     <MudDataGrid Items="@cards" T="LoyaltyCardInfo" Loading="@isLoading" HeaderClass="mud-theme-default text-nowrap" ShowMenuIcon Dense HorizontalScrollbar="true"

@@ -1,7 +1,9 @@
 ﻿@page "/gas-dashboard"
 @using NCMS_wasm.Shared
+@using NCMS_wasm.Client.Pages.Gas.Components
 @attribute [Authorize(Roles = "Gas Employee")]
 <PageTitle>Dashboard | NCMS</PageTitle>
+<LeakPopUp/>
 <MudStack Class="w-100">
     <MudText Typo="Typo.h5">Dashboard</MudText>
     <MudGrid Class="w-100">
