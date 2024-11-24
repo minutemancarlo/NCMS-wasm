@@ -2,94 +2,170 @@
 @attribute [Authorize(Roles = "Front Desk")]
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Hotel.Components
+@using System.Text.Json
 <PageTitle>Inventory Management | NCMS</PageTitle>
 <MudTypographyProvider />
-<MudStack Spacing="2" Class="w-100 pt-5">
-    <MudItem xl="12" lg="12" md="12" sm="12">
-        <MudText Typo="Typo.h5">Hotel Inventory Management</MudText>
-    </MudItem>
-    <MudItem xl="12" lg="12" md="12" sm="12">
-        <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="py-2">
-            <MudTextField @bind-Value="_searchString" Variant="Variant.Outlined"                          
-                          Label="Search"
-                          AdornmentIcon="@Icons.Material.Filled.Search"
-                          Margin="Margin.Dense"
-                          Adornment="Adornment.Start"></MudTextField>
-            <MudSelect T="HotelInventoryType" Label="Item Type" @bind-Value="inventoryType"
-                       ShrinkLabel Placeholder="Filter Item Type.."
-                       Variant="Variant.Outlined"
-                       MultiSelection="false"
-                       AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" Adornment="Adornment.Start"
-                       AdornmentIcon="@Icons.Material.Filled.FilterAlt">
-                @foreach (var type in Enum.GetValues(typeof(HotelInventoryType)).Cast<HotelInventoryType>())
-                {
-                    <MudSelectItem Value="type">@type.ToString().Replace("_", " ")</MudSelectItem>
-                }
-            </MudSelect>          
-            <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Medium" OnClick="FilterItems">Search</MudButton>
-            <MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Medium" OnClick="ClearSearch" >Clear Search</MudButton>
+
+<MudTabs Elevation="4" Rounded="true" Border="true" Color="Color.Info"  Class="w-100 vh-100 pt-5" >
+    <MudTabPanel Text="Inventory">
+        <MudStack Spacing="2" Class="w-100 pt-5">
+            <MudItem xl="12" lg="12" md="12" sm="12">
+                <MudText Typo="Typo.h5">Hotel Inventory Management</MudText>
+            </MudItem>
+            <MudItem xl="12" lg="12" md="12" sm="12">
+                <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="py-2">
+                    <MudTextField @bind-Value="_searchString" Variant="Variant.Outlined"
+                                  Label="Search"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  Margin="Margin.Dense"
+                                  Adornment="Adornment.Start"></MudTextField>
+                    <MudSelect T="HotelInventoryType" Label="Item Type" @bind-Value="inventoryType"
+                               ShrinkLabel Placeholder="Filter Item Type.."
+                               Variant="Variant.Outlined"
+                               MultiSelection="false"
+                               AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" Adornment="Adornment.Start"
+                               AdornmentIcon="@Icons.Material.Filled.FilterAlt">
+                        @foreach (var type in Enum.GetValues(typeof(HotelInventoryType)).Cast<HotelInventoryType>())
+                        {
+                            <MudSelectItem Value="type">@type.ToString().Replace("_", " ")</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Medium" OnClick="FilterItems">Search</MudButton>
+                    <MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Medium" OnClick="ClearSearch">Clear Search</MudButton>
+                </MudStack>
+                <MudDataGrid T="InventoryItems" Items="@inventory" SortMode="SortMode.Multiple" Filterable="true" Loading="isLoading"
+                             Hideable="true">
+                    <ToolBarContent>
+                        <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add" OnClick="@(() => OnOpenDialog("Add", new InventoryItems()))">Add Item</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadInventoryItems">Refresh</MudButton>
+                    </ToolBarContent>
+                    <Columns>
+                        <PropertyColumn Property="x => x.Name" HeaderStyle="background-color: #1abc9c; color: white;">
+                            <CellTemplate>
+                                <MudStack Spacing="0">
+                                    <MudText Typo="Typo.body2">@context.Item.Name</MudText>
+                                    <MudTextM3 Typo="TypoM3.Body" Size="Size.Small" Class="text-muted">@context.Item.Description</MudTextM3>
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.ItemType" Title="Item Type" HeaderStyle="background-color: #1abc9c; color: white;">
+                            <CellTemplate>
+                                <MudText Typo="Typo.body2">@context.Item.ItemType.ToString().Replace("_", " ")</MudText>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Quantity" HeaderStyle="background-color: #1abc9c; color: white;">
+                            <CellTemplate>
+                                <MudText Typo="Typo.body2">@context.Item.Quantity.ToString() @context.Item.Unit.ToLower()</MudText>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <TemplateColumn Title="Created By" HeaderStyle="background-color: #1abc9c; color: white;">
+                            <CellTemplate>
+                                <MudStack Spacing="0">
+                                    <MudText Typo="Typo.body2">@context.Item.CreatedBy</MudText>
+                                    <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.CreatedOn</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn Title="Updated By" HeaderStyle="background-color: #1abc9c; color: white;">
+                            <CellTemplate>
+                                <MudStack Spacing="0">
+                                    <MudText Typo="Typo.body2">@context.Item.UpdatedBy</MudText>
+                                    <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.UpdatedOn</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn Title="Actions" HeaderStyle="background-color: #1abc9c; color: white;">
+                            <CellTemplate>
+                                <MudStack Row Spacing="1">
+                                    <MudFab Color="Color.Info" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="@(() => OnOpenDialog("Update", context.Item))" />
+                                </MudStack>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <NoRecordsContent>
+                        <MudText>No Records to show</MudText>
+                    </NoRecordsContent>
+                    <LoadingContent>
+                        <MudText>Loading Data...</MudText>
+                    </LoadingContent>
+                    <PagerContent>
+                        <MudDataGridPager T="InventoryItems" />
+                    </PagerContent>
+                </MudDataGrid>
+            </MudItem>
         </MudStack>
-        <MudDataGrid T="InventoryItems" Items="@inventory" SortMode="SortMode.Multiple" Filterable="true" Loading="isLoading"
-                     Hideable="true">
-            <ToolBarContent>
-                <MudButton Variant="Variant.Filled" Color="Color.Info" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Add" OnClick="@(() => OnOpenDialog("Add", new InventoryItems()))">Add Item</MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadInventoryItems">Refresh</MudButton>
-            </ToolBarContent>
-            <Columns>
-                <PropertyColumn Property="x => x.Name" HeaderStyle="background-color: #1abc9c; color: white;">
-                    <CellTemplate>
-                        <MudStack Spacing="0">
-                            <MudText Typo="Typo.body2">@context.Item.Name</MudText>
-                            <MudTextM3 Typo="TypoM3.Body" Size="Size.Small" Class="text-muted">@context.Item.Description</MudTextM3>
-                        </MudStack>
-                    </CellTemplate>
-                </PropertyColumn>
-                <PropertyColumn Property="x => x.ItemType" Title="Item Type" HeaderStyle="background-color: #1abc9c; color: white;">
-                    <CellTemplate>
-                        <MudText Typo="Typo.body2">@context.Item.ItemType.ToString().Replace("_"," ")</MudText>
-                    </CellTemplate>
-                </PropertyColumn>
-                <PropertyColumn Property="x => x.Quantity" HeaderStyle="background-color: #1abc9c; color: white;">
-                    <CellTemplate>                        
-                            <MudText Typo="Typo.body2">@context.Item.Quantity.ToString() @context.Item.Unit.ToLower()</MudText>
-                    </CellTemplate>
-                    </PropertyColumn>
-                <TemplateColumn Title="Created By" HeaderStyle="background-color: #1abc9c; color: white;">
-                    <CellTemplate>
-                        <MudStack Spacing="0">
-                            <MudText Typo="Typo.body2">@context.Item.CreatedBy</MudText>
-                            <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.CreatedOn</MudText>
-                        </MudStack>
-                    </CellTemplate>
-                </TemplateColumn>
-                <TemplateColumn Title="Updated By" HeaderStyle="background-color: #1abc9c; color: white;">
-                    <CellTemplate>
-                        <MudStack Spacing="0">
-                            <MudText Typo="Typo.body2">@context.Item.UpdatedBy</MudText>
-                            <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.UpdatedOn</MudText>
-                        </MudStack>
-                    </CellTemplate>
-                </TemplateColumn>
-                <TemplateColumn Title="Actions" HeaderStyle="background-color: #1abc9c; color: white;">
-                    <CellTemplate>
-                        <MudStack Row Spacing="1">
-                            <MudFab Color="Color.Info" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="@(() => OnOpenDialog("Update", context.Item))" />
-                        </MudStack>                        
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-            <NoRecordsContent>
-                <MudText>No Records to show</MudText>
-            </NoRecordsContent>
-            <LoadingContent>
-                <MudText>Loading Data...</MudText>
-            </LoadingContent>
-            <PagerContent>
-                <MudDataGridPager T="InventoryItems" />
-            </PagerContent>
-        </MudDataGrid>
-    </MudItem>
-</MudStack>
+    </MudTabPanel>
+    <MudTabPanel Text="Audit Trail">
+        <MudStack Spacing="2" Class="w-100 pt-5">
+            <MudItem xl="12" lg="12" md="12" sm="12">
+                <MudText Typo="Typo.h5">Hotel Inventory Audit Trail</MudText>
+            </MudItem>
+            <MudItem xl="12" lg="12" md="12" sm="12">
+                
+                <MudDataGrid T="InventoryAuditTrail" Items="@audit" SortMode="SortMode.Multiple" Filterable="true" Loading="isLoading"
+                             Hideable="true">                 
+                    <Columns>
+                        <PropertyColumn Property="x => x.Name" Title="Previous Values" HeaderStyle="background-color: #1abc9c; color: white;">
+                            <CellTemplate>
+                                <MudStack Spacing="0">                                    
+                                    <MudText Typo="Typo.body2"><strong>Name: </strong> @context.Item.PreviousName</MudText>
+                                    <MudText Typo="Typo.body2"><strong>Description: </strong> @context.Item.PreviousDescription</MudText>
+                                    <MudText Typo="Typo.body2"><strong>Type: </strong>
+                                        @if(@context.Item.PreviousItemType is not null)
+                                        {
+                                        @context.Item.PreviousItemType.ToString().Replace("_", " ")                                            
+                                        }
+                                        </MudText>
+                                    <MudText Typo="Typo.body2"><strong>Quantity: </strong> @context.Item.PreviousQuantity.ToString() </MudText>
+                                    <MudText Typo="Typo.body2"><strong>Unit: </strong> @context.Item.PreviousUnit?.ToLower()</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Name" Title="Recent Values" HeaderStyle="background-color: #1abc9c; color: white;">
+                            <CellTemplate>
+                                <MudStack Spacing="0">                                    
+                                    <MudText Typo="Typo.body2"><strong>Name: </strong> @context.Item.Name</MudText>
+                                    <MudText Typo="Typo.body2"><strong>Description: </strong> @context.Item.Description</MudText>
+                                    <MudText Typo="Typo.body2"><strong>Type: </strong> @context.Item.ItemType.ToString().Replace("_", " ")</MudText>
+                                    <MudText Typo="Typo.body2"><strong>Quantity: </strong> @context.Item.Quantity.ToString() </MudText>
+                                    <MudText Typo="Typo.body2"><strong>Unit: </strong> @context.Item.Unit.ToLower()</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.AuditAction" Title="Audit Action" HeaderStyle="background-color: #1abc9c; color: white;">
+                            <CellTemplate>
+                                <MudText Typo="Typo.body2">@context.Item.AuditAction.ToString().ToUpper()</MudText>
+                            </CellTemplate>
+                        </PropertyColumn>                        
+                        <TemplateColumn Title="Updated By" HeaderStyle="background-color: #1abc9c; color: white;">
+                            <CellTemplate>
+                                <MudStack Spacing="0">
+                                    @if (string.IsNullOrEmpty(@context.Item.AuditBy)){
+                                    <MudText Typo="Typo.body2">N/A</MudText>
+                                    }else{
+                                        <MudText Typo="Typo.body2">@context.Item.AuditBy</MudText>
+                                    }
+                                    <MudText Class="text-muted" Typo="Typo.subtitle2">@context.Item.AuditOn</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </TemplateColumn>                       
+                    </Columns>
+                    <NoRecordsContent>
+                        <MudText>No Records to show</MudText>
+                    </NoRecordsContent>
+                    <LoadingContent>
+                        <MudText>Loading Data...</MudText>
+                    </LoadingContent>
+                    <PagerContent>
+                        <MudDataGridPager T="InventoryAuditTrail" />
+                    </PagerContent>
+                </MudDataGrid>
+            </MudItem>
+        </MudStack>
+        </MudTabPanel>
+</MudTabs>
+
+
 
 @code
 {
@@ -98,6 +174,7 @@
     [Inject] IDialogService? DialogService { get; set; }
     [Inject] HttpClient? httpClient { get; set; }
     private List<InventoryItems> inventory = new();
+    private List<InventoryAuditTrail> audit = new();
     private string? _searchString;
     private HotelInventoryType inventoryType = HotelInventoryType.All;
     private bool isLoading = false;
@@ -105,6 +182,7 @@
     protected override async Task OnInitializedAsync()
     {                
         await LoadInventoryItems();
+        await LoadInventoryItemsAudit();
         await base.OnInitializedAsync();
     }
 
@@ -113,6 +191,7 @@
         _searchString = String.Empty;
         inventoryType = HotelInventoryType.All;
         await LoadInventoryItems();
+        await LoadInventoryItemsAudit();
     }
 
     private async Task OnOpenDialog(string action, InventoryItems items)
@@ -126,18 +205,42 @@
                 CloseButton = true,
                 Position = DialogPosition.TopCenter
             };
+        var previousItems = JsonSerializer.Deserialize<InventoryItems>(
+    JsonSerializer.Serialize(items)
+    );
         var parameters = new DialogParameters<AddUpdateInventory>
         {
             {x=>x.userId,MainLayout.CurrentUserId},
             {x=>x.Action,action},
             {x=>x.Items,items},
+            {x=>x.Previous_Items,previousItems}
         };
         var dialog = await DialogService.ShowAsync<AddUpdateInventory>("Simple Dialog", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
         {
             await LoadInventoryItems();
+            await LoadInventoryItemsAudit();
             StateHasChanged();
+        }
+    }
+
+    private async Task LoadInventoryItemsAudit()
+    {
+        isLoading = true;
+        try
+        {
+            audit = new();
+            audit = await httpClient.GetFromJsonAsync<List<InventoryAuditTrail>>($"HotelManagement/GetInventoryItemsAudit");
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception Occured: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

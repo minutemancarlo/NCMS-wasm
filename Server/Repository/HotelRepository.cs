@@ -153,23 +153,33 @@ namespace NCMS_wasm.Server.Repository
             
         }
 
-        public async Task<int> AddOrUpdateInventoryAsync(InventoryItems inventory)
+        public async Task<int> AddOrUpdateInventoryAsync(InventoryRequest inventory)
         {
             var parameters = new DynamicParameters();
-            parameters.Add("@ItemId", inventory.ItemId);
-            parameters.Add("@Name", inventory.Name);
-            parameters.Add("@Description", inventory.Description);
-            parameters.Add("@Quantity", inventory.Quantity);
-            parameters.Add("@ItemType", (int)inventory.ItemType);
-            parameters.Add("@Unit", inventory.Unit);
-            parameters.Add("@CreatedBy", inventory.CreatedBy);
-            parameters.Add("@UpdatedBy", inventory.UpdatedBy);
+            parameters.Add("@ItemId", inventory.Items.ItemId);
+            parameters.Add("@Name", inventory.Items.Name);
+            parameters.Add("@Description", inventory.Items.Description);
+            parameters.Add("@Quantity", inventory.Items.Quantity);
+            parameters.Add("@ItemType", (int)inventory.Items.ItemType);
+            parameters.Add("@Unit", inventory.Items.Unit);
+            parameters.Add("@PreviousName", inventory.PreviousItems.Name);
+            parameters.Add("@PreviousDescription", inventory.PreviousItems.Description);
+            parameters.Add("@PreviousQuantity", inventory.PreviousItems.Quantity==0 ? null: inventory.PreviousItems.Quantity);
+            parameters.Add("@PreviousItemType", inventory.PreviousItems.ItemType == HotelInventoryType.All ? null : inventory.PreviousItems.ItemType);
+            parameters.Add("@PreviousUnit", inventory.PreviousItems.Unit);
+            parameters.Add("@CreatedBy", inventory.Items.CreatedBy);
+            parameters.Add("@UpdatedBy", inventory.Items.UpdatedBy);
 
             string sp = "AddOrUpdateInventory";
 
             return await _dbConnection.ExecuteScalarAsync<int>(sp, parameters, commandType: CommandType.StoredProcedure);
         }
 
+        public async Task<IEnumerable<InventoryAuditTrail>> SelectInventoryAuditAsync()
+        {           
+            var query = "Select * from InventoryAuditTrail order by auditId desc";
+            return await _dbConnection.QueryAsync<InventoryAuditTrail>(query);
+        }
 
 
         public async Task<IEnumerable<RoomInfo>> GetAllRoomsAsync()

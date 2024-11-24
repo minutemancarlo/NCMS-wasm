@@ -52,6 +52,7 @@
     [Parameter] public string? userId { get; set; }
     [Parameter] public string? Action { get; set; }
     [Parameter] public InventoryItems Items { get; set; }
+    [Parameter] public InventoryItems Previous_Items { get; set; }
     MudForm? mudForm;
 
     protected override async Task OnInitializedAsync()
@@ -59,7 +60,8 @@
         if(Action == "Add")
         {
             Items.ItemType = HotelInventoryType.Linens;
-        }
+        }       
+
         await base.OnInitializedAsync();
     }
 
@@ -82,13 +84,19 @@
             {
                 Items.UpdatedBy = userId;
             }
+            
+            var items = new InventoryRequest
+                {
+                    Items = Items,
+                    PreviousItems = Previous_Items
+                };
 
             var options = new JsonSerializerOptions
                 {
                     DefaultIgnoreCondition = JsonIgnoreCondition.Never  // This ensures that null properties are not ignored
                 };
 
-            var response = await httpClient.PostAsJsonAsync("HotelManagement/AddUpdateInventoryItems", Items, options);
+            var response = await httpClient.PostAsJsonAsync("HotelManagement/AddUpdateInventoryItems", items, options);
             // response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
             {

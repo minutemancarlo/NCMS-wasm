@@ -185,7 +185,7 @@ namespace NCMS_wasm.Server.Controllers
                 throw new InvalidOperationException("ImgBB API key is not configured.");
             }
 
-            string url = $"https://api.imgbb.com/1/upload?expiration=2592000key={BBKey}"; //image expires in 30 days.
+            string url = $"https://api.imgbb.com/1/upload?expiration=2592000&key={BBKey}"; //image expires in 30 days.
 
             using HttpClient client = new();
             using MultipartFormDataContent content = new();
@@ -280,7 +280,7 @@ namespace NCMS_wasm.Server.Controllers
         }
 
         [HttpPost("AddUpdateInventoryItems")]
-        public async Task<ActionResult<int>> AddUpdateInventoryItems(InventoryItems items)
+        public async Task<ActionResult<int>> AddUpdateInventoryItems(InventoryRequest items)
         {
             try
             {
@@ -359,6 +359,23 @@ namespace NCMS_wasm.Server.Controllers
             catch (Exception ex)
             {
                 _fileLogger.Log($"Exception Occured in Endpoint [GetInventoryItems]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
+
+                return BadRequest($"Exception occurred while retrieving inventory items: {ex.Message}");
+            }
+        }
+
+        [HttpGet("GetInventoryItemsAudit")]
+        public async Task<ActionResult<InventoryAuditTrail>> GetInventoryItemsAudit()
+        {
+            try
+            {
+                var result = await _hotelRepository.SelectInventoryAuditAsync();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetInventoryItemsAudit]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", ModuleName);
 
                 return BadRequest($"Exception occurred while retrieving inventory items: {ex.Message}");
             }
