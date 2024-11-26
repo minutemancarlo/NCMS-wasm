@@ -1,0 +1,40 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudLayout>
+    <MudAppBar Elevation="1" Bottom="true" Fixed="true" Color="Color.Dark">
+        <MudStack Row Spacing="0">
+            <MudImage Src="images/logo.png" Width="50" Height="50" />
+            <MudText Typo="Typo.h5" Class="pt-2">NCMS</MudText>
+        </MudStack>
+        <MudSpacer />
+        <MudText Typo="Typo.body2">NCMS &copy; @DateTime.Now.Year All Rights Reserved. </MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@fullscreenIcon" Color="Color.Inherit" Edge="Edge.End" OnClick="ToggleFullScreen" />
+    </MudAppBar>
+    <MudMainContent Style="background-color: #3498db;" Class="vh-100">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool isFullScreen = false;
+    private string fullscreenIcon => isFullScreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen;
+
+    private async Task ToggleFullScreen()
+    {
+        if (isFullScreen)
+        {
+            await JSRuntime.InvokeVoidAsync("exitFullscreen");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("enterFullscreen");
+        }
+
+        isFullScreen = !isFullScreen;
+    }
+
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+}

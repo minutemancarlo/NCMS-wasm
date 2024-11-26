@@ -1,0 +1,99 @@
+﻿@page "/dtr"
+@layout DTRLayout
+@using NCMS_wasm.Shared
+
+<MudGrid Class="pa-5">
+    <!-- Left Side: Date, Time, and Title -->
+    <MudItem xs="12" sm="6">
+        <MudPaper Class="pa-5 d-flex flex-row justify-between align-center h-100">
+            <div style="width: 50%; text-align: center;">
+                <lottie-player src="https://lottie.host/b1fb1196-aa95-4fa6-a759-df8cb7da18e9/l1ijtT1F99.json"
+                               background="transparent"
+                               speed="1"
+                               style="width: 100%; max-width: 300px; height: auto;"
+                               loop
+                               autoplay>
+                </lottie-player>
+            </div>
+            <div class="d-flex flex-column justify-center align-start text-center" style="width: 50%;">
+                <MudText Typo="Typo.h3" Class="fw-bold mb-3">Daily Time Record</MudText>
+                <MudText Typo="Typo.h5" Class="mb-1">Today is</MudText>
+                <MudText Typo="Typo.h5" Class="fw-bold" Style="color: #e74c3c;">@currentDate</MudText>
+                <MudDivider Class="my-2" />
+                <MudText Typo="Typo.h5" Class="mb-1">Current Time</MudText>
+                <MudText Typo="Typo.h4" Class="fw-bold" Style="color: #e74c3c;">@currentTime</MudText>
+            </div>
+        </MudPaper>
+    </MudItem>
+
+    <!-- Right Side: ID Image, Name, Time In, Time Out, and Progress Bar -->
+    <MudItem xs="12" sm="6">
+        <MudPaper Class="pa-5 d-flex flex-column align-center h-100">
+            <MudAvatar Style="width: 150px;height: 150px">
+                <MudImage Src="@placeholderImage"></MudImage>
+            </MudAvatar>
+            <MudText Typo="Typo.h5" Class="fw-bold mb-1">Name: [Employee Name]</MudText>
+            <MudText Typo="Typo.h6" Class="mb-1">Time In: [--:--]</MudText>
+            <MudText Typo="Typo.h6">Time Out: [--:--]</MudText>
+            <MudSpacer />
+            <MudStack Spacing="0" Class="w-100">
+                <MudTextField ReadOnly FullWidth @bind-Value="idcard" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                <MudProgressLinear Color="Color.Info" Striped="true" Size="Size.Large" Value="@progressValue" Class="my-7" />
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private string currentDate = DateTime.Now.ToString("dddd, MMMM dd, yyyy");
+    private string currentTime = DateTime.Now.ToString("hh:mm:ss tt");
+    private Timer? timer;
+    private Timer? progressTimer;
+    private string placeholderImage = "user.png";
+    private List<DTRModel> dtr = new List<DTRModel>();
+    private string? idcard;
+    private double progressValue = 0;
+
+    protected override void OnInitialized()
+    {
+        timer = new Timer(UpdateDateTime, null, 0, 1000); // Update date and time every second
+        StartProgressBar(); // Start progress bar fill-up
+    }
+
+
+
+    private void StartProgressBar()
+    {
+        progressValue = 0; // Reset progress
+        progressTimer = new Timer(UpdateProgress, null, 0, 30); // Update progress every 30ms
+    }
+
+    private void UpdateProgress(object? state)
+    {
+        if (progressValue < 100)
+        {
+            progressValue += 1; // Increment progress
+            InvokeAsync(StateHasChanged); // Refresh the UI
+        }
+        else
+        {
+            progressValue = 0;
+            InvokeAsync(StateHasChanged);
+            progressTimer?.Dispose(); // Stop the timer when progress is complete
+        }
+    }
+
+    private void UpdateDateTime(object? state)
+    {
+        currentDate = DateTime.Now.ToString("dddd, MMMM dd, yyyy");
+        currentTime = DateTime.Now.ToString("hh:mm:ss tt");
+        InvokeAsync(StateHasChanged); // Refresh the UI
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+        progressTimer?.Dispose();
+    }
+}
+
