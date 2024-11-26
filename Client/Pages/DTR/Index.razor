@@ -5,7 +5,7 @@
 <MudGrid Class="pa-5">
     <!-- Left Side: Date, Time, and Title -->
     <MudItem xs="12" sm="6">
-        <MudPaper Class="pa-5 d-flex flex-row justify-between align-center h-100">
+        <MudPaper Class="pa-5 d-flex flex-row justify-between align-center h-100" Elevation="4">
             <div style="width: 50%; text-align: center;">
                 <lottie-player src="https://lottie.host/b1fb1196-aa95-4fa6-a759-df8cb7da18e9/l1ijtT1F99.json"
                                background="transparent"
@@ -28,19 +28,70 @@
 
     <!-- Right Side: ID Image, Name, Time In, Time Out, and Progress Bar -->
     <MudItem xs="12" sm="6">
-        <MudPaper Class="pa-5 d-flex flex-column align-center h-100">
+        <MudPaper Class="pa-5 d-flex flex-column align-center h-100" Elevation="4">
             <MudAvatar Style="width: 150px;height: 150px">
-                <MudImage Src="@placeholderImage"></MudImage>
+                <MudImage Src="@modelValue.EmployeeProfile"></MudImage>
             </MudAvatar>
-            <MudText Typo="Typo.h5" Class="fw-bold mb-1">Name: [Employee Name]</MudText>
-            <MudText Typo="Typo.h6" Class="mb-1">Time In: [--:--]</MudText>
-            <MudText Typo="Typo.h6">Time Out: [--:--]</MudText>
+            <MudText Typo="Typo.h5" Class="fw-bold mb-1">Name: @(String.IsNullOrEmpty(modelValue.EmployeeName) ? "[Employee Name]" : modelValue.EmployeeName)</MudText>
+            <MudText Typo="Typo.h6" Class="fw-bold mb-1">Time In: <strong class="text-danger">@(modelValue.TimeIn.HasValue ? modelValue.TimeIn?.ToString("t") : "[--:--]")</strong></MudText>
+            <MudText Typo="Typo.h6" Class="fw-bold">Time Out: <strong class="text-danger">@(modelValue.TimeOut.HasValue ? modelValue.TimeOut?.ToString("t") : "[--:--]")</strong></MudText>
             <MudSpacer />
-            <MudStack Spacing="0" Class="w-100">
-                <MudTextField ReadOnly FullWidth @bind-Value="idcard" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                <MudProgressLinear Color="Color.Info" Striped="true" Size="Size.Large" Value="@progressValue" Class="my-7" />
+            @if (alertVisible)
+            {
+                <MudAlert Variant="Variant.Outlined" Style="width: 50%" ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Error">Card Invalid!</MudAlert>
+            }
+            <MudStack Spacing="1" Class="w-100">
+                <MudFocusTrap Disabled="false" DefaultFocus="DefaultFocus.FirstChild">
+                    <MudTextField FullWidth
+                                  @bind-Value="idcard"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.DocumentScanner"
+                                  AutoFocus
+                                  @ref="rfidReader"
+                                  TextChanged="OnTextChangedAsync"
+                                  Variant="Variant.Outlined" Margin="Margin.Dense" />
+                </MudFocusTrap>
+                <MudProgressLinear Color="Color.Info" Striped="false" Size="Size.Large" Value="@progressValue" Class="my-7" />
             </MudStack>
         </MudPaper>
+    </MudItem>
+
+    <MudItem xs="3" sm="3">
+    </MudItem>
+
+    <MudItem xs="6" md="8" sm="6" Class="d-flex flex-column h-100">
+        <MudPaper Class="pa-5 d-flex flex-column align-center flex-grow-1" Elevation="4">
+            <MudDataGrid RowsPerPage="5" Items="dtr.OrderByDescending(x => x.UpdatedOn).ToList()" Class="h-100" Striped ColumnResizeMode="ResizeMode.Container">
+                <Columns>
+                    <PropertyColumn Property="x => x.EmployeeName" Title="Employee Name" HeaderStyle="background-color: black;color: white;" />
+                    <PropertyColumn Property="x => x.CutOffDate" Title="Cut Off Date" HeaderStyle="background-color: black;color: white;" />
+                    <PropertyColumn Property="x => x.TimeIn" Title="Time In" HeaderStyle="background-color: black;color: white;">
+                        <CellTemplate>
+                            @context.Item.TimeIn?.ToString("t")
+                        </CellTemplate>
+                    </PropertyColumn>
+                    <PropertyColumn Property="x => x.TimeOut" Title="Time Out" HeaderStyle="background-color: black;color: white;">
+                        <CellTemplate>
+                            @context.Item.TimeOut?.ToString("t")
+                        </CellTemplate>
+                    </PropertyColumn>
+                </Columns>
+                <NoRecordsContent>
+                    <MudText>No Records to show</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Loading Content...</MudText>
+                </LoadingContent>
+                <PagerContent>
+                    <MudDataGridPager T="DTRModel" />
+                </PagerContent>
+            </MudDataGrid>
+        </MudPaper>
+    </MudItem>
+
+
+    <MudItem xs="3" sm="3">
+
     </MudItem>
 </MudGrid>
 
@@ -51,37 +102,82 @@
     private Timer? progressTimer;
     private string placeholderImage = "user.png";
     private List<DTRModel> dtr = new List<DTRModel>();
-    private string? idcard;
+    private string idcard = string.Empty;
     private double progressValue = 0;
+    MudTextField<string>? rfidReader;
+    private DTRModel modelValue = new();
+    private bool alertVisible = false;
 
     protected override void OnInitialized()
     {
         timer = new Timer(UpdateDateTime, null, 0, 1000); // Update date and time every second
-        StartProgressBar(); // Start progress bar fill-up
     }
 
+    private async Task OnTextChangedAsync()
+    {
+        if (!String.IsNullOrEmpty(idcard))
+        {
+            StartProgressBar();
+            modelValue.EmployeeName = "Carlo Boado";
+            modelValue.TimeIn = DateTime.Now;
+            modelValue.TimeOut = DateTime.Now;
+            modelValue.UpdatedOn = DateTime.Now;
+            modelValue.CutOffDate = GetCutoffPeriod(DateTime.Now);
+            modelValue.EmployeeProfile = "https://www.profilebakery.com/wp-content/uploads/2023/04/LINKEDIN-Profile-Picture-AI-400x400.jpg";
+            idcard = string.Empty;
+            // alertVisible = true;
+            dtr.Add(modelValue);
+            await rfidReader.SelectRangeAsync(0, rfidReader.Value.ToString().Length);
+        }
+    }
+
+    public string GetCutoffPeriod(DateTime currentDate)
+    {
+
+        string monthName = currentDate.ToString("MMMM");
+        int day = currentDate.Day;
+        int year = currentDate.Year;
+
+        int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+
+        string cutoffPeriod;
+        if (day <= 15)
+        {
+            cutoffPeriod = $"{monthName} 1-15, {year}";
+        }
+        else
+        {
+            cutoffPeriod = $"{monthName} 16-{daysInMonth}, {year}";
+        }
+
+        return cutoffPeriod;
+    }
 
 
     private void StartProgressBar()
     {
-        progressValue = 0; // Reset progress
-        progressTimer = new Timer(UpdateProgress, null, 0, 30); // Update progress every 30ms
+        progressValue = 0;
+        progressTimer = new Timer(UpdateProgress, null, 0, 30);
     }
 
     private void UpdateProgress(object? state)
     {
         if (progressValue < 100)
         {
-            progressValue += 1; // Increment progress
+            progressValue += 0.6; // Increment progress
+            if (progressValue > 100) progressValue = 100; // Ensure it doesn't exceed 100
             InvokeAsync(StateHasChanged); // Refresh the UI
         }
         else
         {
+            alertVisible = false;
             progressValue = 0;
+            modelValue = new();
             InvokeAsync(StateHasChanged);
             progressTimer?.Dispose(); // Stop the timer when progress is complete
         }
     }
+
 
     private void UpdateDateTime(object? state)
     {

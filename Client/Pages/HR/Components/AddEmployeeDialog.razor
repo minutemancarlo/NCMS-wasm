@@ -2,6 +2,7 @@
 @using NCMS_wasm.Client.Pages.Validations
 @using System.Text.Json
 @using System.Text.Json.Serialization
+@using NCMS_wasm.Client.Pages.HR.Components
 @inject AuthenticationStateProvider AuthenticationStateProvider
 <MudDialog>
     <TitleContent>
@@ -30,7 +31,7 @@
                 <MudItem xs="6">
                     <MudText Typo="Typo.caption">Personal Information</MudText>
                     <MudTextField @bind-Value="employeeInfo.Name" For="@(() => employeeInfo.Name)" Label="Name" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.Address"  For="@(() => employeeInfo.Address)" Label="Address" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.Address" For="@(() => employeeInfo.Address)" Label="Address" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                     <MudStack Row>
                         <MudTextField @bind-Value="employeeInfo.Phone" For="@(() => employeeInfo.Phone)" Label="Phone" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                         <MudTextField @bind-Value="employeeInfo.Email" For="@(() => employeeInfo.Email)" Label="Email" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
@@ -65,20 +66,20 @@
                     <MudSelect T="EmploymentStatus" @bind-Value="employeeInfo.EmploymentStatus" For="@(() => employeeInfo.EmploymentStatus)" Class="pt-1" Label="Employment Status" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
                         <MudSelectItem Value="@(EmploymentStatus.Probationary)" />
                         <MudSelectItem Value="@(EmploymentStatus.Regular)" />
-                        <MudSelectItem Value="@(EmploymentStatus.Resigned)" />                        
-                    </MudSelect>                    
+                        <MudSelectItem Value="@(EmploymentStatus.Resigned)" />
+                    </MudSelect>
                     <MudDatePicker Label="Date Hired" For="@(() => employeeInfo.DateHired)" Class="pt-1" Margin="Margin.Dense" Editable="true" Variant="Variant.Outlined" @bind-Date="employeeInfo.DateHired" Placeholder="Select Date" />
                     <MudTextField @bind-Value="employeeInfo.Position" For="@(() => employeeInfo.Position)" Class="pt-1" Label="Position" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                     <MudSelect T="Department" @bind-Value="employeeInfo.Department" Class="pt-1" Label="Department" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
                         <MudSelectItem Value="@(Department.None)" />
                         <MudSelectItem Value="@(Department.HR)" />
                         <MudSelectItem Value="@(Department.Gas)" />
-                    </MudSelect>                    
+                    </MudSelect>
                 </MudItem>
                 <MudItem xs="6">
                     <MudTextField @bind-Value="employeeInfo.Salary" For="@(() => employeeInfo.Salary)" Class="pt-1" Label="Salary" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                     <MudTextField @bind-Value="employeeInfo.SSS" For="@(() => employeeInfo.SSS)" Class="pt-1" Label="SSS ID" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.PagIbig"  For="@(() => employeeInfo.PagIbig)" Class="pt-1" Label="Pag-Ibig ID" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.PagIbig" For="@(() => employeeInfo.PagIbig)" Class="pt-1" Label="Pag-Ibig ID" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                     <MudTextField @bind-Value="employeeInfo.PHIC" For="@(() => employeeInfo.PHIC)" Class="pt-1" Label="PhilHealth ID" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                 </MudItem>
             </MudStack>
@@ -87,7 +88,7 @@
                 <MudItem xs="6">
                     <MudText Typo="Typo.caption">Emergency Contact</MudText>
                     <MudTextField @bind-Value="employeeInfo.EmergencyContactName" For="@(() => employeeInfo.EmergencyContactName)" Class="pt-1" Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                    <MudTextField @bind-Value="employeeInfo.EmergencyContactPhone"  For="@(() => employeeInfo.EmergencyContactPhone)" Class="pt-1" Label="Phone" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="employeeInfo.EmergencyContactPhone" For="@(() => employeeInfo.EmergencyContactPhone)" Class="pt-1" Label="Phone" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                     <MudTextField @bind-Value="employeeInfo.EmergencyContactAddress" For="@(() => employeeInfo.EmergencyContactAddress)" Class="pt-1" Label="Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                     <MudTextField @bind-Value="employeeInfo.EmergencyContactRelationship" For="@(() => employeeInfo.EmergencyContactRelationship)" Class="pt-1" Label="Relationship" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                 </MudItem>
@@ -96,6 +97,8 @@
                     <MudTextField @bind-Value="employeeInfo.BeneficiaryName" For="@(() => employeeInfo.BeneficiaryName)" Label="Name" Class="pt-1" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                     <MudTextField @bind-Value="employeeInfo.BeneficiaryContactInfo" For="@(() => employeeInfo.BeneficiaryContactInfo)" Class="pt-1" Label="Phone" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                     <MudTextField @bind-Value="employeeInfo.BeneficiaryRelationship" For="@(() => employeeInfo.BeneficiaryRelationship)" Class="pt-1" Label="Relationship" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.DocumentScanner" OnClick="@(() => ScanCard(employeeInfo.IDNumber))" Class="mt-1" FullWidth>@(String.IsNullOrEmpty(employeeInfo.CardReference) ? "Scan ID Card" : "Modify ID Card")</MudButton>
+
                 </MudItem>
             </MudStack>
         </MudForm>
@@ -121,19 +124,84 @@
     MudForm form;
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
     [Inject] HttpClient? httpClient { get; set; }
-    [Inject] ISnackbar Snackbar { get; set; }    
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IDialogService? DialogService { get; set; }
+
     EmployeeValidator modelValidator = new EmployeeValidator();
     private bool _loading { get; set; }
-    
+
     [Parameter] public string? currentUserId { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        
+
         await base.OnInitializedAsync();
     }
 
     void Cancel() => MudDialog.Cancel();
+    private async Task ScanCard(string? employeeId)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = false,
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small,
+                BackdropClick = false,
+                CloseButton = true
+            };
+        var parameters = new DialogParameters<IDCardScanner>
+        {
+            {x => x.employeeId, employeeId}
 
+        };
+        var dialog = await DialogService.ShowAsync<IDCardScanner>("Simple Dialog", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var cardId = result.Data.ToString();
+
+            // if (tempCards.Any())
+            // {
+            //     // Find if an RFIDCard with the same RoomNumber already exists
+            //     // var existingCard = bookingInfo.AccessCard.FirstOrDefault(ac => ac.RoomNumber == RoomNumber);
+            //     var existingCard = tempCards.FirstOrDefault(ac => ac.RoomNumber == RoomNumber);
+
+            //     if (existingCard != null)
+            //     {
+            //         // Update the CardReference if the card exists
+            //         existingCard.CardReference = cardId;
+            //     }
+            //     else
+            //     {
+            //         // Add a new RFIDCard if the RoomNumber doesn't exist
+            //         // var rfidCard = new RFIDCard
+            //         //     {
+            //         //         CardReference = cardId,
+            //         //         IsActive = true,
+            //         //         RoomNumber = RoomNumber,
+            //         //         Type = RFIDType.Access
+            //         //     };
+            //         // tempCards.Add(rfidCard);
+
+
+            //     }
+            // }
+            // else
+            // {
+            //     // var rfidCard = new RFIDCard
+            //     //     {
+            //     //         CardReference = cardId,
+            //     //         IsActive = true,
+            //     //         RoomNumber = RoomNumber,
+            //     //         Type = RFIDType.Access
+            //     //     };
+            //     // tempCards.Add(rfidCard);
+
+            //     // bookingInfo.AccessCard.Add(rfidCard);
+
+            // }
+
+        }
+    }
 
     private async Task OnSubmit()
     {
@@ -144,14 +212,14 @@
 
             await form.Validate();
             if (form.IsValid)
-            {                
+            {
                 if (String.IsNullOrEmpty(employeeInfo.IDNumber))
                 {
-                    employeeInfo.CreatedBy = currentUserId;                    
+                    employeeInfo.CreatedBy = currentUserId;
                 }
                 else
                 {
-                    employeeInfo.UpdatedBy =currentUserId;
+                    employeeInfo.UpdatedBy = currentUserId;
                 }
 
                 var options = new JsonSerializerOptions
@@ -159,7 +227,7 @@
                         DefaultIgnoreCondition = JsonIgnoreCondition.Never  // This ensures that null properties are not ignored
                     };
 
-                var response = await httpClient.PostAsJsonAsync("Employee/AddUpdateEmployee", employeeInfo , options  );
+                var response = await httpClient.PostAsJsonAsync("Employee/AddUpdateEmployee", employeeInfo, options);
                 // response.EnsureSuccessStatusCode();
                 if (response.IsSuccessStatusCode)
                 {
@@ -183,9 +251,10 @@
                         Console.WriteLine($"Unexpected error: {response.StatusCode} - {errorMessage}");
                     }
                 }
-                
+
             }
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             Snackbar.Add($"Failed to submit employee info: {ex.Message}", Severity.Error);
             Console.WriteLine($"Failed to submit employee info: {ex.Message}");
@@ -197,10 +266,10 @@
 
 
 
-                
+
     }
 
-    
+
 
     private async Task UploadFiles(IBrowserFile file)
     {

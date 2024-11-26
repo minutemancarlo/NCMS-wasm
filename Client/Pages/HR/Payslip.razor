@@ -25,6 +25,17 @@
                         </MudLoadingButton>                        
                     </ActivatorContent>
                 </MudFileUpload>
+                <MudLoadingButton Variant="Variant.Filled"
+                                  Class="my-2 mx-1"
+                                  Color="Color.Info"
+                                  Size="Size.Medium"
+                                  Loading="@(_loading)"                                  
+                                  StartIcon="@Icons.Material.Filled.AssignmentReturned"
+                                  ButtonType="ButtonType.Button">
+                    <LoadingContent>Generating...</LoadingContent>
+                    <ChildContent>Auto Generate DTR</ChildContent>
+                </MudLoadingButton>
+                
                 <MudSpacer />
             </ToolBarContent>
             <Columns>                
@@ -71,7 +82,7 @@
     private bool isLoading = false;
     private List<PayslipUpload> payslipUploads = new List<PayslipUpload>();
     private bool uploading = false;
-
+    private bool _loading = false;
     protected override async Task OnInitializedAsync()
     {        
         BaseUrl = $"{navigationManager.BaseUri}Templates/PayslipTemplate.xlsx";

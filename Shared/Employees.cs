@@ -42,6 +42,8 @@ namespace NCMS_wasm.Shared
         public string BeneficiaryContactInfo { get; set; }           
 
         public string? imageUrl { get; set; }
+
+        public string? CardReference { get; set; }
     }
 
     public enum Department

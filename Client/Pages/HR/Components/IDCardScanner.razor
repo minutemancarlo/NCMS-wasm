@@ -1,0 +1,98 @@
+﻿@using NCMS_wasm.Shared
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.DocumentScanner"></MudIcon>
+            Scan Card
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Class="w-100" Spacing="2">
+            <MudText Typo="Typo.body1">Employee ID Number: <strong>@employeeId</strong></MudText>
+            <MudTextField @bind-Value="cardValue" Label="Card ID" Variant="Variant.Outlined" ReadOnly ShrinkLabel Margin="Margin.Normal" />
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          Size="Size.Large"
+                          Disabled="@isValid"
+                          OnClick="OnSubmit"
+                          Loading="@(_loading)"
+                          ButtonType="ButtonType.Button">
+            <LoadingContent>Submitting...</LoadingContent>
+            <ChildContent>Submit</ChildContent>
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public string? employeeId { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    [Inject] HttpClient? httpClient { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+
+    private string? cardValue { get; set; }
+    private bool _loading = false;
+    private bool isValid = true;
+    [JSInvokable]
+    public async Task ReceiveRfidData(string data)
+    {
+        cardValue = null;
+        cardValue = data;
+
+        if (await VerifyCard(data))
+        {
+            Snackbar.Add("ID Card already in use.", Severity.Error);
+            isValid = true;
+        }
+        else
+        {
+            isValid = false;
+        }
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("startKeyboardListener", DotNetObjectReference.Create(this));
+        await base.OnInitializedAsync();
+    }
+
+    private async Task<bool> VerifyCard(string cardNumber)
+    {
+        try
+        {
+            var response = await httpClient.GetAsync($"CardManagement/VerifyAccessCard?cardId={cardNumber}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var exist = await response.Content.ReadFromJsonAsync<bool>();
+                return exist;
+            }
+            else
+            {
+                Snackbar.Add($"Verification failed. Status code: {response.StatusCode}");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occurred: {ex.Message}");
+            return false; // Return a default value in case of an exception
+        }
+    }
+
+    private async Task OnSubmit()
+    {
+        MudDialog.Close(DialogResult.Ok(cardValue));
+    }
+
+
+    void Cancel() => MudDialog.Cancel();
+
+
+}
