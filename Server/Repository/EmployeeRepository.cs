@@ -44,7 +44,8 @@ namespace NCMS_wasm.Server.Repository
                 parameters.Add("@CreatedBy", employeeInfo.CreatedBy);
                 parameters.Add("@CreatedOn", employeeInfo.CreatedOn);
                 parameters.Add("@UpdatedBy", employeeInfo.UpdatedBy);
-                parameters.Add("@UpdatedOn", employeeInfo.UpdatedOn);                
+                parameters.Add("@UpdatedOn", employeeInfo.UpdatedOn);
+                parameters.Add("@CardReference", employeeInfo.CardReference);
 
             // Execute the stored procedure
             return await _dbConnection.ExecuteScalarAsync<int>("AddOrUpdateEmployee", parameters, commandType: CommandType.StoredProcedure);
