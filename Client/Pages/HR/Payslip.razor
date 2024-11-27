@@ -3,74 +3,127 @@
 @using NCMS_wasm.Shared
 <PageTitle>Payslips | NCMS</PageTitle>
 
-<MudStack>
-    <MudText Typo="Typo.h5">Payslip Upload Facility</MudText>
-    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Download the template to fill payslip for employees. Click <MudLink OnClick="@(() => OnDownloadTemplate())" Underline="Underline.Always">here</MudLink></MudAlert>
-    <MudStack>
-        <MudDataGrid Items="@payslipUploads" T="PayslipUpload" Loading="@isLoading" HeaderClass="mud-theme-default text-wrap" ShowMenuIcon="false"
-                     HorizontalScrollbar="true"
-                     ColumnResizeMode="ResizeMode.Column">
-            <ToolBarContent>
-                <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadFileUploads">Refresh</MudButton>
-                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".xlsx">
-                    <ActivatorContent>
-                        <MudLoadingButton Variant="Variant.Filled"
-                                          Color="Color.Primary"
-                                          Size="Size.Medium"
-                                          StartIcon="@Icons.Material.Filled.CloudUpload"
-                                          Loading="@(uploading)"                                          
-                                          ButtonType="ButtonType.Button">
-                            <LoadingContent>Uploading...</LoadingContent>
-                            <ChildContent>Upload Payslip</ChildContent>
-                        </MudLoadingButton>                        
-                    </ActivatorContent>
-                </MudFileUpload>
-                <MudLoadingButton Variant="Variant.Filled"
-                                  Class="my-2 mx-1"
-                                  Color="Color.Info"
-                                  Size="Size.Medium"
-                                  Loading="@(_loading)"                                  
-                                  StartIcon="@Icons.Material.Filled.AssignmentReturned"
-                                  ButtonType="ButtonType.Button">
-                    <LoadingContent>Generating...</LoadingContent>
-                    <ChildContent>Auto Generate DTR</ChildContent>
-                </MudLoadingButton>
-                
-                <MudSpacer />
-            </ToolBarContent>
-            <Columns>                
-                <PropertyColumn Title="File Name" Property="x => x.FileName" Filterable="true" />
-                <PropertyColumn Title="Status" Property="x => x.PayslipFileStatus" Filterable="true">
-                    <CellTemplate>
-                        @if (context.Item.PayslipFileStatus == PayslipFileStatus.Success)
+<MudTabs Elevation="4" Rounded="true" Border="true" Color="Color.Info" Class="w-100 vh-100 pt-5">
+    <MudTabPanel Text="Payslip Upload">
+        <MudStack>
+            <MudText Typo="Typo.h5">Payslip Upload Facility</MudText>
+            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Download the template to fill payslip for employees. Click <MudLink OnClick="@(() => OnDownloadTemplate())" Underline="Underline.Always">here</MudLink></MudAlert>
+            <MudStack>
+                <MudDataGrid Items="@payslipUploads" T="PayslipUpload" Loading="@isLoading" HeaderClass="mud-theme-default text-wrap" ShowMenuIcon="false"
+                             HorizontalScrollbar="true"
+                             ColumnResizeMode="ResizeMode.Container">
+                    <ToolBarContent>
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadFileUploads">Refresh</MudButton>
+                        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".xlsx">
+                            <ActivatorContent>
+                                <MudLoadingButton Variant="Variant.Filled"
+                                                  Color="Color.Primary"
+                                                  Size="Size.Medium"
+                                                  StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                  Loading="@(uploading)"
+                                                  ButtonType="ButtonType.Button">
+                                    <LoadingContent>Uploading...</LoadingContent>
+                                    <ChildContent>Upload Payslip</ChildContent>
+                                </MudLoadingButton>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                       
+
+                        <MudSpacer />
+                    </ToolBarContent>
+                    <Columns>
+                        <PropertyColumn Title="File Name" Property="x => x.FileName" Filterable="true" />
+                        <PropertyColumn Title="Status" Property="x => x.PayslipFileStatus" Filterable="true">
+                            <CellTemplate>
+                                @if (context.Item.PayslipFileStatus == PayslipFileStatus.Success)
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Success">Success</MudChip>
+                                }
+                                else if (context.Item.PayslipFileStatus == PayslipFileStatus.Processing)
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Info">Processing</MudChip>
+                                }
+                                else if (context.Item.PayslipFileStatus == PayslipFileStatus.OnQueue)
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Default">On Queue</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Error">Failed</MudChip>
+                                }
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Title="Uploaded On" Property="x => x.UploadedOn" Filterable="false" />
+                    </Columns>
+                    <NoRecordsContent>
+                        <MudText>No Records to show</MudText>
+                    </NoRecordsContent>
+                    <LoadingContent>
+                        <MudText>Loading Content...</MudText>
+                    </LoadingContent>
+                </MudDataGrid>
+            </MudStack>
+        </MudStack>
+    </MudTabPanel>
+    <MudTabPanel Text="DTR">
+        <MudStack>
+            <MudText Typo="Typo.h5">Daily Time Records</MudText>
+            <MudDataGrid T="DTRModel" Items="@dtr" SortMode="SortMode.Multiple" HorizontalScrollbar Filterable="true" Loading="isLoading" ColumnResizeMode="ResizeMode.Column"
+                         Hideable="true">
+                         <ToolBarContent>
+                    <MudLoadingButton Variant="Variant.Filled"
+                                      Class="my-2 mx-1"
+                                      Color="Color.Info"
+                                      Size="Size.Medium"
+                                      Loading="@(_loading)"
+                                      StartIcon="@Icons.Material.Filled.AssignmentReturned"
+                                      ButtonType="ButtonType.Button">
+                        <LoadingContent>Generating...</LoadingContent>
+                        <ChildContent>Generate DTR</ChildContent>
+                    </MudLoadingButton>
+                    <MudSelect @bind-Value="selectedCutOff" Label="Cut Off Date" FullWidth="false" Margin="Margin.Dense" Variant="Variant.Outlined">
+                        @foreach (var item in groupedCutOffDates)
                         {
-                            <MudChip T="string" Size="Size.Small" Color="Color.Success">Success</MudChip>
-                        }
-                        else if (context.Item.PayslipFileStatus == PayslipFileStatus.Processing)
-                        {
-                            <MudChip T="string" Size="Size.Small" Color="Color.Info">Processing</MudChip>
-                        }
-                        else if (context.Item.PayslipFileStatus == PayslipFileStatus.OnQueue)
-                        {
-                            <MudChip T="string" Size="Size.Small" Color="Color.Default">On Queue</MudChip>
-                        }
-                        else
-                        {
-                            <MudChip T="string" Size="Size.Small" Color="Color.Error">Failed</MudChip>
-                        }
-                    </CellTemplate>
-                </PropertyColumn>
-                <PropertyColumn Title="Uploaded On" Property="x => x.UploadedOn" Filterable="false" />
-            </Columns>
-            <NoRecordsContent>
-                <MudText>No Records to show</MudText>
-            </NoRecordsContent>
-            <LoadingContent>
-                <MudText>Loading Content...</MudText>
-            </LoadingContent>
-        </MudDataGrid>
-    </MudStack>
-</MudStack>
+                            <MudSelectItem Value="@item" />
+                        }                                                
+                    </MudSelect>
+                    <MudSpacer/>
+                    <MudSpacer />
+                         </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.IDNumber" Title="Employee ID" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;"/>
+                    <PropertyColumn Property="x => x.Name" Title="Employee Name" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;" />
+                    <PropertyColumn Property="x => x.CutOffDate" Title="Cut Off Date" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;" />
+                    <PropertyColumn Property="x => x.ShiftDate" Title="Shift Date" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;">
+                        <CellTemplate>
+                            @context.Item.ShiftDate?.ToString("MM/dd/yyyy")
+                        </CellTemplate>
+                        </PropertyColumn>
+                    <PropertyColumn Property="x => x.TimeIn" Title="Time In" HeaderStyle="background-color: #1abc9c; color: white;" >
+                         <CellTemplate>
+                            @context.Item.TimeIn?.ToString("t")
+                        </CellTemplate>
+                        </PropertyColumn>
+                    <PropertyColumn Property="x => x.TimeOut" Title="Time In" HeaderStyle="background-color: #1abc9c; color: white;" >
+                         <CellTemplate>
+                            @context.Item.TimeOut?.ToString("t")
+                        </CellTemplate>
+                        </PropertyColumn>
+                </Columns>
+                <NoRecordsContent>
+                    <MudText>No Records to show</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Loading Data...</MudText>
+                </LoadingContent>
+                <PagerContent>
+                    <MudDataGridPager T="DTRModel" />
+                </PagerContent>
+            </MudDataGrid>
+        </MudStack>
+    </MudTabPanel>
+</MudTabs>
+
 
 
 @code {
@@ -81,17 +134,22 @@
     private string BaseUrl = String.Empty;
     private bool isLoading = false;
     private List<PayslipUpload> payslipUploads = new List<PayslipUpload>();
+    private List<DTRModel> dtr = new List<DTRModel>();
     private bool uploading = false;
     private bool _loading = false;
+    private List<string> groupedCutOffDates = new List<string>();
+    private string? selectedCutOff;
+
     protected override async Task OnInitializedAsync()
-    {        
+    {
         BaseUrl = $"{navigationManager.BaseUri}Templates/PayslipTemplate.xlsx";
         await LoadFileUploads();
+        await LoadDTRHistory();
         await base.OnInitializedAsync();
     }
     private async Task OnDownloadTemplate()
     {
-        await JSRuntime.InvokeVoidAsync("downloadFile", BaseUrl,"PayslipTemplate.xlsx");
+        await JSRuntime.InvokeVoidAsync("downloadFile", BaseUrl, "PayslipTemplate.xlsx");
     }
 
     private async Task LoadFileUploads()
@@ -100,11 +158,11 @@
         {
             isLoading = true;
 
-            var response = await httpClient.PostAsJsonAsync("Payslip/GetPayslipsUploads","");
+            var response = await httpClient.PostAsJsonAsync("Payslip/GetPayslipsUploads", "");
 
             if (response.IsSuccessStatusCode)
-            {              
-                payslipUploads = await response.Content.ReadFromJsonAsync<List<PayslipUpload>>();               
+            {
+                payslipUploads = await response.Content.ReadFromJsonAsync<List<PayslipUpload>>();
             }
         }
         catch (Exception ex)
@@ -116,6 +174,38 @@
         finally
         {
             isLoading = false;
+        }
+    }
+
+    private async Task LoadDTRHistory()
+    {
+        try
+        {            
+            var response = await httpClient.PostAsJsonAsync("Employee/GetEmployeeRFIDInfoAll", new DTRModel());
+
+            if (response.IsSuccessStatusCode)
+            {
+                var employee = await response.Content.ReadFromJsonAsync<List<DTRModel>>();
+                dtr.Clear();
+                if (employee is not null)
+                {
+                    dtr = employee;
+                    groupedCutOffDates = dtr.GroupBy(d => d.CutOffDate).Select(g => g.Key).ToList();
+                }
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"An error occured: {errorMessage}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception occurred: {ex.Message}");
+        }
+        finally
+        {
+
         }
     }
 
