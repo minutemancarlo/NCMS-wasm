@@ -1,4 +1,5 @@
 ﻿using Auth0.ManagementApi;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Server.Repository;
@@ -120,6 +121,74 @@ namespace NCMS_wasm.Server.Controllers
                 _fileLogger.Log($"Exception Occured in Endpoint [GetEmployeeInfo]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
 
                 _logger.LogError($"Exception occurred while retrieving employee info for email '{email}': {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
+            }
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost("GetEmployeeRFIDInfo")]
+        public async Task<ActionResult<DTRModel>> GetEmployeeRFIDInfo([FromBody] string rfid)
+        {
+            try
+            {
+                var employee = await _employeeRepository.GetEmployeeInfoRFIDAsync(rfid);
+
+                if (employee == null)
+                {
+                    
+                    return NotFound($"Employee not found.");
+                }
+                else
+                {                   
+                    _logger.LogInformation($"Employee information retrieved successfully.");
+                    return Ok(employee);
+                }
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetEmployeeRFIDInfo]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
+                _logger.LogError($"Exception occurred while retrieving employee: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("GetEmployeeRFIDInfoAll")]
+        public async Task<ActionResult<List<DTRModel>>> GetEmployeeRFIDInfoAll()
+        {
+            try
+            {
+                var employee = await _employeeRepository.GetEmployeeInfoRFIDAllAsync();
+                
+                    _logger.LogInformation($"Employee information retrieved successfully.");
+                    return Ok(employee);
+                
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetEmployeeRFIDInfoAll]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
+                _logger.LogError($"Exception occurred while retrieving employee: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("InsertOrUpdateDTR")]
+        public async Task<ActionResult> InsertOrUpdateDTR(DTRModel dtr)
+        {
+            try
+            {
+                var result = await _employeeRepository.ManageDTRAsync(dtr);
+                return Ok(result);               
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [InsertOrUpdateDTR]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
+                _logger.LogError($"Exception occurred while retrieving employee: {ex.Message}");
                 return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
             }
         }

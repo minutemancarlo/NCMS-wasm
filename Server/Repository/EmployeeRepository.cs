@@ -71,6 +71,29 @@ namespace NCMS_wasm.Server.Repository
             return employee;
         }
 
+        public async Task<DTRModel> GetEmployeeInfoRFIDAsync(string rfid)
+        {
+            var parameters = new DynamicParameters();
+            // Adding wildcard characters for partial match using the LIKE operator
+            parameters.Add("@RFID", rfid.Trim());
+
+            string query = "SELECT TOP 1 * FROM Employee a left join DTR b on a.IDNumber = b.EMployeeId where a.cardReference = @RFID order by b.shiftDate desc";
+
+            var employee = await _dbConnection.QueryFirstOrDefaultAsync<DTRModel>(query, parameters);
+
+            return employee;
+        }
+
+        public async Task<IEnumerable<DTRModel>> GetEmployeeInfoRFIDAllAsync()
+        {
+            
+            string query = "SELECT *,b.UpdateOn as DTRUpdatedOn FROM Employee a inner join DTR b on a.IDNumber = b.EMployeeId order by b.UpdateOn desc";            
+
+            return await _dbConnection.QueryAsync<DTRModel>(query);
+        }
+
+
+
         public async Task<int> BindUserAccountAsync(Employee employee)
         {
             var parameters = new DynamicParameters();
@@ -80,6 +103,20 @@ namespace NCMS_wasm.Server.Repository
             string query = "UPDATE Employee SET Auth0_Id = @AuthId WHERE IDNumber = @IDNumber";
             
             return await _dbConnection.ExecuteAsync(query, parameters);
+        }
+
+        public async Task<int> ManageDTRAsync(DTRModel dtr)
+        {            
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@IDNumber", dtr.IDNumber);
+            parameters.Add("@CutOffDate", dtr.CutOffDate);
+            parameters.Add("@TimeIn", dtr.TimeIn);
+            parameters.Add("@TimeOut", dtr.TimeOut);
+            parameters.Add("@ShiftDate", dtr.ShiftDate);
+            string query = "ManageDTR";
+
+            return await _dbConnection.ExecuteAsync(query, parameters,commandType: CommandType.StoredProcedure);
         }
 
         public async Task<int> UnBindUserAccountAsync(string employee)

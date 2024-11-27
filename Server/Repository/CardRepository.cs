@@ -33,6 +33,7 @@ namespace NCMS_wasm.Server.Repository
 
             return result > 0;
         }
+        
 
         public async Task<int> InsertAccessCardAsync(RFIDCard accessCard)
         {
