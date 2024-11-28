@@ -93,6 +93,56 @@ namespace NCMS_wasm.Server.Repository
             return await _dbConnection.QueryAsync<DTRModel>(query);
         }
 
+        public async Task<IEnumerable<GeneratedDTR>> GetDTRForProcessAsync()
+        {
+
+            string query = "SELECT * from DTRTasks WHERE Status = 0 order by CreatedOn ASC";
+
+            return await _dbConnection.QueryAsync<GeneratedDTR>(query);
+        }
+
+        public async Task<IEnumerable<GeneratedDTR>> GetDTRForProcessAllAsync()
+        {
+
+            string query = "SELECT * from DTRTasks order by CreatedOn DESC";
+
+            return await _dbConnection.QueryAsync<GeneratedDTR>(query);
+        }
+
+        public async Task<IEnumerable<DTRModel>> GetDTRIndividualAsync(string CutOffDate,string employeeId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@CutOff", CutOffDate.Trim());
+            parameters.Add("@EmployeeId", employeeId.Trim());
+
+            string query = "SELECT * from DTR Where CutOffDate=@CutOff and EmployeeId = @EmployeeId order by ShiftDate asc";
+
+            return await _dbConnection.QueryAsync<DTRModel>(query,parameters);
+        }
+
+        public async Task<int> UpdateDTRTaskStatusAsync(DTRStatus status, int? taskId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@TaskId", taskId);
+            parameters.Add("@Status", status);
+
+            string query = "UpdateDTRTask";
+
+            return await _dbConnection.ExecuteAsync(query, parameters,commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<int> InsertDTRRequestAsync(GeneratedDTR request)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@TaskName", request.TaskName);
+            parameters.Add("@TaskType", request.TaskType);
+            parameters.Add("@Status", request.Status);
+
+            string sp = "InsertDTRRequest";
+
+            return await _dbConnection.ExecuteAsync(sp, parameters,commandType: CommandType.StoredProcedure);
+        }
+
 
 
         public async Task<int> BindUserAccountAsync(Employee employee)

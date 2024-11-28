@@ -193,6 +193,57 @@ namespace NCMS_wasm.Server.Controllers
             }
         }
 
+        [HttpPost("GenerateDTRRequest")]
+        public async Task<ActionResult> GenerateDTRRequest(GenerateDTRRequest request)
+        {
+            try
+            {
+                var taskName = String.Empty;
+                if(request.DTRType == "All")
+                {
+                    taskName = $"DTR_{request.CutOffDate}_{DateTime.Now.Date.ToString("MMddyyyy")}_{DateTime.Now.ToString("hhmmss")}";
+                }
+                else
+                {
+                    taskName = $"DTR_{request.CutOffDate}_{request.EmployeeId}_{DateTime.Now.Date.ToString("MMddyyyy")}_{DateTime.Now.ToString("hhmmss")}";
+                }
+
+                var dtr = new GeneratedDTR
+                {
+                    TaskType = request.DTRType,                    
+                    TaskName =  taskName,
+                    Status = DTRStatus.On_Queue                    
+                };
+                var result = await _employeeRepository.InsertDTRRequestAsync(dtr);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GenerateDTRRequest]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+                
+                return BadRequest($"Exception occurred while generating dtr request: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpPost("GetDTRRequests")]
+        public async Task<ActionResult<GeneratedDTR>> GetDTRRequests()
+        {
+            try
+            {
+                var employee = await _employeeRepository.GetDTRForProcessAllAsync();                
+                    return Ok(employee);
+                
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetDTRRequests]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");                
+                return BadRequest($"Exception occurred while retrieving dtr requests: {ex.Message}");
+            }
+        }
+
+
         [HttpPost("GetMyInfo")]
         public async Task<ActionResult<Employee>> GetMyInfo([FromBody] string auth_id)
         {

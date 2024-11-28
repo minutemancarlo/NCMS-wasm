@@ -51,6 +51,7 @@ builder.Services.AddScoped<ReceiptService>();
 //Add Background Services
 builder.Services.AddHostedService<PayslipProcessor>();
 builder.Services.AddHostedService<EmailSenderProcessor>();
+builder.Services.AddHostedService<DTRProcessor>();
 
 
 // Add services to the container.

@@ -27,7 +27,7 @@
                                 </MudLoadingButton>
                             </ActivatorContent>
                         </MudFileUpload>
-                       
+
 
                         <MudSpacer />
                     </ToolBarContent>
@@ -67,14 +67,15 @@
     </MudTabPanel>
     <MudTabPanel Text="DTR">
         <MudStack>
-            <MudText Typo="Typo.h5">Daily Time Records</MudText>
+            <MudText Typo="Typo.h5" Class="pt-3">Daily Time Records</MudText>
             <MudDataGrid T="DTRModel" Items="@dtr" SortMode="SortMode.Multiple" HorizontalScrollbar Filterable="true" Loading="isLoading" ColumnResizeMode="ResizeMode.Column"
                          Hideable="true">
-                         <ToolBarContent>
+                <ToolBarContent>
                     <MudLoadingButton Variant="Variant.Filled"
                                       Class="my-2 mx-1"
                                       Color="Color.Info"
                                       Size="Size.Medium"
+                                      OnClick="OnGenerateDTR"
                                       Loading="@(_loading)"
                                       StartIcon="@Icons.Material.Filled.AssignmentReturned"
                                       ButtonType="ButtonType.Button">
@@ -85,30 +86,40 @@
                         @foreach (var item in groupedCutOffDates)
                         {
                             <MudSelectItem Value="@item" />
-                        }                                                
+                        }
                     </MudSelect>
-                    <MudSpacer/>
+                    @if (isIndividual)
+                    {
+                        <MudSelect @bind-Value="selectedEmployeeId" Disabled="@(selectedCutOff != null? false: true)" Label="Employee Name" Class="px-1" FullWidth="false" Margin="Margin.Dense" Variant="Variant.Outlined">
+                            @foreach (var item in selectedEmployee)
+                            {
+                                <MudSelectItem Value="@item.employeeId">@item.employeeName</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                    <MudCheckBox @bind-Value="isIndividual">Individual DTR</MudCheckBox>
                     <MudSpacer />
-                         </ToolBarContent>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadDTRHistory">Refresh</MudButton>
+                </ToolBarContent>
                 <Columns>
-                    <PropertyColumn Property="x => x.IDNumber" Title="Employee ID" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;"/>
+                    <PropertyColumn Property="x => x.IDNumber" Title="Employee ID" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;" />
                     <PropertyColumn Property="x => x.Name" Title="Employee Name" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;" />
                     <PropertyColumn Property="x => x.CutOffDate" Title="Cut Off Date" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;" />
                     <PropertyColumn Property="x => x.ShiftDate" Title="Shift Date" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;">
                         <CellTemplate>
                             @context.Item.ShiftDate?.ToString("MM/dd/yyyy")
                         </CellTemplate>
-                        </PropertyColumn>
-                    <PropertyColumn Property="x => x.TimeIn" Title="Time In" HeaderStyle="background-color: #1abc9c; color: white;" >
-                         <CellTemplate>
+                    </PropertyColumn>
+                    <PropertyColumn Property="x => x.TimeIn" Title="Time In" HeaderStyle="background-color: #1abc9c; color: white;">
+                        <CellTemplate>
                             @context.Item.TimeIn?.ToString("t")
                         </CellTemplate>
-                        </PropertyColumn>
-                    <PropertyColumn Property="x => x.TimeOut" Title="Time In" HeaderStyle="background-color: #1abc9c; color: white;" >
-                         <CellTemplate>
+                    </PropertyColumn>
+                    <PropertyColumn Property="x => x.TimeOut" Title="Time In" HeaderStyle="background-color: #1abc9c; color: white;">
+                        <CellTemplate>
                             @context.Item.TimeOut?.ToString("t")
                         </CellTemplate>
-                        </PropertyColumn>
+                    </PropertyColumn>
                 </Columns>
                 <NoRecordsContent>
                     <MudText>No Records to show</MudText>
@@ -118,6 +129,65 @@
                 </LoadingContent>
                 <PagerContent>
                     <MudDataGridPager T="DTRModel" />
+                </PagerContent>
+            </MudDataGrid>
+        </MudStack>
+
+        <MudStack>
+            <MudText Typo="Typo.h5" Class="pt-3">DTR Requests</MudText>
+            <MudDataGrid T="GeneratedDTR" Items="@dtrRequests" SortMode="SortMode.Multiple" HorizontalScrollbar Filterable="true" Loading="isLoading" ColumnResizeMode="ResizeMode.Column"
+                         Hideable="true">
+                <ToolBarContent>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" Class="my-2 mx-1" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadDTRRequests">Refresh</MudButton>
+                    <MudSpacer />
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.TaskId" Title="Task ID" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;" />
+                    <PropertyColumn Property="x => x.TaskName" Title="Name" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;">
+                        <CellTemplate>
+                            @if (context.Item.Status == DTRStatus.Processed)
+                            {
+                                <MudLink OnClick="@(async() => await OnDownloadDTRRequest(context.Item.TaskName))" Typo="Typo.body2">@context.Item.TaskName</MudLink>
+                            }
+                            else
+                            {
+                                @context.Item.TaskName
+                            }
+                        </CellTemplate>
+                        </PropertyColumn>
+                    <PropertyColumn Property="x => x.TaskType" Title="Type" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;" />
+                    <PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;">
+                        <CellTemplate>
+                            @if (context.Item.Status == DTRStatus.Processed)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Success">Success</MudChip>
+                            }
+                            else if (context.Item.Status == DTRStatus.Processing)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Info">Processing</MudChip>
+                            }
+                            else if (context.Item.Status == DTRStatus.On_Queue)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Default">On Queue</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Error">Failed</MudChip>
+                            }
+                        </CellTemplate>
+                    </PropertyColumn>
+                    <PropertyColumn Property="x => x.CreatedOn" Title="Created On" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;" />
+                    <PropertyColumn Property="x => x.UpdatedOn" Title="Updated On" HeaderClass="text-nowrap" HeaderStyle="background-color: #1abc9c; color: white;" />
+
+                </Columns>
+                <NoRecordsContent>
+                    <MudText>No Records to show</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Loading Data...</MudText>
+                </LoadingContent>
+                <PagerContent>
+                    <MudDataGridPager T="GeneratedDTR" />
                 </PagerContent>
             </MudDataGrid>
         </MudStack>
@@ -138,18 +208,31 @@
     private bool uploading = false;
     private bool _loading = false;
     private List<string> groupedCutOffDates = new List<string>();
+    private List<IndividualEmployee> selectedEmployee = new List<IndividualEmployee>();
     private string? selectedCutOff;
+    private string? selectedEmployeeId;
+    private bool isIndividual = false;
+    private List<GeneratedDTR> dtrRequests = new();
+    private string? DTRBaseUri;
 
     protected override async Task OnInitializedAsync()
     {
         BaseUrl = $"{navigationManager.BaseUri}Templates/PayslipTemplate.xlsx";
         await LoadFileUploads();
         await LoadDTRHistory();
+        await LoadDTRRequests();
         await base.OnInitializedAsync();
     }
     private async Task OnDownloadTemplate()
     {
         await JSRuntime.InvokeVoidAsync("downloadFile", BaseUrl, "PayslipTemplate.xlsx");
+    }
+
+    private async Task OnDownloadDTRRequest(string file)
+    {
+        BaseUrl = $"{navigationManager.BaseUri}DTR/Payslip/Success/{file}.xlsx";
+
+        await JSRuntime.InvokeVoidAsync("downloadFile", BaseUrl, $"{file}.xlsx");
     }
 
     private async Task LoadFileUploads()
@@ -180,7 +263,7 @@
     private async Task LoadDTRHistory()
     {
         try
-        {            
+        {
             var response = await httpClient.PostAsJsonAsync("Employee/GetEmployeeRFIDInfoAll", new DTRModel());
 
             if (response.IsSuccessStatusCode)
@@ -191,6 +274,12 @@
                 {
                     dtr = employee;
                     groupedCutOffDates = dtr.GroupBy(d => d.CutOffDate).Select(g => g.Key).ToList();
+                    selectedEmployee = dtr.GroupBy(d => d.IDNumber).Select(g => new IndividualEmployee
+                        {
+                            employeeId = g.FirstOrDefault()?.IDNumber,
+                            employeeName = g.FirstOrDefault()?.Name
+                        }).ToList();
+
                 }
             }
             else
@@ -209,6 +298,103 @@
         }
     }
 
+    private async Task OnGenerateDTR()
+    {
+        try
+        {
+            isLoading = true;
+            if (selectedCutOff != null)
+            {
+                if (isIndividual)
+                {
+                    if (selectedEmployeeId != null)
+                    {
+                        //Generate Individual DTR
+                        var payload = new GenerateDTRRequest
+                            {
+                                EmployeeId = selectedEmployeeId,
+                                CutOffDate = selectedCutOff,
+                                DTRType = "Individual"
+                            };
+                        var response = await httpClient.PostAsJsonAsync("Employee/GenerateDTRRequest", payload);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            await LoadDTRRequests();
+                            Snackbar.Add("Individual DTR Request added On-Queue", Severity.Success);
+                        }
+                        else
+                        {
+                            var errorMessage = await response.Content.ReadAsStringAsync();
+                            Snackbar.Add($"An error Occured: {errorMessage}", Severity.Error);
+                        }
+                    }
+                    else
+                    {
+                        Snackbar.Add("Please select Employee", Severity.Error);
+                    }
+                }
+                else
+                {
+                    //Generate All DTR
+                    var payload = new GenerateDTRRequest
+                        {                            
+                            CutOffDate = selectedCutOff,
+                            DTRType = "All"
+                        };
+                    var response = await httpClient.PostAsJsonAsync("Employee/GenerateDTRRequest", payload);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        await LoadDTRRequests();
+                        Snackbar.Add("DTR Request added On-Queue", Severity.Success);
+                    }
+                    else
+                    {
+                        var errorMessage = await response.Content.ReadAsStringAsync();
+                        Snackbar.Add($"An error Occured: {errorMessage}", Severity.Error);
+                    }
+
+
+                }
+            }
+            else
+            {
+                Snackbar.Add("Please select a Cut Off Date", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occured: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadDTRRequests()
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync("Employee/GetDTRRequests", new GeneratedDTR());
+
+            if (response.IsSuccessStatusCode)
+            {
+                var generatedDTRRequests = await response.Content.ReadFromJsonAsync<List<GeneratedDTR>>();
+                dtrRequests = generatedDTRRequests;
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"An error Occured: {errorMessage}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error Occured: {ex.Message}", Severity.Error);
+        }
+    }
 
 
     private async Task UploadFiles(IBrowserFile file)
@@ -254,6 +440,12 @@
         {
             uploading = false;
         }
+    }
+
+    public class IndividualEmployee
+    {
+        public string? employeeId { get; set; }
+        public string? employeeName { get; set; }
     }
 
 

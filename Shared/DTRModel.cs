@@ -19,4 +19,32 @@ namespace NCMS_wasm.Shared
         public string? TimeInFormatted => TimeIn?.ToString("HH:mm tt");
         public string? TimeOutFormatted => TimeOut?.ToString("HH:mm tt");
     }
+
+    public class GenerateDTRRequest
+    {
+        public string? EmployeeId { get; set; }
+        public string? CutOffDate { get; set; }
+        public string? DTRType { get; set; }
+    }
+
+    public class GeneratedDTR
+    {
+        public int? TaskId { get; set; }
+        public string? TaskName { get; set; }
+        public string? TaskType { get; set; }
+        public string? FilePath { get; set; }
+        public DTRStatus? Status { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public DateTime? UpdatedOn { get; set; }
+    }
+
+    public enum DTRStatus
+    {
+        On_Queue,
+        Processing,
+        Processed,
+        Failed
+    }
+
+
 }
