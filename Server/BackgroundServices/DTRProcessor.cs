@@ -84,6 +84,11 @@ namespace NCMS_wasm.Server.BackgroundServices
                                     summaryWorksheet.Cells["B2"].Value = employeeInfo.Name;
                                     summaryWorksheet.Cells["C2"].Value = employeeInfo.Position;
                                     summaryWorksheet.Cells["E2"].Value = employeeInfo.Salary;
+                                    summaryWorksheet.Cells["F2"].Value = 0;
+                                    summaryWorksheet.Cells["G2"].Value = 0;
+                                    summaryWorksheet.Cells["H2"].Value = 0;
+                                    summaryWorksheet.Cells["I2"].Value = 0;
+
 
                                     // Calculate the payroll date
                                     string[] cutoffParts = cutoffDate.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -247,7 +252,12 @@ namespace NCMS_wasm.Server.BackgroundServices
                                                 summaryWorksheet.Cells[summaryRow, 1].Value = employeeInfo.IDNumber;
                                                 summaryWorksheet.Cells[summaryRow, 2].Value = employeeInfo.Name;
                                                 summaryWorksheet.Cells[summaryRow, 3].Value = employeeInfo.Position;
-                                                summaryWorksheet.Cells[summaryRow, 4].Value = employeeInfo.Salary;
+                                                summaryWorksheet.Cells[summaryRow, 5].Value = employeeInfo.Salary;
+                                                summaryWorksheet.Cells[summaryRow, 6].Value = 0;
+                                                summaryWorksheet.Cells[summaryRow, 7].Value = 0;
+                                                summaryWorksheet.Cells[summaryRow, 8].Value = 0;
+                                                summaryWorksheet.Cells[summaryRow, 9].Value = 0;
+
 
                                                 // Calculate payroll date
                                                 string[] cutoffParts = cutoffDate.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -258,7 +268,7 @@ namespace NCMS_wasm.Server.BackgroundServices
                                                     int.Parse(cutoffParts[2]),
                                                     DateTime.ParseExact(cutoffParts[0], "MMMM", null).Month + 1,
                                                     payrollDay);
-                                                summaryWorksheet.Cells[summaryRow, 5].Value = payrollDate.ToString("MM/dd/yyyy");
+                                                summaryWorksheet.Cells[summaryRow, 4].Value = payrollDate.ToString("MM/dd/yyyy");
 
                                                 // Create new worksheet for this employee's DTR
                                                 var dtrWorksheetName = $"{currentEmployee} - {employeeInfo.Name}";
@@ -340,8 +350,7 @@ namespace NCMS_wasm.Server.BackgroundServices
 
                                                 // Update summary formula for Net Pay with corrected references
                                                 summaryWorksheet.Cells[summaryRow, 10].Formula = $"{employeeInfo.Salary}/240 * '{dtrWorksheetName}'!E{row} - SUM(F{summaryRow}:I{summaryRow}) ";
-                                                summaryWorksheet.Cells[summaryRow, 10].Style.Numberformat.Format = "0.00";
-
+                                                summaryWorksheet.Cells[summaryRow, 10].Style.Numberformat.Format = "0.00";                                                
                                                 using (var range = dtrWorksheet.Cells[1, 1, 1, 6])
                                                 {
                                                     range.Style.Font.Bold = true;
