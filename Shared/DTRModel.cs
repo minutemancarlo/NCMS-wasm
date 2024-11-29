@@ -20,6 +20,14 @@ namespace NCMS_wasm.Shared
         public string? TimeOutFormatted => TimeOut?.ToString("HH:mm tt");
     }
 
+    public class DTRLeave
+    {
+        public string? IDNumber { get; set; }
+        public string? LeaveType { get; set; }
+        public DateTime? LeaveStart { get; set; }
+        public DateTime? LeaveEnd { get; set; }
+    }
+
     public class GenerateDTRRequest
     {
         public string? EmployeeId { get; set; }

@@ -192,10 +192,30 @@
                     DateTime currentTime = GetCurrentTime();
                     modelValue.Name = employee.Name;
                     modelValue.IDNumber = employee.IDNumber;
-                    modelValue.ShiftDate = employee.ShiftDate ?? DateTime.Now.Date;
                     modelValue.CutOffDate = GetCutoffPeriod(currentTime);
-                    await ValidateAndAssignTime(employee.TimeIn, employee.TimeOut);
-                    modelValue.Profile = employee.Profile;                    
+                    modelValue.Profile = employee.Profile;
+                    if (employee.ShiftDate is null)
+                    {
+                        modelValue.ShiftDate = DateTime.Now.Date;
+                        await ValidateAndAssignTime(null,null);
+                    }
+                    else
+                    {
+                        if (employee.ShiftDate != DateTime.Now.Date)
+                        {
+                            modelValue.ShiftDate = DateTime.Now.Date;
+                            await ValidateAndAssignTime(null, employee.TimeOut);
+                        }
+                        else
+                        {
+                            modelValue.ShiftDate = employee.ShiftDate;
+                            await ValidateAndAssignTime(employee.TimeIn, employee.TimeOut);
+                        }
+                    }                
+                    
+                    
+                    
+                                    
                 }
                 else
                 {
@@ -280,25 +300,27 @@
 
     private async Task ValidateAndAssignTime(DateTime? timeIn, DateTime? timeOut)
     {
+
         DateTime currentTime = DateTime.Now;
+        
 
         // Define Day Shift Time Frames
         DateTime dayShiftTimeInStart = currentTime.Date.AddHours(8); // 8:00 AM
-        DateTime dayShiftTimeInEnd = currentTime.Date.AddHours(12); // 12:00 PM
+        DateTime dayShiftTimeInEnd = currentTime.Date.AddHours(13); // 12:00 PM
         DateTime dayShiftTimeOutStart = currentTime.Date.AddHours(13); // 1:00 PM
         DateTime dayShiftTimeOutEnd = currentTime.Date.AddHours(17); // 5:00 PM
 
         // Define Night Shift Time Frames
-        DateTime nightShiftTimeInStart = currentTime.Date.AddHours(0); // 10:00 PM
+        DateTime nightShiftTimeInStart = currentTime.Date.AddHours(23); // 10:00 PM
         DateTime nightShiftTimeInEnd = currentTime.Date.AddHours(1); // 12:00 AM
-        DateTime nightShiftTimeOutStart = currentTime.Date.AddHours(2); // 6:00 AM
-        DateTime nightShiftTimeOutEnd = currentTime.Date.AddHours(5); // 7:00 AM
+        DateTime nightShiftTimeOutStart = currentTime.Date.AddHours(6); // 6:00 AM
+        DateTime nightShiftTimeOutEnd = currentTime.Date.AddHours(7); // 7:00 AM
 
         // Check if it's Day Shift or Night Shift
         bool isDayShift = currentTime >= dayShiftTimeInStart && currentTime <= dayShiftTimeOutEnd;
         bool isNightShift = currentTime >= nightShiftTimeInStart || currentTime <= nightShiftTimeOutEnd;
         
-        if (timeIn == null && timeOut == null)
+        if (timeIn == null && timeOut == null )
         {
             if (isDayShift)
             {
@@ -315,7 +337,7 @@
             }
             else if (isNightShift)
             {
-                if (currentTime >= nightShiftTimeInStart || currentTime <= nightShiftTimeInEnd)
+                if (currentTime >= nightShiftTimeInStart || currentTime <= nightShiftTimeInEnd )
                 {
                     modelValue.TimeIn = currentTime;
                     await OnSubmitDtr();

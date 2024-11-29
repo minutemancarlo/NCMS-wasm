@@ -1,6 +1,10 @@
-﻿using Dapper;
+﻿using CsvHelper.Configuration;
+using Dapper;
+using Microsoft.Extensions.Logging;
 using NCMS_wasm.Shared;
+using OfficeOpenXml.Drawing;
 using System.Data;
+using System.Data.SqlTypes;
 
 namespace NCMS_wasm.Server.Repository
 {
@@ -73,10 +77,10 @@ namespace NCMS_wasm.Server.Repository
         }
 
         public async Task<DTRModel> GetEmployeeInfoRFIDAsync(string rfid)
-        {
+        {            
             var parameters = new DynamicParameters();
             // Adding wildcard characters for partial match using the LIKE operator
-            parameters.Add("@RFID", rfid.Trim());
+            parameters.Add("@RFID", rfid.Trim());            
 
             string query = "SELECT TOP 1 * FROM Employee a left join DTR b on a.IDNumber = b.EMployeeId where a.cardReference = @RFID order by b.shiftDate desc";
 
@@ -118,6 +122,37 @@ namespace NCMS_wasm.Server.Repository
             string query = "SELECT * from DTR Where CutOffDate=@CutOff and EmployeeId = @EmployeeId order by ShiftDate asc";
 
             return await _dbConnection.QueryAsync<DTRModel>(query,parameters);
+        }
+
+        public async Task<IEnumerable<DTRModel>> GetDTRAllAsync(string CutOffDate)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@CutOff", CutOffDate.Trim());            
+
+            string query = "SELECT *,EmployeeId as IDNumber from DTR Where CutOffDate=@CutOff order by EmployeeId,UpdateOn asc";
+
+            return await _dbConnection.QueryAsync<DTRModel>(query, parameters);
+        }
+
+        public async Task<DTRLeave> GetLeavesAsync(DateTime? CutOffDate,EventsType eventsType, string? employeeId = "")
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@CutOff", CutOffDate);
+            parameters.Add("@EmployeeId", employeeId);
+
+            if (eventsType == EventsType.Leave)
+            {
+            string query = @"Select c.EventId,a.IDNumber, a.Name, LTRIM(RTRIM(SUBSTRING(c.EventName, 1, CHARINDEX('-', c.EventName) - 1))) as LeaveType, EventStart,EventEnd from 
+                Employee a inner join LeaveRequests b on a.Auth0_Id = b.EmployeeID inner join [Events] c on b.EventId = c.EventId Where c.EventType = 1 and c.IsApproved = 1 and @CutOff BETWEEN c.EventStart and c.EventEnd and a.IDNumber = @EmployeeId";
+
+            return await _dbConnection.QueryFirstOrDefaultAsync<DTRLeave>(query, parameters);
+            }
+            else
+            {
+                string query = @"Select EventName + ' - ' + EventSubType as LeaveType,EventStart,EventName from Events Where EventType = 0 and IsApproved = 1 and @CutOff BETWEEN EventStart and EventEnd";
+
+                return await _dbConnection.QueryFirstOrDefaultAsync<DTRLeave>(query, parameters);
+            }
         }
 
         public async Task<int> UpdateDTRTaskStatusAsync(DTRStatus status, int? taskId)
@@ -166,14 +201,14 @@ namespace NCMS_wasm.Server.Repository
             parameters.Add("@TimeOut", dtr.TimeOut);
             parameters.Add("@ShiftDate", dtr.ShiftDate);
             string query = "ManageDTR";
-
             return await _dbConnection.ExecuteAsync(query, parameters,commandType: CommandType.StoredProcedure);
         }
 
+        
+       
         public async Task<int> UnBindUserAccountAsync(string employee)
         {
             var parameters = new DynamicParameters();
-            
             parameters.Add("@AuthId", employee);
 
             string query = "UPDATE Employee SET Auth0_Id = NULL WHERE Auth0_Id = @AuthId";
