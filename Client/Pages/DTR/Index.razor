@@ -194,6 +194,7 @@
                     modelValue.IDNumber = employee.IDNumber;
                     modelValue.CutOffDate = GetCutoffPeriod(currentTime);
                     modelValue.Profile = employee.Profile;
+                    modelValue.TimeIn = employee.TimeIn;
                     if (employee.ShiftDate is null)
                     {
                         modelValue.ShiftDate = DateTime.Now.Date;
@@ -208,14 +209,14 @@
                         }
                         else
                         {
-                            modelValue.ShiftDate = employee.ShiftDate;
+                            modelValue.ShiftDate = employee.ShiftDate;                            
                             await ValidateAndAssignTime(employee.TimeIn, employee.TimeOut);
                         }
                     }                
-                    
-                    
-                    
-                                    
+
+
+
+
                 }
                 else
                 {
@@ -302,7 +303,7 @@
     {
 
         DateTime currentTime = DateTime.Now;
-        
+
 
         // Define Day Shift Time Frames
         DateTime dayShiftTimeInStart = currentTime.Date.AddHours(8); // 8:00 AM
@@ -319,7 +320,7 @@
         // Check if it's Day Shift or Night Shift
         bool isDayShift = currentTime >= dayShiftTimeInStart && currentTime <= dayShiftTimeOutEnd;
         bool isNightShift = currentTime >= nightShiftTimeInStart || currentTime <= nightShiftTimeOutEnd;
-        
+
         if (timeIn == null && timeOut == null )
         {
             if (isDayShift)
@@ -358,7 +359,7 @@
             if (isDayShift)
             {
                 if (currentTime >= dayShiftTimeOutStart && currentTime <= dayShiftTimeOutEnd)
-                {
+                {                    
                     modelValue.TimeOut = currentTime;
                     await OnSubmitDtr();
                     Snackbar.Add("Time Out recorded successfully.", Severity.Success);
@@ -371,7 +372,7 @@
             else if (isNightShift)
             {
                 if (currentTime >= nightShiftTimeOutStart && currentTime <= nightShiftTimeOutEnd)
-                {
+                {                    
                     modelValue.TimeOut = currentTime;
                     await OnSubmitDtr();
                     Snackbar.Add("Time Out recorded successfully.", Severity.Success);

@@ -181,6 +181,7 @@ namespace NCMS_wasm.Server.Controllers
         {
             try
             {
+                _fileLogger.Log($"DTR: EmployeeId: {dtr.IDNumber}, Shift Date: {dtr.ShiftDate}, Cut Off Date: {dtr.CutOffDate}, Time In: {dtr.TimeIn}, Time Out: {dtr.TimeOut}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
                 var result = await _employeeRepository.ManageDTRAsync(dtr);
                 return Ok(result);               
             }
