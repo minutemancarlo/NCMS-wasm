@@ -21,7 +21,7 @@ namespace NCMS_wasm.Server.BackgroundServices
         private string LogFileName = String.Empty;
         private string ModuleName = "DTR Processor";
 
-        public DTRProcessor(IConfiguration configuration,EmployeeRepository employeeRepository)
+        public DTRProcessor(IConfiguration configuration, EmployeeRepository employeeRepository)
         {
             _fileLogger = new FileLogger(configuration);
             _employeeRepository = employeeRepository;
@@ -44,6 +44,8 @@ namespace NCMS_wasm.Server.BackgroundServices
         {
             int? currentTask = 0;
             string processingFilePath = "", successFilePath = "", failedFilePath = "";
+            TimeZoneInfo targetTimeZone;
+            targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
             try
             {
                 var tasks = await _employeeRepository.GetDTRForProcessAsync();
@@ -51,6 +53,7 @@ namespace NCMS_wasm.Server.BackgroundServices
                 {
                     foreach (var item in tasks)
                     {
+
                         await _employeeRepository.UpdateDTRTaskStatusAsync(Shared.DTRStatus.Processing, item.TaskId);
                         _fileLogger.Log($"Processing DTR Task Id: {item.TaskId}, Type: {item.TaskType}, Name: {item.TaskName}", LogFileName, ModuleName);
                         currentTask = item.TaskId;
@@ -62,7 +65,7 @@ namespace NCMS_wasm.Server.BackgroundServices
                             string cutoffDate = parts[1];
                             string employeeId = parts[2];
                             var dtrList = await _employeeRepository.GetDTRIndividualAsync(cutoffDate, employeeId);
-                            
+
                             if (dtrList != null && dtrList.Any())
                             {
                                 string templatePath = Path.Combine(template, "PayslipTemplate.xlsx");
@@ -95,10 +98,20 @@ namespace NCMS_wasm.Server.BackgroundServices
                                     string[] dateRange = cutoffParts[1].Split('-');
                                     int endDay = int.Parse(dateRange[1].Replace(",", ""));
                                     int payrollDay = endDay == 30 ? 10 : 25;
-                                    DateTime payrollDate = new DateTime(
-                                        int.Parse(cutoffParts[2]), // Year
-                                        DateTime.ParseExact(cutoffParts[0], "MMMM", null).Month + 1, // Next month
-                                        payrollDay);
+                                    int currentMonth = DateTime.ParseExact(cutoffParts[0], "MMMM", null).Month;
+                                    int year = int.Parse(cutoffParts[2]); // Adjust the month if payrollDay is not 10
+                                    if (payrollDay != 25)
+                                    {
+                                        currentMonth += 1; // Adjust the year if the month exceeds December
+                                        if (currentMonth > 12)
+                                        {
+                                            currentMonth = 1; // Move to January
+                                            year += 1; // Increment year
+                                        }
+                                    }
+                                    DateTime payrollDate = new DateTime(year, currentMonth, payrollDay);
+
+
 
                                     summaryWorksheet.Cells["D2"].Value = payrollDate.ToString("MM/dd/yyyy");
 
@@ -119,7 +132,7 @@ namespace NCMS_wasm.Server.BackgroundServices
                                     string[] dateRangeForDTR = cutoffPartsForDTR[1].Split('-');
                                     int cutOffstartDay = int.Parse(dateRangeForDTR[0]);
                                     int cutOffendDay = int.Parse(dateRangeForDTR[1].Replace(",", ""));
-                                    int year = int.Parse(cutoffPartsForDTR[2]);
+                                    year = int.Parse(cutoffPartsForDTR[2]);
                                     int month = DateTime.ParseExact(cutoffPartsForDTR[0], "MMMM", null).Month;
 
                                     // Loop through the date range and populate the ShiftDate
@@ -141,7 +154,7 @@ namespace NCMS_wasm.Server.BackgroundServices
                                             dtrWorksheet.Cells[row, 3].Value = dtrForDay.TimeIn?.ToString("hh:mm tt"); // Time In
                                             dtrWorksheet.Cells[row, 4].Value = dtrForDay.TimeOut?.ToString("hh:mm tt"); // Time Out
                                             dtrWorksheet.Cells[row, 5].Formula = $"IF(OR(C{row}=\"\", D{row}=\"\"), 0, IF(AND(TEXT(C{row},\"HH:mm\")<TEXT(\"12:00 PM\",\"HH:mm\"), TEXT(D{row},\"HH:mm\")>TEXT(\"01:00 PM\",\"HH:mm\")), (D{row}-C{row})*24-1, (D{row}-C{row})*24))";
-                                            dtrWorksheet.Cells[row, 5].Style.Numberformat.Format = "0.00";                                            
+                                            dtrWorksheet.Cells[row, 5].Style.Numberformat.Format = "0.00";
                                         }
                                         else
                                         {
@@ -151,10 +164,10 @@ namespace NCMS_wasm.Server.BackgroundServices
                                             dtrWorksheet.Cells[row, 3].Value = ""; // Time In
                                             dtrWorksheet.Cells[row, 4].Value = ""; // Time Out
                                             dtrWorksheet.Cells[row, 5].Formula = $"IF(OR(C{row}=\"\", D{row}=\"\"), 0, IF(AND(TEXT(C{row},\"HH:mm\")<TEXT(\"12:00 PM\",\"HH:mm\"), TEXT(D{row},\"HH:mm\")>TEXT(\"01:00 PM\",\"HH:mm\")), (D{row}-C{row})*24-1, (D{row}-C{row})*24))";
-                                            dtrWorksheet.Cells[row, 5].Style.Numberformat.Format = "0.00";                                            
+                                            dtrWorksheet.Cells[row, 5].Style.Numberformat.Format = "0.00";
                                         }
 
-                                        if(leave is not null)
+                                        if (leave is not null)
                                         {
                                             dtrWorksheet.Cells[row, 3].Value = "8:00 AM"; // Time In
                                             dtrWorksheet.Cells[row, 4].Value = "5:00 PM"; // Time Out
@@ -164,7 +177,7 @@ namespace NCMS_wasm.Server.BackgroundServices
                                                 dtrWorksheet.Cells[row, 3].Value = "8:00 AM"; // Time In
                                                 dtrWorksheet.Cells[row, 4].Value = "5:00 PM"; // Time Out
                                                 dtrWorksheet.Cells[row, 6].Value = holidays.LeaveType is null ? "" : holidays.LeaveType;
-                                            }                                                                                        
+                                            }
                                         }
                                         else
                                         {
@@ -264,10 +277,19 @@ namespace NCMS_wasm.Server.BackgroundServices
                                                 string[] dateRange = cutoffParts[1].Split('-');
                                                 int endDay = int.Parse(dateRange[1].Replace(",", ""));
                                                 int payrollDay = endDay == 30 ? 10 : 25;
-                                                DateTime payrollDate = new DateTime(
-                                                    int.Parse(cutoffParts[2]),
-                                                    DateTime.ParseExact(cutoffParts[0], "MMMM", null).Month + 1,
-                                                    payrollDay);
+                                                int currentMonth = DateTime.ParseExact(cutoffParts[0], "MMMM", null)
+                                                    .Month;
+                                                int year = int.Parse(cutoffParts[2]); // Adjust the month if payrollDay is not 10
+                                                if (payrollDay != 10)
+                                                {
+                                                    currentMonth += 1; // Adjust the year if the month exceeds December
+                                                    if (currentMonth > 12)
+                                                    {
+                                                        currentMonth = 1; // Move to January
+                                                        year += 1; // Increment year
+                                                    }
+                                                }
+                                                DateTime payrollDate = new DateTime(year, currentMonth, payrollDay);
                                                 summaryWorksheet.Cells[summaryRow, 4].Value = payrollDate.ToString("MM/dd/yyyy");
 
                                                 // Create new worksheet for this employee's DTR
@@ -286,7 +308,7 @@ namespace NCMS_wasm.Server.BackgroundServices
                                                 string[] dateRangeForDTR = cutoffParts[1].Split('-');
                                                 int cutOffStartDay = int.Parse(dateRangeForDTR[0]);
                                                 int cutOffEndDay = int.Parse(dateRangeForDTR[1].Replace(",", ""));
-                                                int year = int.Parse(cutoffParts[2]);
+                                                year = int.Parse(cutoffParts[2]);
                                                 int month = DateTime.ParseExact(cutoffParts[0], "MMMM", null).Month;
 
                                                 DateTime startDate = new DateTime(year, month, cutOffStartDay);
@@ -350,7 +372,7 @@ namespace NCMS_wasm.Server.BackgroundServices
 
                                                 // Update summary formula for Net Pay with corrected references
                                                 summaryWorksheet.Cells[summaryRow, 10].Formula = $"{employeeInfo.Salary}/240 * '{dtrWorksheetName}'!E{row} - SUM(F{summaryRow}:I{summaryRow}) ";
-                                                summaryWorksheet.Cells[summaryRow, 10].Style.Numberformat.Format = "0.00";                                                
+                                                summaryWorksheet.Cells[summaryRow, 10].Style.Numberformat.Format = "0.00";
                                                 using (var range = dtrWorksheet.Cells[1, 1, 1, 6])
                                                 {
                                                     range.Style.Font.Bold = true;
@@ -360,7 +382,7 @@ namespace NCMS_wasm.Server.BackgroundServices
                                                 }
                                                 dtrWorksheet.Cells.AutoFitColumns();
                                             }
-                                            
+
                                             summaryRow++;
                                         }
                                     }
