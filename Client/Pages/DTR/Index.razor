@@ -188,6 +188,7 @@
 
                 if (response.IsSuccessStatusCode)
                 {
+                    targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
                     var employee = await response.Content.ReadFromJsonAsync<DTRModel>();
                     DateTime currentTime = GetCurrentTime();
                     modelValue.Name = employee.Name;
@@ -307,8 +308,8 @@
 
         // Define Day Shift Time Frames
         DateTime dayShiftTimeInStart = currentTime.Date.AddHours(8); // 8:00 AM
-        DateTime dayShiftTimeInEnd = currentTime.Date.AddHours(13); // 12:00 PM
-        DateTime dayShiftTimeOutStart = currentTime.Date.AddHours(13); // 1:00 PM
+        DateTime dayShiftTimeInEnd = currentTime.Date.AddHours(17); // 12:00 PM
+        DateTime dayShiftTimeOutStart = currentTime.Date.AddHours(8); // 1:00 PM
         DateTime dayShiftTimeOutEnd = currentTime.Date.AddHours(17); // 5:00 PM
 
         // Define Night Shift Time Frames
