@@ -7,6 +7,7 @@
 @using HomagGroup.Blazor3D.Scenes
 @using HomagGroup.Blazor3D.Settings
 @using HomagGroup.Blazor3D.Viewers
+
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Validations
 
@@ -95,11 +96,16 @@
 
                         </MudStack>
                         <!-- A-Frame Scene -->
-                       @*  <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%">
+                        @* <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%">
                             <a-sky src="images/@Image"></a-sky>
                             <a-entity camera look-controls></a-entity>
-                        </a-scene> *@
-                        <model-viewer src="/assets/blazor3d.glb" shadow-intensity="1" ar camera-controls touch-action="pan-y" alt="A 3D model carousel"></model-viewer>
+                        </a-scene> *@                       
+                        @* <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%"> <a-assets> <a-asset-item id="room-obj" src="https://ncmslu.x10.mx/HOTEL-ROOM.obj"></a-asset-item> </a-assets> <a-entity obj-model="obj: #room-obj" position="0 1.6 -5"></a-entity> <a-sky color="#ECECEC"></a-sky> <a-entity camera look-controls></a-entity> </a-scene> *@
+                        <model-viewer src="@($"assets/{roomType}.glb")" style="height: 500px" class="w-100" camera-controls tone-mapping="neutral" shadow-intensity="1">
+                            <div class="progress-bar hide" slot="progress-bar">
+                                <div class="update-bar"></div>
+                            </div>                                                      
+                        </model-viewer>
                     </MudPaper>
                   
                 </MudStack>
@@ -158,11 +164,11 @@
 
                             </MudStack>
                             <!-- A-Frame Scene -->
-                            @* <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%">
-                                <a-sky src="images/@Image"></a-sky>
-                                <a-entity camera look-controls></a-entity>
-                            </a-scene> *@
-                            
+                            <model-viewer src="@($"assets/{roomType}.glb")" style="height: 500px" class="w-100" camera-controls tone-mapping="neutral" shadow-intensity="1">
+                                <div class="progress-bar hide" slot="progress-bar">
+                                    <div class="update-bar"></div>
+                                </div>
+                            </model-viewer>
                         </MudPaper>
 
                     </MudStack>
@@ -206,7 +212,10 @@
     private GuestsInfo tempGuestInfo = new();
 
 
- 
+    
+    
+
+   
 
     protected override async Task OnParametersSetAsync()
     {

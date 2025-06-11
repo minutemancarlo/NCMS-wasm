@@ -14,6 +14,7 @@ namespace NCMS_wasm.Shared
         public decimal Points { get; set; } = 0.00M;
         public string? RegisteredTo { get; set; }
         public int? RoomNumber { get; set; }
+        public string? EmployeeID { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? UpdatedBy { get; set; }
@@ -23,7 +24,8 @@ namespace NCMS_wasm.Shared
     public enum RFIDType
     {
         Loyalty = 1,
-        Access = 2
+        Access = 2,
+        EmployeeId =3
     }
 
 }

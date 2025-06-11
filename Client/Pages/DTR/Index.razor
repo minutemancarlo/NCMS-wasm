@@ -1,0 +1,460 @@
+﻿@page "/dtr"
+@layout DTRLayout
+@using NCMS_wasm.Shared
+
+<MudGrid Class="pa-5">
+    <!-- Left Side: Date, Time, and Title -->
+    <MudItem xs="12" sm="6">
+        <MudPaper Class="pa-5 d-flex flex-row justify-between align-center h-100" Elevation="4">
+            <div style="width: 50%; text-align: center;">
+                <lottie-player src="https://lottie.host/b1fb1196-aa95-4fa6-a759-df8cb7da18e9/l1ijtT1F99.json"
+                               background="transparent"
+                               speed="1"
+                               style="width: 100%; max-width: 300px; height: auto;"
+                               loop
+                               autoplay>
+                </lottie-player>
+            </div>
+            <div class="d-flex flex-column justify-center align-start text-center" style="width: 50%;">
+                <MudText Typo="Typo.h3" Class="fw-bold mb-3">Daily Time Record</MudText>
+                <MudText Typo="Typo.h5" Class="mb-1">Today is</MudText>
+                <MudText Typo="Typo.h5" Class="fw-bold" Style="color: #e74c3c;">@currentDate</MudText>
+                <MudDivider Class="my-2" />
+                <MudText Typo="Typo.h5" Class="mb-1">Current Time</MudText>
+                <MudText Typo="Typo.h4" Class="fw-bold" Style="color: #e74c3c;">@currentTime</MudText>
+
+            </div>
+        </MudPaper>
+    </MudItem>
+
+    <!-- Right Side: ID Image, Name, Time In, Time Out, and Progress Bar -->
+    <MudItem xs="12" sm="6">
+        <MudPaper Class="pa-5 d-flex flex-column align-center h-100" Elevation="4">
+            <MudStack Spacing="0" Row Class="w-100" Justify="Justify.SpaceBetween">
+                @if (IsDayShift)
+                {
+                    <MudText Typo="Typo.h6" Class="fw-bold text-start">In: 8:00 AM to 12:00 PM</MudText>
+                    <MudText Typo="Typo.h6" Class="fw-bold text-end">Out: 1:00 PM to 5:00 PM</MudText>
+                }
+                else if (IsNightShift)
+                {
+                    <MudText Typo="Typo.h6" Class="fw-bold text-start">In: 10:00 PM to 12:00 AM</MudText>
+                    <MudText Typo="Typo.h6" Class="fw-bold text-end">Out: 6:00 AM to 7:00 AM</MudText>
+                }
+                else
+                {
+                    <MudText Typo="Typo.h6" Class="fw-bold text-center text-muted">No active shift at this time.</MudText>
+                }
+            </MudStack>
+            <MudAvatar Style="width: 150px;height: 150px">
+                <MudImage Src="@modelValue.Profile"></MudImage>
+            </MudAvatar>
+            <MudText Typo="Typo.h5" Class="fw-bold mb-1">Name: @(String.IsNullOrEmpty(modelValue.Name) ? "[Employee Name]" : modelValue.Name)</MudText>
+            <MudText Typo="Typo.h6" Class="fw-bold mb-1">Time In: <strong class="text-danger">@(modelValue.TimeIn.HasValue ? modelValue.TimeIn?.ToString("t") : "[--:--]")</strong></MudText>
+            <MudText Typo="Typo.h6" Class="fw-bold">Time Out: <strong class="text-danger">@(modelValue.TimeOut.HasValue ? modelValue.TimeOut?.ToString("t") : "[--:--]")</strong></MudText>
+            <MudSpacer />
+
+            <MudStack Spacing="1" Class="w-100">
+                <MudFocusTrap Disabled="false" DefaultFocus="DefaultFocus.FirstChild">
+                    <MudTextField FullWidth
+                                  @bind-Value="idcard"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.DocumentScanner"
+                                  AutoFocus
+                                  ReadOnly
+                                  @ref="rfidReader"
+                                  TextChanged="OnTextChangedAsync"
+                                  Variant="Variant.Outlined" Margin="Margin.Dense" />
+                </MudFocusTrap>
+                <MudProgressLinear Color="Color.Info" Striped="false" Size="Size.Large" Value="@progressValue" Class="my-7" />
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="3" sm="3">
+    </MudItem>
+
+    <MudItem xs="6" md="8" sm="6" Class="d-flex flex-column h-100">
+        <MudPaper Class="pa-5 d-flex flex-column align-center flex-grow-1" Elevation="4">
+            <MudDataGrid RowsPerPage="5" Items="dtr.OrderByDescending(x => x.UpdatedOn).ToList()" Class="h-100" Striped ColumnResizeMode="ResizeMode.Container">
+                <Columns>
+                    <PropertyColumn Property="x => x.Name" Title="Employee Name" HeaderStyle="background-color: black;color: white;" />
+                    <PropertyColumn Property="x => x.CutOffDate" Title="Cut Off Date" HeaderStyle="background-color: black;color: white;" />
+                    <PropertyColumn Property="x => x.TimeIn" Title="Time In" HeaderStyle="background-color: black;color: white;">
+                        <CellTemplate>
+                            @context.Item.TimeIn?.ToString("t")
+                        </CellTemplate>
+                    </PropertyColumn>
+                    <PropertyColumn Property="x => x.TimeOut" Title="Time Out" HeaderStyle="background-color: black;color: white;">
+                        <CellTemplate>
+                            @context.Item.TimeOut?.ToString("t")
+                        </CellTemplate>
+                    </PropertyColumn>
+                </Columns>
+                <NoRecordsContent>
+                    <MudText>No Records to show</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Loading Content...</MudText>
+                </LoadingContent>
+                <PagerContent>
+                    <MudDataGridPager T="DTRModel" />
+                </PagerContent>
+            </MudDataGrid>
+        </MudPaper>
+    </MudItem>
+
+
+    <MudItem xs="3" sm="3">
+
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Inject] IHttpClientFactory httpClientFactory { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
+
+    private TimeZoneInfo targetTimeZone;
+    private string currentDate = string.Empty;
+    private string currentTime = string.Empty;
+    private Timer? timer;
+    private Timer? progressTimer;
+    private string placeholderImage = "images/user-alt-solid.svg";
+    private List<DTRModel> dtr = new List<DTRModel>();
+    private string idcard = string.Empty;
+    private double progressValue = 0;
+    MudTextField<string>? rfidReader;
+    private DTRModel modelValue = new();
+    private bool alertVisible = false;
+    private bool IsDayShift { get; set; }
+    private bool IsNightShift { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila"); // Set your desired timezone here
+        UpdateShiftStatus();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Configuration.PreventDuplicates = false;
+        Snackbar.Configuration.NewestOnTop = true;
+        Snackbar.Configuration.ShowCloseIcon = true;
+        Snackbar.Configuration.VisibleStateDuration = 10000;
+        Snackbar.Configuration.HideTransitionDuration = 500;
+        Snackbar.Configuration.ShowTransitionDuration = 500;
+        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
+        UpdateDateTime(null); // Initialize the date/time display
+        timer = new Timer(UpdateDateTime, null, 0, 1000); // Update date and time every second
+        await LoadDTRHistory();
+        await JSRuntime.InvokeVoidAsync("startKeyboardListener", DotNetObjectReference.Create(this));
+    }
+
+    [JSInvokable]
+    public async Task ReceiveRfidData(string data)
+    {
+        Snackbar.Clear();
+        idcard = data;
+        StateHasChanged();
+    }
+
+    private void UpdateShiftStatus()
+    {
+        DateTime currentTime = DateTime.Now;
+
+        // Day Shift (8:00 AM to 5:00 PM, considering lunch break)
+        DateTime dayShiftStart = currentTime.Date.AddHours(8);
+        DateTime dayShiftEnd = currentTime.Date.AddHours(17);
+
+        // Night Shift (10:00 PM to 7:00 AM next day)
+        DateTime nightShiftStart = currentTime.Date.AddHours(22);
+        DateTime nightShiftEnd = currentTime.Date.AddDays(1).AddHours(7);
+
+        IsDayShift = currentTime >= dayShiftStart && currentTime < dayShiftEnd;
+        IsNightShift = currentTime >= nightShiftStart || currentTime < nightShiftEnd;
+    }
+
+    private DateTime GetCurrentTime()
+    {
+        return TimeZoneInfo.ConvertTime(DateTime.UtcNow, targetTimeZone);
+    }
+
+    private async Task OnTextChangedAsync()
+    {
+        if (!String.IsNullOrEmpty(idcard))
+        {
+            try
+            {
+                var httpClient = httpClientFactory.CreateClient("Anonymous");
+                var response = await httpClient.PostAsJsonAsync("Employee/GetEmployeeRFIDInfo", idcard);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
+                    var employee = await response.Content.ReadFromJsonAsync<DTRModel>();
+                    DateTime currentTime = GetCurrentTime();
+                    modelValue.Name = employee.Name;
+                    modelValue.IDNumber = employee.IDNumber;
+                    modelValue.CutOffDate = GetCutoffPeriod(currentTime);
+                    modelValue.Profile = employee.Profile;
+                    modelValue.TimeIn = employee.TimeIn;
+                    if (employee.ShiftDate is null)
+                    {
+                        modelValue.ShiftDate = DateTime.Now.Date;
+                        await ValidateAndAssignTime(null,null);
+                    }
+                    else
+                    {
+                        if (employee.ShiftDate != DateTime.Now.Date)
+                        {
+                            modelValue.ShiftDate = DateTime.Now.Date;
+                            await ValidateAndAssignTime(null, employee.TimeOut);
+                        }
+                        else
+                        {
+                            modelValue.ShiftDate = employee.ShiftDate;                            
+                            await ValidateAndAssignTime(employee.TimeIn, employee.TimeOut);
+                        }
+                    }                
+
+
+
+
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"ID Card Invalid: {errorMessage}", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception occurred: {ex.Message}");
+            }
+            finally
+            {
+                idcard = string.Empty;
+                StartProgressBar();
+            }
+        }
+    }
+
+
+    private async Task OnSubmitDtr()
+    {
+        try
+        {
+            var httpClient = httpClientFactory.CreateClient("Anonymous");
+            var response = await httpClient.PostAsJsonAsync("Employee/InsertOrUpdateDTR", modelValue);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var employee = await response.Content.ReadFromJsonAsync<int>();
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"An error occured: {errorMessage}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception occurred: {ex.Message}");
+        }
+        finally
+        {
+            idcard = string.Empty;
+            await LoadDTRHistory();
+            StartProgressBar();
+        }
+    }
+
+
+    private async Task LoadDTRHistory()
+    {
+        try
+        {
+            var httpClient = httpClientFactory.CreateClient("Anonymous");
+            var response = await httpClient.PostAsJsonAsync("Employee/GetEmployeeRFIDInfoAll", modelValue);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var employee = await response.Content.ReadFromJsonAsync<List<DTRModel>>();
+                dtr.Clear();
+                if (employee is not null)
+                {
+                    dtr = employee;
+                }
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"An error occured: {errorMessage}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception occurred: {ex.Message}");
+        }
+        finally
+        {
+
+        }
+    }
+
+    private async Task ValidateAndAssignTime(DateTime? timeIn, DateTime? timeOut)
+    {
+
+        DateTime currentTime = DateTime.Now;
+
+
+        // Define Day Shift Time Frames
+        DateTime dayShiftTimeInStart = currentTime.Date.AddHours(8); // 8:00 AM
+        DateTime dayShiftTimeInEnd = currentTime.Date.AddHours(17); // 12:00 PM
+        DateTime dayShiftTimeOutStart = currentTime.Date.AddHours(8); // 1:00 PM
+        DateTime dayShiftTimeOutEnd = currentTime.Date.AddHours(17); // 5:00 PM
+
+        // Define Night Shift Time Frames
+        DateTime nightShiftTimeInStart = currentTime.Date.AddHours(23); // 10:00 PM
+        DateTime nightShiftTimeInEnd = currentTime.Date.AddHours(1); // 12:00 AM
+        DateTime nightShiftTimeOutStart = currentTime.Date.AddHours(6); // 6:00 AM
+        DateTime nightShiftTimeOutEnd = currentTime.Date.AddHours(7); // 7:00 AM
+
+        // Check if it's Day Shift or Night Shift
+        bool isDayShift = currentTime >= dayShiftTimeInStart && currentTime <= dayShiftTimeOutEnd;
+        bool isNightShift = currentTime >= nightShiftTimeInStart || currentTime <= nightShiftTimeOutEnd;
+
+        if (timeIn == null && timeOut == null )
+        {
+            if (isDayShift)
+            {
+                if (currentTime >= dayShiftTimeInStart && currentTime <= dayShiftTimeInEnd)
+                {
+                    modelValue.TimeIn = currentTime;
+                    Snackbar.Add("Time In recorded successfully.", Severity.Success);
+                    await OnSubmitDtr();
+                }
+                else
+                {
+                    Snackbar.Add("Not Allowed Time for Time In (Day Shift).", Severity.Error);
+                }
+            }
+            else if (isNightShift)
+            {
+                if (currentTime >= nightShiftTimeInStart || currentTime <= nightShiftTimeInEnd )
+                {
+                    modelValue.TimeIn = currentTime;
+                    await OnSubmitDtr();
+                    Snackbar.Add("Time In recorded successfully.", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Not Allowed Time for Time In (Night Shift).", Severity.Error);
+                }
+            }
+            else
+            {
+                Snackbar.Add("Invalid shift time.", Severity.Error);
+            }
+        }
+        else if (timeIn != null && timeOut == null)
+        {
+            if (isDayShift)
+            {
+                if (currentTime >= dayShiftTimeOutStart && currentTime <= dayShiftTimeOutEnd)
+                {                    
+                    modelValue.TimeOut = currentTime;
+                    await OnSubmitDtr();
+                    Snackbar.Add("Time Out recorded successfully.", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Not Allowed Time for Time Out (Day Shift).", Severity.Error);
+                }
+            }
+            else if (isNightShift)
+            {
+                if (currentTime >= nightShiftTimeOutStart && currentTime <= nightShiftTimeOutEnd)
+                {                    
+                    modelValue.TimeOut = currentTime;
+                    await OnSubmitDtr();
+                    Snackbar.Add("Time Out recorded successfully.", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Not Allowed Time for Time Out (Night Shift).", Severity.Error);
+                }
+            }
+            else
+            {
+                Snackbar.Add("Invalid shift time.", Severity.Error);
+            }
+        }
+        else if (timeIn != null && timeOut != null)
+        {
+            Snackbar.Add("Both Time In and Time Out are already recorded.", Severity.Warning);
+        }
+    }
+
+
+
+    public string GetCutoffPeriod(DateTime currentDate)
+    {
+        string monthName = currentDate.ToString("MMMM");
+        int day = currentDate.Day;
+        int year = currentDate.Year;
+
+        int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+
+        string cutoffPeriod;
+        if (day <= 15)
+        {
+            cutoffPeriod = $"{monthName} 1-15, {year}";
+        }
+        else
+        {
+            cutoffPeriod = $"{monthName} 16-{daysInMonth}, {year}";
+        }
+
+        return cutoffPeriod;
+    }
+
+    private void UpdateDateTime(object? state)
+    {
+        DateTime now = GetCurrentTime();
+        currentDate = now.ToString("dddd, MMMM dd, yyyy");
+        currentTime = now.ToString("hh:mm:ss tt");
+        InvokeAsync(StateHasChanged); // Refresh the UI
+    }
+
+    private void StartProgressBar()
+    {
+        progressValue = 0;
+        progressTimer = new Timer(UpdateProgress, null, 0, 30);
+    }
+
+    private void UpdateProgress(object? state)
+    {
+        if (progressValue < 100)
+        {
+            progressValue += 0.6; // Increment progress
+            if (progressValue > 100) progressValue = 100; // Ensure it doesn't exceed 100
+            InvokeAsync(StateHasChanged); // Refresh the UI
+        }
+        else
+        {
+            Snackbar.Clear();
+            alertVisible = false;
+            progressValue = 0;
+            modelValue = new();
+            InvokeAsync(StateHasChanged);
+            progressTimer?.Dispose(); // Stop the timer when progress is complete
+        }
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+        progressTimer?.Dispose();
+    }
+}
+
+

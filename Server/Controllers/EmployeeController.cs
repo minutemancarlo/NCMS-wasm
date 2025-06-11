@@ -1,4 +1,5 @@
 ﻿using Auth0.ManagementApi;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NCMS_wasm.Server.Logger;
 using NCMS_wasm.Server.Repository;
@@ -123,6 +124,126 @@ namespace NCMS_wasm.Server.Controllers
                 return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
             }
         }
+
+
+        [AllowAnonymous]
+        [HttpPost("GetEmployeeRFIDInfo")]
+        public async Task<ActionResult<DTRModel>> GetEmployeeRFIDInfo([FromBody] string rfid)
+        {
+            try
+            {
+                var employee = await _employeeRepository.GetEmployeeInfoRFIDAsync(rfid);
+
+                if (employee == null)
+                {
+                    
+                    return NotFound($"Employee not found.");
+                }
+                else
+                {                   
+                    _logger.LogInformation($"Employee information retrieved successfully.");
+                    return Ok(employee);
+                }
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetEmployeeRFIDInfo]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
+                _logger.LogError($"Exception occurred while retrieving employee: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("GetEmployeeRFIDInfoAll")]
+        public async Task<ActionResult<List<DTRModel>>> GetEmployeeRFIDInfoAll()
+        {
+            try
+            {
+                var employee = await _employeeRepository.GetEmployeeInfoRFIDAllAsync();
+                
+                    _logger.LogInformation($"Employee information retrieved successfully.");
+                    return Ok(employee);
+                
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetEmployeeRFIDInfoAll]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
+                _logger.LogError($"Exception occurred while retrieving employee: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("InsertOrUpdateDTR")]
+        public async Task<ActionResult> InsertOrUpdateDTR(DTRModel dtr)
+        {
+            try
+            {
+                _fileLogger.Log($"DTR: EmployeeId: {dtr.IDNumber}, Shift Date: {dtr.ShiftDate}, Cut Off Date: {dtr.CutOffDate}, Time In: {dtr.TimeIn}, Time Out: {dtr.TimeOut}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+                var result = await _employeeRepository.ManageDTRAsync(dtr);
+                return Ok(result);               
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [InsertOrUpdateDTR]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+
+                _logger.LogError($"Exception occurred while retrieving employee: {ex.Message}");
+                return BadRequest($"Exception occurred while retrieving employee info: {ex.Message}");
+            }
+        }
+
+        [HttpPost("GenerateDTRRequest")]
+        public async Task<ActionResult> GenerateDTRRequest(GenerateDTRRequest request)
+        {
+            try
+            {
+                var taskName = String.Empty;
+                if(request.DTRType == "All")
+                {
+                    taskName = $"DTR_{request.CutOffDate}_{DateTime.Now.Date.ToString("MMddyyyy")}_{DateTime.Now.ToString("hhmmss")}";
+                }
+                else
+                {
+                    taskName = $"DTR_{request.CutOffDate}_{request.EmployeeId}_{DateTime.Now.Date.ToString("MMddyyyy")}_{DateTime.Now.ToString("hhmmss")}";
+                }
+
+                var dtr = new GeneratedDTR
+                {
+                    TaskType = request.DTRType,                    
+                    TaskName =  taskName,
+                    Status = DTRStatus.On_Queue                    
+                };
+                var result = await _employeeRepository.InsertDTRRequestAsync(dtr);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GenerateDTRRequest]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");
+                
+                return BadRequest($"Exception occurred while generating dtr request: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpPost("GetDTRRequests")]
+        public async Task<ActionResult<GeneratedDTR>> GetDTRRequests()
+        {
+            try
+            {
+                var employee = await _employeeRepository.GetDTRForProcessAllAsync();                
+                    return Ok(employee);
+                
+            }
+            catch (Exception ex)
+            {
+                _fileLogger.Log($"Exception Occured in Endpoint [GetDTRRequests]: {ex.Message}", DateTime.Now.ToString("MM-dd-yyyy") + ".txt", "EmployeeController");                
+                return BadRequest($"Exception occurred while retrieving dtr requests: {ex.Message}");
+            }
+        }
+
 
         [HttpPost("GetMyInfo")]
         public async Task<ActionResult<Employee>> GetMyInfo([FromBody] string auth_id)

@@ -34,12 +34,15 @@
         <a class="dismiss">🗙</a>
     </div>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
-    
+
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
     <script src="_content/MudBlazor.Extensions/js/components/MudExAppLoader.min.js"></script>
     <script type="module" src="_content/Heron.MudCalendar/Heron.MudCalendar.min.js"></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
     <script>
         function downloadFile(url, fileName) {
             const link = document.createElement('a');
@@ -68,15 +71,40 @@
             });
         };
 
-    
-            function scrollToElement(id) {
+
+        function scrollToElement(id) {
             var element = document.getElementById(id);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth' });
             }
         }
-    
+
     </script>
+
+    <script>
+        function enterFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+        }
+
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE11 */
+                document.msExitFullscreen();
+            }
+        }
+    </script>
+
+
 </body>
 
 </html>

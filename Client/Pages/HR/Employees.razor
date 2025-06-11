@@ -114,8 +114,7 @@
                                           ButtonType="ButtonType.Button">
                             <LoadingContent>Generating...</LoadingContent>
                             <ChildContent>Export to PDF</ChildContent>
-                        </MudLoadingButton>
-                        
+                        </MudLoadingButton>                        
                     </MudCardActions>
 
                 </MudCardContent>
@@ -149,6 +148,8 @@
         await base.OnInitializedAsync();
     }
 
+   
+    
     private async Task AddEmployee(){
         var options = new DialogOptions
             {

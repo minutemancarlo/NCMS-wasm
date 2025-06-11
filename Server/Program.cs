@@ -7,6 +7,7 @@ using NCMS_wasm.Client.Pages.Hotel;
 using NCMS_wasm.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using NCMS_wasm.Server.BackgroundServices;
+using Microsoft.AspNetCore.StaticFiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,7 @@ builder.Services.AddScoped<ReceiptService>();
 //Add Background Services
 builder.Services.AddHostedService<PayslipProcessor>();
 builder.Services.AddHostedService<EmailSenderProcessor>();
+builder.Services.AddHostedService<DTRProcessor>();
 
 
 // Add services to the container.
@@ -81,15 +83,16 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
 });
-//var allowedOrigin = builder.Configuration["AllowedOrigin:url"];
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowSpecificOrigin", builder =>
-//    {
-//        builder.WithOrigins(allowedOrigin) 
-//               .AllowAnyMethod()
-//               .AllowAnyHeader();
-//    });
+
+//var allowedOrigin = "https://ncmslu.x10.mx"; 
+//builder.Services.AddCors(options => 
+//{ 
+//    options.AddPolicy("AllowSpecificOrigin", 
+//        builder => { 
+//            builder.WithOrigins(allowedOrigin).
+//            AllowAnyMethod()
+//            .AllowAnyHeader(); 
+//        }); 
 //});
 
 
@@ -123,7 +126,11 @@ app.UseCors("AllowOrigin");
 app.UseHttpsRedirection();
 
 app.UseBlazorFrameworkFiles();
-app.UseStaticFiles();
+StaticFileOptions options = new StaticFileOptions { ContentTypeProvider = new FileExtensionContentTypeProvider() };
+((FileExtensionContentTypeProvider)options.ContentTypeProvider).Mappings.Add(new KeyValuePair<string, string>(".glb", "model/gltf-buffer"));
+app.UseStaticFiles(options);
+
+
 
 app.UseRouting();
 
