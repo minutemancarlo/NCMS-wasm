@@ -299,10 +299,6 @@ namespace NCMS-wasm.Server.wwwroot.Reports {
             
             private global::System.Data.DataColumn columnTotalNetPay;
             
-            private global::System.Data.DataColumn columnTotalDeductions;
-            
-            private global::System.Data.DataColumn columnTotalSalary;
-            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public PayslipDataTable() {
@@ -418,22 +414,6 @@ namespace NCMS-wasm.Server.wwwroot.Reports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn TotalDeductionsColumn {
-                get {
-                    return this.columnTotalDeductions;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn TotalSalaryColumn {
-                get {
-                    return this.columnTotalSalary;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -469,7 +449,7 @@ namespace NCMS-wasm.Server.wwwroot.Reports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public PayslipRow AddPayslipRow(string EmployeeId, string EmployeeName, string Position, System.DateTime PayrollDate, string BasicSalary, string SSS, string PagIbig, string PHIC, string Tax, string TotalNetPay, string TotalDeductions, string TotalSalary) {
+            public PayslipRow AddPayslipRow(string EmployeeId, string EmployeeName, string Position, System.DateTime PayrollDate, string BasicSalary, string SSS, string PagIbig, string PHIC, string Tax, string TotalNetPay) {
                 PayslipRow rowPayslipRow = ((PayslipRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         EmployeeId,
@@ -481,9 +461,7 @@ namespace NCMS-wasm.Server.wwwroot.Reports {
                         PagIbig,
                         PHIC,
                         Tax,
-                        TotalNetPay,
-                        TotalDeductions,
-                        TotalSalary};
+                        TotalNetPay};
                 rowPayslipRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowPayslipRow);
                 return rowPayslipRow;
@@ -516,8 +494,6 @@ namespace NCMS-wasm.Server.wwwroot.Reports {
                 this.columnPHIC = base.Columns["PHIC"];
                 this.columnTax = base.Columns["Tax"];
                 this.columnTotalNetPay = base.Columns["TotalNetPay"];
-                this.columnTotalDeductions = base.Columns["TotalDeductions"];
-                this.columnTotalSalary = base.Columns["TotalSalary"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -543,10 +519,6 @@ namespace NCMS-wasm.Server.wwwroot.Reports {
                 base.Columns.Add(this.columnTax);
                 this.columnTotalNetPay = new global::System.Data.DataColumn("TotalNetPay", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnTotalNetPay);
-                this.columnTotalDeductions = new global::System.Data.DataColumn("TotalDeductions", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnTotalDeductions);
-                this.columnTotalSalary = new global::System.Data.DataColumn("TotalSalary", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnTotalSalary);
                 this.ExtendedProperties.Add("Generator_TablePropName", "_Payslip");
                 this.ExtendedProperties.Add("Generator_UserTableName", "Payslip");
             }
@@ -851,38 +823,6 @@ namespace NCMS-wasm.Server.wwwroot.Reports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string TotalDeductions {
-                get {
-                    try {
-                        return ((string)(this[this.tablePayslip.TotalDeductionsColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'TotalDeductions\' in table \'Payslip\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tablePayslip.TotalDeductionsColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string TotalSalary {
-                get {
-                    try {
-                        return ((string)(this[this.tablePayslip.TotalSalaryColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'TotalSalary\' in table \'Payslip\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tablePayslip.TotalSalaryColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public bool IsEmployeeIdNull() {
                 return this.IsNull(this.tablePayslip.EmployeeIdColumn);
             }
@@ -999,30 +939,6 @@ namespace NCMS-wasm.Server.wwwroot.Reports {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetTotalNetPayNull() {
                 this[this.tablePayslip.TotalNetPayColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsTotalDeductionsNull() {
-                return this.IsNull(this.tablePayslip.TotalDeductionsColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetTotalDeductionsNull() {
-                this[this.tablePayslip.TotalDeductionsColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsTotalSalaryNull() {
-                return this.IsNull(this.tablePayslip.TotalSalaryColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetTotalSalaryNull() {
-                this[this.tablePayslip.TotalSalaryColumn] = global::System.Convert.DBNull;
             }
         }
         

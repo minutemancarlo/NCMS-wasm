@@ -252,7 +252,7 @@
           <Paragraph>
             <TextRuns>
               <TextRun>
-                <Value>=Fields!TotalNetPay.Value</Value>
+                <Value>=First(Fields!TotalNetPay.Value, "Payslip")</Value>
                 <Style>
                   <Format>'₱'#,0.00;('₱'#,0.00)</Format>
                   <rd:FormatSymbolCulture>fil-PH</rd:FormatSymbolCulture>
@@ -686,7 +686,7 @@
           <Paragraph>
             <TextRuns>
               <TextRun>
-                <Value>=Fields!TotalDeductions.Value</Value>
+                <Value>=First(Fields!SSS.Value, "Payslip") + First(Fields!PagIbig.Value, "Payslip") + First(Fields!PHIC.Value, "Payslip") + First(Fields!Tax.Value, "Payslip")</Value>
                 <Style>
                   <Format>'₱'#,0.00;('₱'#,0.00)</Format>
                   <rd:FormatSymbolCulture>fil-PH</rd:FormatSymbolCulture>
@@ -751,7 +751,7 @@
           <Paragraph>
             <TextRuns>
               <TextRun>
-                <Value>=Fields!TotalSalary.Value</Value>
+                <Value>=First(Fields!TotalNetPay.Value, "Payslip") - First(Fields!SSS.Value, "Payslip") - First(Fields!PagIbig.Value, "Payslip") - First(Fields!PHIC.Value, "Payslip") - First(Fields!Tax.Value, "Payslip")</Value>
                 <Style>
                   <Format>'₱'#,0.00;('₱'#,0.00)</Format>
                   <rd:FormatSymbolCulture>fil-PH</rd:FormatSymbolCulture>
@@ -973,18 +973,10 @@
           <DataField>TotalNetPay</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="TotalDeductions">
-          <DataField>TotalDeductions</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="TotalSalary">
-          <DataField>TotalSalary</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
       </Fields>
       <rd:DataSetInfo>
         <rd:DataSetName>Payslip</rd:DataSetName>
-        <rd:SchemaPath>C:\Users\Anubis\Source\Repos\NCMS-wasm\Server\wwwroot\Reports\Payslip.xsd</rd:SchemaPath>
+        <rd:SchemaPath>C:\Users\admin\Documents\Local Repo\NORLU\NCMS-wasm\WindowsFormsForRDLCDesign\Payslip.xsd</rd:SchemaPath>
         <rd:TableName>Payslip</rd:TableName>
         <rd:TableAdapterFillMethod />
         <rd:TableAdapterGetDataMethod />

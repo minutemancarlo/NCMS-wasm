@@ -1,8 +1,17 @@
 ﻿@page "/Booking/{encryptedParams}"
 @layout NoLayout
+@using HomagGroup.Blazor3D.Enums
+@using HomagGroup.Blazor3D.Events
+@using HomagGroup.Blazor3D.Lights
+@using HomagGroup.Blazor3D.Maths
+@using HomagGroup.Blazor3D.Scenes
+@using HomagGroup.Blazor3D.Settings
+@using HomagGroup.Blazor3D.Viewers
 @using NCMS_wasm.Shared
 @using NCMS_wasm.Client.Pages.Validations
+
 @inject IJSRuntime JSRuntime
+
 
 <style>
     .paper-container {
@@ -86,10 +95,11 @@
 
                         </MudStack>
                         <!-- A-Frame Scene -->
-                        <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%">
+                       @*  <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%">
                             <a-sky src="images/@Image"></a-sky>
                             <a-entity camera look-controls></a-entity>
-                        </a-scene>
+                        </a-scene> *@
+                        <model-viewer src="/assets/blazor3d.glb" shadow-intensity="1" ar camera-controls touch-action="pan-y" alt="A 3D model carousel"></model-viewer>
                     </MudPaper>
                   
                 </MudStack>
@@ -148,10 +158,11 @@
 
                             </MudStack>
                             <!-- A-Frame Scene -->
-                            <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%">
+                            @* <a-scene embedded vr-mode-ui="enabled: false" style="height: 100%; width: 100%">
                                 <a-sky src="images/@Image"></a-sky>
                                 <a-entity camera look-controls></a-entity>
-                            </a-scene>
+                            </a-scene> *@
+                            
                         </MudPaper>
 
                     </MudStack>
@@ -193,6 +204,9 @@
     MudForm? guestForm;
     GuestsInfoValidator guestValidator = new GuestsInfoValidator();
     private GuestsInfo tempGuestInfo = new();
+
+
+ 
 
     protected override async Task OnParametersSetAsync()
     {
@@ -278,5 +292,7 @@
             Navigation.NavigateTo("/Home");
         }
     }
+
+  
 
 }

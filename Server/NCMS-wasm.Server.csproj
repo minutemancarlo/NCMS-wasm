@@ -59,6 +59,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\360images\" />
+    <Folder Include="wwwroot\images\models\" />
     <Folder Include="wwwroot\images\Thumbnail\" />
     <Folder Include="wwwroot\Uploads\Payslip\Failed\" />
     <Folder Include="wwwroot\Uploads\Payslip\Processing\" />
